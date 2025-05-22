@@ -23,7 +23,7 @@ class Command(BaseCommand):
                cursor.execute(f'ALTER TABLE "{table}"DISABLE TRIGGER ALL')
 
       for table in tables:
-         cursor.execute(f'TRUNCATE TABLE "{table}" CASCADE')
+         cursor.execute(f'TRUNCATE TABLE "{table}" RESTART IDENTITY CASCADE')
 
       if connection.vendor == "postgresql":
          for table in tables:
