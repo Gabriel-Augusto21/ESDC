@@ -12,6 +12,14 @@
          <option>{{ alimento.nome }} - {{alimento.classificacao.nome}}</option>
       {% endfor %}
    </select>
+   <ul>
+      <li>
+         <a href="{% url "alimentos:nutrientes" %}">Nutrientes</a>
+      </li>
+      <li>
+         <a href="{% url "alimentos:classificacao" %}">Classificacao</a>
+      </li>
+   </ul>
 </body>
 
 </html>
