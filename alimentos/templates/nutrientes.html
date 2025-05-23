@@ -6,8 +6,21 @@
    <title>Nutrientes</title>
 </head>
 <body>
-   essa é a tela de insercao de nutrientes
-   <p>nicole e joão, aqui ceis podem mecher no front ja que ta de boa</p>
+   <h1>Front, Ainda falta mandar o nutrientes</h1>
+   <select name="classificacao" id="classificacao-select">
+      <option value="1">Nutriente 1</option>
+      <option value="2">Nutriente 2</option>
+      <option value="3">Nutriente 3</option>
+   </select>
+
+   <ul>
+      <li>
+         <a href="{% url "alimentos:classificacao" %}">Classificação</a>
+      </li>
+      <li>
+         <a href="{% url "alimentos:alimentos" %}">Alimentos</a>
+      </li>
+   </ul>
 
 </body>
 </html>
