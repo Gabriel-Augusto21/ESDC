@@ -1,1 +1,4 @@
 sopa
+Então galera, eu preciso que voces adicionem as seguintes dependencias:
+Pandas e numpy
+ex: pip install pandas
