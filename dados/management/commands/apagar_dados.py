@@ -5,7 +5,7 @@ from alimentos.models import Classificacao
 
 
 class Command(BaseCommand):
-   help = "Redefine o sistema, apagando tudo do banco"
+   help = "Redefine o sistema, apagando tudo(dados) do banco"
 
    @transaction.atomic
    def handle(self, *args, **options):
