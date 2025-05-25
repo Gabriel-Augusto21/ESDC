@@ -37,3 +37,10 @@ class Command(BaseCommand):
                   );
                """
                )
+
+      if connection.vendor == "postgresql":
+         for table in tables:
+               cursor.execute(f'ALTER TABLE "{table}" ENABLE TRIGGER ALL;')
+
+      self.stdout.write(self.style.WARNING("Banco de dados limpo com sucesso!"))
+      
