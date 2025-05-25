@@ -1,11 +1,10 @@
 from django.core.management import BaseCommand
 from django.db import connection, transaction
-from alimentos.models import Classificacao
 
 
 
 class Command(BaseCommand):
-   help = "Redefine o sistema, apagando tudo do banco"
+   help = "Redefine o sistema, apagando tudo(dados) do banco"
 
    @transaction.atomic
    def handle(self, *args, **options):
@@ -37,3 +36,10 @@ class Command(BaseCommand):
                   );
                """
                )
+
+      if connection.vendor == "postgresql":
+         for table in tables:
+               cursor.execute(f'ALTER TABLE "{table}" ENABLE TRIGGER ALL;')
+
+      self.stdout.write(self.style.WARNING("Banco de dados limpo com sucesso!"))
+      

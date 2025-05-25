@@ -8,9 +8,9 @@
 <body>
    <h1>Front, Ainda falta mandar o nutrientes</h1>
    <select name="classificacao" id="classificacao-select">
-      <option value="1">Nutriente 1</option>
-      <option value="2">Nutriente 2</option>
-      <option value="3">Nutriente 3</option>
+      {% for nutriente in nutrientes %}
+         <option value="nutirente.id">{{nutriente.nome }} / {{nutriente.unidade}}</option>
+      {% endfor %}
    </select>
 
    <ul>

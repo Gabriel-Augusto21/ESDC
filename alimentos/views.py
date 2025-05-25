@@ -1,8 +1,9 @@
 from django.shortcuts import render
-from alimentos.models import Classificacao, Alimento
+from alimentos.models import Classificacao, Alimento, Nutriente
 
 def nutrientes(requisicao):
-   return render(requisicao, 'nutrientes.html')
+   nutrientes = Nutriente.objects.all()
+   return render(requisicao, 'nutrientes.html', {"nutrientes": nutrientes})
 
 def classificacao(req):
    classificacao = Classificacao.objects.all()
