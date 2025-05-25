@@ -1,6 +1,5 @@
 from django.core.management import BaseCommand
 from django.db import connection, transaction
-from alimentos.models import Classificacao
 
 
 
