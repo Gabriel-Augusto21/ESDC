@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt_BR">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Alimentos</title>
+</head>
+<body>
+   <h1>Front, tá ai os dados de alimentos</h1>
+   <select name="Select Alimentos" id="sopa">
+      {% for alimento in alimentos %}
+         <option>{{ alimento.nome }} - {{alimento.classificacao.nome}}</option>
+      {% endfor %}
+   </select>
+   <ul>
+      <li>
+         <a href="{% url "alimentos:nutrientes" %}">Nutrientes</a>
+      </li>
+      <li>
+         <a href="{% url "alimentos:classificacao" %}">Classificacao</a>
+      </li>
+   </ul>
+</body>
+
+</html>
