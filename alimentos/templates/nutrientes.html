@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Nutrientes</title>
+</head>
+<body>
+   <h1>Front, Ainda falta mandar o nutrientes</h1>
+   <select name="classificacao" id="classificacao-select">
+      {% for nutriente in nutrientes %}
+         <option value="nutirente.id">{{nutriente.nome }} / {{nutriente.unidade}}</option>
+      {% endfor %}
+   </select>
+
+   <ul>
+      <li>
+         <a href="{% url "alimentos:classificacao" %}">Classificação</a>
+      </li>
+      <li>
+         <a href="{% url "alimentos:alimentos" %}">Alimentos</a>
+      </li>
+   </ul>
+
+</body>
+</html>
