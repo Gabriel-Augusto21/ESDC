@@ -6,7 +6,9 @@ from django.contrib import messages
 # NUTRIENTES
 def nutrientes(request):
    nutrientes = Nutriente.objects.all().order_by('id')
-   return render(request, 'nutrientes.html', {"nutrientes": nutrientes})
+   if nutrientes:
+      return render(request, 'nutrientes.html', {"nutrientes": nutrientes})
+   return js({"nutrientes": 'Banco de Dados vazio!'})
 
 def busca_nutriente_nome(request):
    if request.GET.get('nome'):
@@ -44,7 +46,6 @@ def atualizar_nutriente(request):
 def apagar_nutriente(request):
    if request.GET.get('id'):
       id = request.GET.get('id')
-      
       nutriente = Nutriente.objects.get(id=id)
       if not nutriente:
          return js({'nutriente': 'Não existe'})
