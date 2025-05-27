@@ -9,7 +9,7 @@
    <h1>Front, nutrientes adicionados</h1>
    <select name="classificacao" id="classificacao-select">
       {% for nutriente in nutrientes %}
-         <option value="nutirente.id">{{nutriente.nome }} / {{nutriente.unidade}}</option>
+         <option value="{{ nutriente.id }}">{{nutriente.nome }} / {{nutriente.unidade}}</option>
       {% endfor %}
    </select>
 

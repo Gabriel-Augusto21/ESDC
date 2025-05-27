@@ -21,9 +21,9 @@ def inserir_nutriente(request):
    if request.GET.get('nome') and request.GET.get('unidade'):
       nome = request.GET.get('nome')
       unidade = request.GET.get('unidade')
-      nutriente = Nutriente.objects.filter(nome=nome)
+      nutriente = Nutriente.objects.filter(nome=nome).exists()
 
-      if not nutriente.exists():
+      if not nutriente:
          Nutriente.objects.create(nome=nome, unidade=unidade)
          return js({'nutrientes': f'{nome} adicionado com sucesso!'})
       return js({'nutrientes': 'Nutriente já existente'})
