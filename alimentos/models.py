@@ -10,6 +10,7 @@ class Classificacao(models.Model):
 class Alimento(models.Model):
     classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
     nome = models.CharField(max_length=255, null=False)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nome
