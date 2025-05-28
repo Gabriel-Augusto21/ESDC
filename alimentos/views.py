@@ -2,11 +2,17 @@ from django.shortcuts import render
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import JsonResponse as js
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.conf import settings
 
 # NUTRIENTES
 def nutrientes(request):
    nutrientes = Nutriente.objects.all().order_by('id')
-   return render(request, 'nutrientes.html', {"nutrientes": nutrientes})
+   nutriente_lista = Nutriente.objects.all().order_by('nome')
+   paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
+   numero_pagina = request.GET.get('page')
+   page_obj = paginator.get_page(numero_pagina)
+   return render(request, 'nutrientes.html', {"nutrientes": page_obj, "page_obj": page_obj})
 
 def busca_nutriente_nome(request):
    if request.GET.get('nome'):
