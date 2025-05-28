@@ -19,7 +19,7 @@ class Command(BaseCommand):
          sheet_name=nome_tabela,
          usecols="BB:BC",
          engine="openpyxl",
-         nrows=33
+         nrows=34
       )
 
       # Percorrendo o dataframe dados_excel1
