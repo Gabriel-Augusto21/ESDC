@@ -2,6 +2,8 @@ from django.shortcuts import render
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import JsonResponse as js
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.conf import settings
 
 # NUTRIENTES
 def nutrientes(request):
@@ -62,5 +64,8 @@ def inserir_classificacao(req):
 
 # ALIMENTOS
 def alimentos(request):
-   alimentos = Alimento.objects.all()
-   return render(request, 'alimentos.html', {"alimentos": alimentos})
+   alimento_lista = Alimento.objects.all().order_by('nome')
+   paginator = Paginator(alimento_lista, settings.NUMBER_GRID_PAGES)
+   numero_pagina = request.GET.get('page')
+   page_obj = paginator.get_page(numero_pagina)
+   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
