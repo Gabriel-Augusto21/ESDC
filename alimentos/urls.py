@@ -10,6 +10,7 @@ urlpatterns = [
    path("alimentos/", views.alimentos, name="alimentos"),
    path("inserir_nutriente/", views.inserir_nutriente, name="inserir_nutriente"),
    path("apagar_nutriente/", views.apagar_nutriente, name="apagar_nutriente"),
+   path("apagar_classificacao/", views.apagar_classificacao, name="apagar_classificacao"),
    path("atualizar_nutriente/", views.atualizar_nutriente, name="atualizar_nutriente"),
    path("busca_nutriente_nome/", views.busca_nutriente_nome, name="busca_nutriente_nome"),
    path("busca_alimento_nome/", views.busca_alimento_nome, name="busca_alimento_nome"),
