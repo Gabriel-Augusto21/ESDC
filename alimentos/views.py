@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import JsonResponse as js
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.conf import settings
 from django.forms.models import model_to_dict
@@ -65,12 +66,26 @@ def classificacao(request):
    page_obj = paginator.get_page(numero_pagina)
    return render(request, 'classificacao.html', {"classificacoes": page_obj, 'page_obj': page_obj})
 
+def get_classificacao(request):
+   requisicao = request.GET.get('nome')
+   if requisicao:
+      classificacao = Classificacao.objects.filter(nome=requisicao)
+      return render(request)
+
 def inserir_classificacao(req):
    pass
+
 def apagar_classificacao(req):
    teste = req.GET.get('id')
    print(f'Id coletada {teste}')
+   nome = Classificacao.objects.get(id=teste)
    return js({'Mensagem': f'Apaguei o {teste}', 'obj': model_to_dict(Classificacao.objects.get(id=teste))})
+
+   # return js({})
+   # return HttpResponse(status=204)
+   # return HttpResponse(f"{nome.nome} pronto(a) pra receber is_active = false")
+
+
 
 # ALIMENTOS
 def alimentos(request):

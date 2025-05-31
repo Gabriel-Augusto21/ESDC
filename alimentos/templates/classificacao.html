@@ -1,44 +1,22 @@
 {% extends 'master.html' %}
 {%load static%}
 {% block conteudo %}
-<div class='container'>
-   <div class="form-group row align-items-center mb-4">
-      <div class="col-12 text-center">
-         <h1 class="display-5 font-weight-bold fonte-h1">
-            <i class="fas fa-book-open"></i> Classificação
-         </h1>
-         <hr class="mt-2 mb-3" style="border-color:green">
+<div class='container my-5'>
+   <div class="form-group row align-items-center mb-5">
+      <div class="col">
+         <input class="form-control" 
+         id="txtBuscaNome" 
+         value="{{ query }}"
+         type="text" 
+         placeholder="Digite o nome"
+         >
       </div>
-   </div>
-   <fieldset class="fieldset-custom">
-      <legend>
-         {% if page_obj.paginator.count == 0 %}
-            Nenhum registro cadastrado
-         {% elif page_obj.paginator.count == 1 %}
-            1 registro encontrado
-         {% else %}
-            {{ page_obj.paginator.count }} registros encontrados
-         {% endif %}
-      </legend>
-      <div class="form-group row align-items-center">
-         <div class="col-auto">
-            <img src="{% static 'img/lupa.png' %}" alt="icone de uma lupa" width="20" height="20">
-         </div>
-         <div class="text-left">
-            <label for="txtBuscaNome" class="col-form-label">Pesquisar por nome:</label>
-         </div>
-         <div class="col">
-            <input type="text" class="form-control" id="txtBuscaNome" placeholder="Digite o nome" value="{{ query }}">
-         </div>
-      </div> 
-      <div id="nutrientes-table">
-         {% include 'classificacao_table.html' %}
-      </div>
-   </fieldset>
+      <div id="mensagem-confirmacao"></div>
+   </div> 
+   {% include 'classificacao_table.html' %}
 </div>
 <script>
   const csrf_token = '{{ csrf_token }}';
 </script>
 <script src="{% static "js/classificacao.js" %}"></script>
-
 {% endblock %}
