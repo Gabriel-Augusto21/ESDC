@@ -1,43 +1,36 @@
 $(document).ready(function() {  
-   function reseta_input(){
-      $('.form-control').on('click', function () {
-         let input = $(this);
-         let valorOriginal = input.prop('defaultValue'); // pega o valor original do atributo value
-         let valorAtual = input.val();
-      
-         if (valorAtual !== valorOriginal) {
-            input.val(valorOriginal); // reseta pro valor original
-         }
-      });
-   }
-   $('.update-btn').on('click', function() {
-      let tr = $(this).closest('tr');
-      let nome = tr.find('#txtNome').val();
-      if (nome) {
-         console.log('Me informaram: '+nome);
-      }
-      else{
-         reseta_input();
-         console.log('Me informaram nada');
-      }
-      
-   });
    // Criando o alerta quando clicado no botao de excluir 
    document.body.addEventListener('click', function (e) {
+      if (e.target.closest('.update-btn')){
+         e.preventDefault();
+
+         const btn = e.target.closest('.update-btn');
+         const url = btn.dataset.url;
+         const tr = btn.closest('tr');
+         const nome = tr.querySelector('#txtNome')?.textContent.trim() || 'Item';
+
+         Swal.fire({
+            title: 'Renomear classificação',
+            icon: 'info',
+            input: "text",
+            inputLabel: "Informe um novo nome de classificacao",
+            inputValue: nome,
+            showCancelButton: true,
+         });
+      }
       if (e.target.closest('.delete-btn')) {
          e.preventDefault();
 
          const btn = e.target.closest('.delete-btn');
          const url = btn.dataset.url;
          const tr = btn.closest('tr');
-         const nome = tr.querySelector('#txtNome')?.value || 'Item';
          
          Swal.fire({
-            title: 'Tem certeza?',
-            text: "Você não poderá desfazer isso!",
+            title: 'Tem certeza que deseja excluir?',
+            text: "Você poderá desfazer isso mais tarde!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d33',
+            confirmButtonColor: '#FF0000',
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Sim, excluir',
             cancelButtonText: 'Cancelar'
@@ -48,14 +41,14 @@ $(document).ready(function() {
                   swap: 'none'
                });
                Swal.fire({
-                  title: 'Tudo ok',
-                  text: `"${nome}" agora está inativo!`,
-                  icon: 'warning',
+                  title: 'Tudo certo!',
+                  text: `Essa classificacao agora está inativa!`,
+                  icon: 'success',
                   confirmButtonColor: '#3085d6',
                })
             }
          });
       }
+      
    });
 });
-

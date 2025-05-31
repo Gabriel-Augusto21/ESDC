@@ -75,6 +75,12 @@ def get_classificacao(request):
 def inserir_classificacao(req):
    pass
 
+def atualizar_classificacao(req):
+   teste = req.GET.get('id')
+   print(f'Id coletada {teste}')
+   nome = Classificacao.objects.get(id=teste)
+   return js({'Mensagem': f'Atualizei o {teste}', 'obj': model_to_dict(Classificacao.objects.get(id=teste))})
+
 def apagar_classificacao(req):
    teste = req.GET.get('id')
    print(f'Id coletada {teste}')

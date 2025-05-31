@@ -1,17 +1,21 @@
 {% load static %}
-<table class="table table-borderless table-hover">
+<table class="table table-borderless table-hover mb-5">
    <tbody>
       {% for classificacao in classificacoes %}
-         <tr data-id="{{ classificacao.id }}">
-            <td class="input-group p-1">&nbsp;
-               <input class="form-control rounded" type="text" id="txtNome" value="{{classificacao.nome}}">
-               <div class="ml-2">
+         <tr data-id="{{ classificacao.id }}" class="border-bottom linha">
+            <td class="align-middle text-start w-75" >
+               <p class="mb-0 text-start" id="txtNome">{{ classificacao.nome }}</p>
+            </td>
+            <td class="align-middle text-end pe-3">
+               <div class="d-inline-flex gap-2">
                   <button class="btn btn-sm delete-btn" 
-                     data-id="{{ classificacao.id }}"
-                     data-url="/apagar_classificacao/?id={{ classificacao.id }}">
+                        data-id="{{ classificacao.id }}"
+                        data-url="/apagar_classificacao/?id={{ classificacao.id }}">
                      <img src="{% static 'img/delete.png' %}" alt="Excluir" width="20" height="20">
                   </button>
-                  <button class="btn btn-sm update-btn">
+                  <button class="btn btn-sm update-btn"
+                        data-id="{{ classificacao.id }}"
+                        data-url="/atualizar_classificacao/?id={{ classificacao.id }}">
                      <img src="{% static 'img/update.png' %}" alt="Alterar" width="20" height="20">
                   </button>
                </div>
