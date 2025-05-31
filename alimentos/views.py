@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import JsonResponse as js
-from django.contrib import messages
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.forms.models import model_to_dict
 
 # NUTRIENTES
 def nutrientes(request):
-   nutrientes = Nutriente.objects.all().order_by('id')
    nutriente_lista = Nutriente.objects.all().order_by('nome')
    paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
    numero_pagina = request.GET.get('page')
@@ -48,7 +48,7 @@ def atualizar_nutriente(request):
    return js({'nutriente': 'Preciso de um nome e uma id'})
    
 def apagar_nutriente(request):
-   if request.GET.get('id'):
+   if request.POST.get('id'):
       id = request.GET.get('id')
       
       nutriente = Nutriente.objects.get(id=id)
@@ -60,16 +60,46 @@ def apagar_nutriente(request):
    
 # CLASSIFICAÇÃO
 def classificacao(request):
-   classificacao = Classificacao.objects.all()
-   return render(request, 'classificacao.html', {"classificacao": classificacao})
+   classificacao_lista = Classificacao.objects.all().order_by()
+   paginator = Paginator(classificacao_lista, settings.NUMBER_GRID_PAGES)
+   numero_pagina = request.GET.get('page')
+   page_obj = paginator.get_page(numero_pagina)
+   return render(request, 'classificacao.html', {"classificacoes": page_obj, 'page_obj': page_obj})
+
+def get_classificacao(request):
+   requisicao = request.GET.get('nome')
+   if requisicao:
+      classificacao = Classificacao.objects.filter(nome=requisicao)
+      return render(request)
 
 def inserir_classificacao(req):
    pass
 
+def atualizar_classificacao(req):
+   teste = req.GET.get('id')
+   print(f'Id coletada {teste}')
+   nome = Classificacao.objects.get(id=teste)
+   return js({'Mensagem': f'Atualizei o {teste}', 'obj': model_to_dict(Classificacao.objects.get(id=teste))})
+
+def apagar_classificacao(req):
+   teste = req.GET.get('id')
+   print(f'Id coletada {teste}')
+   nome = Classificacao.objects.get(id=teste)
+   return js({'Mensagem': f'Apaguei o {teste}', 'obj': model_to_dict(Classificacao.objects.get(id=teste))})
+
+   # return js({})
+   # return HttpResponse(status=204)
+   # return HttpResponse(f"{nome.nome} pronto(a) pra receber is_active = false")
+
+
+
 # ALIMENTOS
 def alimentos(request):
-   alimentos = Alimento.objects.all()
-   return render(request, 'alimentos.html', {"alimentos": alimentos})
+   nutriente_lista = Alimento.objects.all().order_by('nome')
+   paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
+   numero_pagina = request.GET.get('page')
+   page_obj = paginator.get_page(numero_pagina)
+   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
 
 def busca_alimento_nome(request):
    if request.GET.get('nome'):

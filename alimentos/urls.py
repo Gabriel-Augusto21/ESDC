@@ -16,4 +16,7 @@ urlpatterns = [
    path("inserir_alimento/", views.inserir_alimento, name="inserir_alimento"),
    path("atualizar_alimento/", views.atualizar_alimento, name="atualizar_alimento"),
    path("apagar_alimento/", views.apagar_alimento, name="apagar_alimento"),
+   path("apagar_classificacao/", views.apagar_classificacao, name="apagar_classificacao"),
+   path("get_classificacao/", views.get_classificacao, name="get_classificacao"),
+   path("atualizar_classificacao/", views.get_classificacao, name="get_classificacao"),
 ]
