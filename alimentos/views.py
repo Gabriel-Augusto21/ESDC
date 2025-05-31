@@ -2,17 +2,26 @@ from django.shortcuts import render
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import JsonResponse as js
 from django.contrib import messages
+<<<<<<< HEAD
 from django.core.paginator import Paginator
 from django.conf import settings
+=======
+>>>>>>> origin/producao
 
 # NUTRIENTES
 def nutrientes(request):
    nutrientes = Nutriente.objects.all().order_by('id')
+<<<<<<< HEAD
    nutriente_lista = Nutriente.objects.all().order_by('nome')
    paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
    numero_pagina = request.GET.get('page')
    page_obj = paginator.get_page(numero_pagina)
    return render(request, 'nutrientes.html', {"nutrientes": page_obj, "page_obj": page_obj})
+=======
+   if nutrientes:
+      return render(request, 'nutrientes.html', {"nutrientes": nutrientes})
+   return js({"nutrientes": 'Banco de Dados vazio!'})
+>>>>>>> origin/producao
 
 def busca_nutriente_nome(request):
    if request.GET.get('nome'):
@@ -27,9 +36,15 @@ def inserir_nutriente(request):
    if request.GET.get('nome') and request.GET.get('unidade'):
       nome = request.GET.get('nome')
       unidade = request.GET.get('unidade')
+<<<<<<< HEAD
       nutriente = Nutriente.objects.filter(nome=nome)
 
       if not nutriente.exists():
+=======
+      nutriente = Nutriente.objects.filter(nome=nome).exists()
+
+      if not nutriente:
+>>>>>>> origin/producao
          Nutriente.objects.create(nome=nome, unidade=unidade)
          return js({'nutrientes': f'{nome} adicionado com sucesso!'})
       return js({'nutrientes': 'Nutriente já existente'})
@@ -50,7 +65,10 @@ def atualizar_nutriente(request):
 def apagar_nutriente(request):
    if request.GET.get('id'):
       id = request.GET.get('id')
+<<<<<<< HEAD
       
+=======
+>>>>>>> origin/producao
       nutriente = Nutriente.objects.get(id=id)
       if not nutriente:
          return js({'nutriente': 'Não existe'})

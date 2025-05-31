@@ -1,5 +1,22 @@
+<<<<<<< HEAD
 {% extends 'master.html' %}
 {% load static %}
+=======
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Nutrientes</title>
+</head>
+<body>
+   <h1>Front, nutrientes adicionados</h1>
+   <select name="classificacao" id="classificacao-select">
+      {% for nutriente in nutrientes %}
+         <option value="{{ nutriente.id }}">{{nutriente.nome }} / {{nutriente.unidade}}</option>
+      {% endfor %}
+   </select>
+>>>>>>> origin/producao
 
 {% block conteudo %}
 
