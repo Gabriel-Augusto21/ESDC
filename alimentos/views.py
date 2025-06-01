@@ -60,38 +60,51 @@ def apagar_nutriente(request):
    
 # CLASSIFICAÇÃO
 def classificacao(request):
-   classificacao_lista = Classificacao.objects.all().order_by()
+   classificacao_lista = Classificacao.objects.all().order_by('-is_active', 'nome')
    paginator = Paginator(classificacao_lista, settings.NUMBER_GRID_PAGES)
    numero_pagina = request.GET.get('page')
    page_obj = paginator.get_page(numero_pagina)
    return render(request, 'classificacao.html', {"classificacoes": page_obj, 'page_obj': page_obj})
 
 def get_classificacao(request):
-   requisicao = request.GET.get('nome')
-   if requisicao:
-      classificacao = Classificacao.objects.filter(nome=requisicao)
-      return render(request)
+   return render(request, 'classificacao.html', {})
 
 def inserir_classificacao(req):
-   pass
+   nome = req.GET.get('nome')
+   if nome:
+      if not Classificacao.objects.filter(nome=nome).exists():
+         Classificacao.objects.create(nome=nome)
+         return js({'Mensagem': f'{nome} inserido com sucesso!'})
+      else:
+         return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
+   return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
 def atualizar_classificacao(req):
+   id = req.GET.get('id')
+   nome = req.GET.get('nome')
+   if id:   
+      item = Classificacao.objects.get(id=id)
+      item.nome = nome
+      item.save()
+      return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
+
+   return js({'Mensagem': f'{nome} não pode ser atualizada!'})
+
+def ativar_classificacao(req):
    teste = req.GET.get('id')
-   print(f'Id coletada {teste}')
-   nome = Classificacao.objects.get(id=teste)
-   return js({'Mensagem': f'Atualizei o {teste}', 'obj': model_to_dict(Classificacao.objects.get(id=teste))})
+   if teste:
+      item = Classificacao.objects.get(id=teste)
+      item.is_active = True
+      item.save()
+   return js({'Mensagem': f'{item.nome} foi desativado'})
 
-def apagar_classificacao(req):
+def desativar_classificacao(req):
    teste = req.GET.get('id')
-   print(f'Id coletada {teste}')
-   nome = Classificacao.objects.get(id=teste)
-   return js({'Mensagem': f'Apaguei o {teste}', 'obj': model_to_dict(Classificacao.objects.get(id=teste))})
-
-   # return js({})
-   # return HttpResponse(status=204)
-   # return HttpResponse(f"{nome.nome} pronto(a) pra receber is_active = false")
-
-
+   if teste:
+      item = Classificacao.objects.get(id=teste)
+      item.is_active = False
+      item.save()
+   return js({'Mensagem': f'{item.nome} foi desativado'})
 
 # ALIMENTOS
 def alimentos(request):
