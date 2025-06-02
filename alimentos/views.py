@@ -60,21 +60,21 @@ def inserir_nutriente(request):
 
 
 def atualizar_nutriente(request):
-    id = request.GET.get('id')
-    nome = request.GET.get('nome')
-    unidade = request.GET.get('unidade')
-    categoria = request.GET.get('categoria')
+   id = request.GET.get('id')
+   nome = request.GET.get('nome')
+   unidade = request.GET.get('unidade')
+   categoria = request.GET.get('categoria')
 
-    if not id or not nome or not unidade:
-        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+   if not id or not nome or not unidade:
+      return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
-    nutriente = get_object_or_404(Nutriente, pk=id)
-    nutriente.nome = nome
-    nutriente.unidade = unidade
-    nutriente.categoria = categoria or None
-    nutriente.save()
+   nutriente = get_object_or_404(Nutriente, pk=id)
+   nutriente.nome = nome
+   nutriente.unidade = unidade
+   nutriente.categoria = categoria or None
+   nutriente.save()
 
-    return js({'Mensagem': 'Nutriente atualizado com sucesso!'})
+   return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=400)
 
 
 def ativar_nutriente(request):
@@ -87,10 +87,12 @@ def ativar_nutriente(request):
 
 def desativar_nutriente(request):
     id = request.GET.get('id')
-    nutriente = get_object_or_404(Nutriente, pk=id)
-    nutriente.is_active = False
-    nutriente.save()
-    return js({'Mensagem': f'{nutriente.nome} foi desativado'})
+    if id:
+      nutriente = get_object_or_404(Nutriente, pk=id)
+      nutriente.is_active = False
+      nutriente.save()
+      return js({'Mensagem': f'{nutriente.nome} foi desativado'})
+    return js({'Mensagem': f'Não foi possível desativar {nutriente.nome}'}, status=400)
 
 def listar_nutrientes(request):
     query = request.GET.get('query', '').strip()
