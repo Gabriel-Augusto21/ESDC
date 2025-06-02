@@ -1,54 +1,24 @@
-$(document).ready(function() {  
-   // Criando o alerta quando clicado no botao de excluir 
-   document.body.addEventListener('click', function (e) {
-      if (e.target.closest('.update-btn')){
-         e.preventDefault();
-
-         const btn = e.target.closest('.update-btn');
-         const url = btn.dataset.url;
-         const tr = btn.closest('tr');
-         const nome = tr.querySelector('#txtNome')?.textContent.trim() || 'Item';
-
-         Swal.fire({
-            title: 'Renomear classificação',
-            icon: 'info',
-            input: "text",
-            inputLabel: "Informe um novo nome de classificacao",
-            inputValue: nome,
-            showCancelButton: true,
-         });
-      }
-      if (e.target.closest('.delete-btn')) {
-         e.preventDefault();
-
-         const btn = e.target.closest('.delete-btn');
-         const url = btn.dataset.url;
-         const tr = btn.closest('tr');
-         
-         Swal.fire({
-            title: 'Tem certeza que deseja excluir?',
-            text: "Você poderá desfazer isso mais tarde!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#FF0000',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sim, excluir',
-            cancelButtonText: 'Cancelar'
-         }).then((result) => {
-            if (result.isConfirmed) {
-               // Dispara HTMX manualmente
-               htmx.ajax('GET', url, {
-                  swap: 'none'
-               });
-               Swal.fire({
-                  title: 'Tudo certo!',
-                  text: `Essa classificacao agora está inativa!`,
-                  icon: 'success',
-                  confirmButtonColor: '#3085d6',
-               })
-            }
-         });
-      }
-      
-   });
+import { alerta_inserir, alerta_update, alerta_ativar, alerta_desativar } from './alertas_classificacao.js';
+document.body.addEventListener('click', function (e) {
+   const insert_btn = e.target.closest('.insert-btn');
+   const update_btn = e.target.closest('.update-btn')
+   const ativar_btn = e.target.closest('.ativar-btn');
+   const desativar_btn = e.target.closest('.desativar-btn')
+   
+   if (insert_btn) {
+      e.preventDefault();
+      alerta_inserir(insert_btn);
+   }
+   if (update_btn){
+      e.preventDefault();
+      alerta_update(update_btn);
+   }
+   if (desativar_btn) {
+      e.preventDefault();
+      alerta_desativar(desativar_btn);
+   }
+   if (ativar_btn) {
+      e.preventDefault();
+      alerta_ativar(ativar_btn);
+   } 
 });
