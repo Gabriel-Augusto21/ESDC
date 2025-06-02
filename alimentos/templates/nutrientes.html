@@ -1,26 +1,38 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Nutrientes</title>
-</head>
-<body>
-   <h1>Front, Ainda falta mandar o nutrientes</h1>
-   <select name="classificacao" id="classificacao-select">
-      {% for nutriente in nutrientes %}
-         <option value="nutirente.id">{{nutriente.nome }} / {{nutriente.unidade}}</option>
-      {% endfor %}
-   </select>
+{% extends 'master.html' %}
+{% load static %}
 
-   <ul>
-      <li>
-         <a href="{% url "alimentos:classificacao" %}">Classificação</a>
-      </li>
-      <li>
-         <a href="{% url "alimentos:alimentos" %}">Alimentos</a>
-      </li>
-   </ul>
+{% block conteudo %}
+<div class="container mt-5">
 
-</body>
-</html>
+   <!-- Formulário de busca -->
+   <form method="get" class="form-group row mb-4 d-flex justify-content-center">
+      <div class="col-3">
+         <input class="form-control"
+                  id="txtBuscaNome"
+                  name="query"
+                  value="{{ query }}"
+                  type="text"
+                  placeholder="Informe um nutriente...">
+      </div>
+      <div class="col-auto">
+         <button type="submit" class="btn btn-primary">Buscar</button>
+      </div>
+   </form>
+   <!-- Botão de inserir -->
+   <div class="form-group row mr-1 justify-content-end">
+      <button type="button" 
+      class="btn btn-sm btn-primary insert-btn"
+      data-url="{% url 'alimentos:inserir_nutriente' %}">
+         Inserir nutriente
+      </button>
+   </div>
+
+    <!-- Tabela -->
+    {% include 'nutrientes_table.html' %}
+</div>
+
+<script>
+    const csrf_token = '{{ csrf_token }}';
+</script>
+<script type="module" src="{% static 'js/nutrientes.js' %}"></script>
+{% endblock %}

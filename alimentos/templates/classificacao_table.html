@@ -1,0 +1,69 @@
+{% load static %}
+<table class="table table-bordered table-hover mb-5 tabelas">
+   <tbody style="p{font-family: 'Poppins', sans-serif;}">
+   {% for classificacao in classificacoes %}
+      <tr data-id="{{ classificacao.id }}">      
+         <td class="align-middle w-75">
+            <p class="mb-0 content-start" id="txtNome">{{ classificacao.nome }}</p>
+         </td>
+         <td class="text-end pe-3">
+            <div class="d-inline-flex gap-2">
+               {% if classificacao.is_active %}
+               <button class="btn btn-sm desativar-btn" 
+                     data-id="{{ classificacao.id }}"
+                     data-url="/desativar_classificacao/?id={{ classificacao.id }}">
+                  <img src="{% static 'img/unlock.png' %}" alt="Excluir" width="20" height="20">
+               {% else %}
+               <button class="btn btn-sm ativar-btn" 
+                     data-id="{{ classificacao.id }}"
+                     data-url="/ativar_classificacao/?id={{ classificacao.id }}">
+                  <img src="{% static 'img/lock.png' %}" alt="Excluir" width="20" height="20">
+               {% endif %}
+               </button>
+
+               {% if classificacao.is_active %}
+               <button class="btn btn-sm update-btn"
+                     data-id="{{ classificacao.id }}"
+                     data-url="/atualizar_classificacao/?id={{ classificacao.id }}&nome={{classificacao.nome}}">
+                  <img src="{% static 'img/update.png' %}" alt="Alterar" width="20" height="20">
+               </button>
+               {% endif %}
+            </div>
+         </td>
+      </tr>
+   {% endfor %}
+   </tbody>
+</table>
+<nav aria-label="Page navigation" class="fs-2">
+   <ul class="pagination">
+      {% if page_obj.has_previous %}
+         <li class="page-item"><a class="page-link" href="?page=1&query={{ query }}">&laquo; primeira</a></li>
+         <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ query }}">&lsaquo; anterior</a></li>
+      {% else %}
+         <li class="page-item disabled"><span class="page-link">&laquo; primeira</span></li>
+         <li class="page-item disabled"><span class="page-link">&lsaquo; anterior</span></li>
+      {% endif %}
+      
+      {% for num in page_obj.paginator.page_range %}
+         {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+         {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}&query={{ query }}">{{ num }}</a></li>
+         {% endif %}
+      {% endfor %}
+      
+      {% if page_obj.has_next %}
+         <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&query={{ query }}">próxima &rsaquo;</a></li>
+         <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&query={{ query }}">última &raquo;</a></li>
+      {% else %}
+         <li class="page-item disabled"><span class="page-link">próxima &rsaquo;</span></li>
+         <li class="page-item disabled"><span class="page-link">última &raquo;</span></li>
+      {% endif %}
+    </ul>
+</nav>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
