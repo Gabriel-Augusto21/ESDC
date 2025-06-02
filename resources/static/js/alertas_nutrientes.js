@@ -29,6 +29,42 @@ export function alerta_inserir(btn) {
     });
 }
 
+// Inserção bem sucedida
+htmx.on("htmx:afterOnLoad", (event) => {
+   const resp = JSON.parse(event.detail.xhr.response);
+   if (resp.Mensagem?.includes("inserido com sucesso")) {
+      Swal.fire({
+         title: 'Tudo certo!',
+         text: resp.Mensagem,
+         icon: 'success',
+         confirmButtonColor: '#3085d6',
+      }).then(() => {
+         window.location.reload();
+      });
+   }
+});
+// Erro de inserção
+htmx.on("htmx:responseError", (event) => {
+   const status = event.detail.xhr.status;
+   const resp = JSON.parse(event.detail.xhr.response);
+
+   if (status === 400 && resp.Mensagem?.includes("já existe")) {
+      Swal.fire({
+         title: 'Erro!',
+         text: resp.Mensagem,
+         icon: 'error',
+         confirmButtonColor: '#3085d6',
+      });
+   } else {
+      Swal.fire({
+         title: 'Erro inesperado',
+         text: 'Algo deu errado. Tente novamente mais tarde.',
+         icon: 'error',
+         confirmButtonColor: '#3085d6',
+      });
+   }
+});
+
 // 🔔 Atualizar Nutriente
 export function alerta_update(btn) {
     const id = btn.dataset.id;
@@ -79,13 +115,17 @@ export function alerta_ativar(btn) {
         cancelButtonText: 'Cancelar'
     }).then(result => {
         if (result.isConfirmed) {
-            htmx.ajax('GET', url, { swap: 'none' });
+               htmx.ajax('GET', url, { 
+                  swap: 'none' 
+            });
             Swal.fire({
                 title: 'Tudo certo!',
                 text: 'Esse nutriente agora está ativo!',
                 icon: 'success',
                 confirmButtonColor: '#3085d6',
-            }).then(() => window.location.reload());
+            }).then(() => {
+               window.location.reload();
+            });
         }
     });
 }
@@ -114,21 +154,3 @@ export function alerta_desativar(btn) {
         }
     });
 }
-
-// ✅ Respostas de sucesso e erro HTMX
-htmx.on("htmx:afterOnLoad", event => {
-    const resp = JSON.parse(event.detail.xhr.response);
-    Swal.fire({
-        title: 'Sucesso!',
-        text: resp.mensagem,
-        icon: 'success',
-    }).then(() => window.location.reload());
-});
-
-htmx.on("htmx:responseError", () => {
-    Swal.fire({
-        title: 'Erro!',
-        text: 'Algo deu errado. Verifique os dados e tente novamente.',
-        icon: 'error',
-    });
-});

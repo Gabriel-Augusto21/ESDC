@@ -52,10 +52,11 @@ def inserir_nutriente(request):
 
     if nome and unidade:
         if Nutriente.objects.filter(nome=nome).exists():
-            return js({'mensagem': 'Nutriente já existente'}, status=400)
+            
+            return js({'Mensagem': f'{nome} já existe'}, status=400)
         Nutriente.objects.create(nome=nome, unidade=unidade, categoria=categoria)
-        return js({'mensagem': f'{nome} inserido com sucesso!'})
-    return js({'mensagem': 'Informe nome e unidade'}, status=400)
+        return js({'Mensagem': f'{nome} inserido com sucesso!'}, status=400)
+    return js({'Mensagem': 'Informe nome e unidade'}, status=400)
 
 
 def atualizar_nutriente(request):
@@ -65,7 +66,7 @@ def atualizar_nutriente(request):
     categoria = request.GET.get('categoria')
 
     if not id or not nome or not unidade:
-        return js({'mensagem': 'Parâmetros incompletos'}, status=400)
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.nome = nome
@@ -73,7 +74,7 @@ def atualizar_nutriente(request):
     nutriente.categoria = categoria or None
     nutriente.save()
 
-    return js({'mensagem': 'Nutriente atualizado com sucesso!'})
+    return js({'Mensagem': 'Nutriente atualizado com sucesso!'})
 
 
 def ativar_nutriente(request):
@@ -81,7 +82,7 @@ def ativar_nutriente(request):
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.is_active = True
     nutriente.save()
-    return js({'mensagem': f'{nutriente.nome} foi ativado'})
+    return js({'Mensagem': f'{nutriente.nome} foi ativado'})
 
 
 def desativar_nutriente(request):
@@ -89,7 +90,7 @@ def desativar_nutriente(request):
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.is_active = False
     nutriente.save()
-    return js({'mensagem': f'{nutriente.nome} foi desativado'})
+    return js({'Mensagem': f'{nutriente.nome} foi desativado'})
 
 def listar_nutrientes(request):
     query = request.GET.get('query', '').strip()
