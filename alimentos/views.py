@@ -231,3 +231,9 @@ def apagar_alimento(request):
         except Alimento.DoesNotExist:
             return js({'alimento': 'Alimento não encontrado'})
     return js({'alimento': 'Preciso de uma id'})
+
+def ativar_alimento(request):
+    pass
+
+def desativar_alimento(request):
+    pass
