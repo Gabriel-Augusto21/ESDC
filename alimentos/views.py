@@ -60,21 +60,25 @@ def inserir_nutriente(request):
 
 
 def atualizar_nutriente(request):
-   id = request.GET.get('id')
-   nome = request.GET.get('nome')
-   unidade = request.GET.get('unidade')
-   categoria = request.GET.get('categoria')
+    id = request.GET.get('id')
+    nome = request.GET.get('nome')
+    unidade = request.GET.get('unidade')
+    categoria = request.GET.get('categoria')
 
-   if not id or not nome or not unidade:
-      return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+    if not id or not nome or not unidade:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
-   nutriente = get_object_or_404(Nutriente, pk=id)
-   nutriente.nome = nome
-   nutriente.unidade = unidade
-   nutriente.categoria = categoria or None
-   nutriente.save()
+    nutriente = get_object_or_404(Nutriente, pk=id)
 
-   return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=400)
+    if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
+
+    nutriente.nome = nome
+    nutriente.unidade = unidade
+    nutriente.categoria = categoria or None
+    nutriente.save()
+    return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
+
 
 
 def ativar_nutriente(request):
