@@ -7,7 +7,9 @@ export function alerta_inserir(btn) {
             <input id="swal-unidade" class="swal2-input" placeholder="Unidade">
             <input id="swal-categoria" class="swal2-input" placeholder="Categoria (opcional)">
         `,
+        
         confirmButtonText: 'Inserir',
+        cancelButtonText: 'Cancelar',
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {

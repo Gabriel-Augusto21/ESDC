@@ -6,7 +6,6 @@ from django.core.paginator import Paginator
 from django.conf import settings
 from django.forms.models import model_to_dict
 
-
 # NUTRIENTES
 def nutrientes(request):
     query = request.GET.get('query', '')
@@ -51,7 +50,7 @@ def inserir_nutriente(request):
     categoria = request.GET.get('categoria', '')
 
     if nome and unidade:
-        if Nutriente.objects.filter(nome=nome).exists():
+        if Nutriente.objects.filter(nome__iexact=nome).exists():
             
             return js({'Mensagem': f'{nome} já existe'}, status=400)
         Nutriente.objects.create(nome=nome, unidade=unidade, categoria=categoria)
@@ -70,6 +69,9 @@ def atualizar_nutriente(request):
 
     nutriente = get_object_or_404(Nutriente, pk=id)
 
+    if Nutriente.objects.filter(nome=nome).exists():
+        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+
     if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
         return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
 
@@ -78,7 +80,6 @@ def atualizar_nutriente(request):
     nutriente.categoria = categoria or None
     nutriente.save()
     return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
-
 
 
 def ativar_nutriente(request):

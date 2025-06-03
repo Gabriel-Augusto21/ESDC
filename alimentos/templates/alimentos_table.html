@@ -17,12 +17,26 @@
             {{alimento.classificacao.nome}}
          </td>
          <td>
-            <button class="btn btn-sm delete-btn" id="apagar" data-id="{{ alimento.id }}">
-               <img src="{% static 'img/delete.png' %}" alt="Excluir" width="20" height="20">
-            </button>              
-            <button class="btn btn-sm" id="atualizar">
-               <img src="{% static 'img/update.png' %}" alt="Alterar" width="20" height="20">
-            </button>
+            {% if alimento.is_active %}
+               <button class="btn btn-sm desativar-btn" 
+                     data-id="{{ alimento.id }}"
+                     data-url="/desativar_alimento/?id={{ alimento.id }}">
+                  <img src="{% static 'img/unlock.png' %}" alt="Excluir" width="20" height="20">
+               {% else %}
+               <button class="btn btn-sm ativar-btn" 
+                     data-id="{{ alimento.id }}"
+                     data-url="/ativar_alimento/?id={{ alimento.id }}">
+                  <img src="{% static 'img/lock.png' %}" alt="Excluir" width="20" height="20">
+               {% endif %}
+               </button>
+
+               {% if alimento.is_active %}
+               <button class="btn btn-sm update-btn"
+                     data-id="{{ alimento.id }}"
+                     data-url="/atualizar_alimento/?id={{ alimento.id }}&nome={{alimento.nome}}">
+                  <img src="{% static 'img/update.png' %}" alt="Alterar" width="20" height="20">
+               </button>
+               {% endif %}
          </td>
       </tr>
       {% endfor %}
@@ -56,3 +70,8 @@
         {% endif %}
     </ul>
 </nav>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- HTMX -->
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
