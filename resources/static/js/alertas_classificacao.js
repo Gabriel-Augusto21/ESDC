@@ -142,8 +142,7 @@ export function alerta_ativar(ativar_btn){
    });
 }
 export function alerta_desativar(desativar_btn){
-   const btn = desativar_btn;
-   const url = btn.dataset.url;
+   const url = desativar_btn.dataset.url;
    
    Swal.fire({
       title: 'Tem certeza que deseja desativar essa Classificação?',

@@ -8,9 +8,12 @@ urlpatterns = [
    
    path("nutrientes/", views.nutrientes, name="nutrientes"),
    path("inserir_nutriente/", views.inserir_nutriente, name="inserir_nutriente"),
-   path("apagar_nutriente/", views.apagar_nutriente, name="apagar_nutriente"),
+   path("desativar_nutriente/", views.desativar_nutriente, name="desativar_nutriente"),
    path("atualizar_nutriente/", views.atualizar_nutriente, name="atualizar_nutriente"),
+   path("ativar_nutriente/", views.ativar_nutriente, name="ativar_nutriente"),
    path("busca_nutriente_nome/", views.busca_nutriente_nome, name="busca_nutriente_nome"),
+   path("get_nutriente/", views.get_nutriente, name="get_nutriente"),
+   path("listar_nutrientes/", views.listar_nutrientes, name="listar_nutrientes"),
 
    path("alimentos/", views.alimentos, name="alimentos"),
    path("busca_alimento_nome/", views.busca_alimento_nome, name="busca_alimento_nome"),
