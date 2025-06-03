@@ -3,5 +3,4 @@ Então galera, eu preciso que voces adicionem as seguintes dependencias:
 Pandas e numpy
 ex: pip install pandas
 
-
-khbgjhbjk
+mexendo nessa bomba pra testar com o luan dia 26/05

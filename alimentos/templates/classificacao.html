@@ -1,27 +1,30 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Classificações</title>
-</head>
-<body>
-   <h1>Front, tá ai as classificações</h1>
+{% extends 'master.html' %}
+{%load static%}
+{% block conteudo %}
+<div class='container mt-5'>
+   <div class="form-group row mb-4">
+      <div class="col-3 d-block mx-auto">
+         <input class="form-control form-control-sm border-0" 
+         id="txtBuscaNome" 
+         value="{{ query }}"
+         type="text" 
+         placeholder="Informe uma classificação..."
+         style="border-radius: 8px;
+         text-align: center;
+         box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2);">
+      </div>
+   </div> 
+   <div class="form-group row mr-1 justify-content-end">
+      <button type="button" 
+      class="btn btn-sm btn-primary insert-btn"
+      data-url="/inserir_classificacao/"
+      >Inserir Classificação</button>
+   </div>
 
-   <select name="classificacao" id="classificacao-select">
-   {% for item in classificacao %}
-      <option value="{{ item.id }}">{{ item.nome }}</option>
-   {% endfor %}
-   </select>
-
-   <ul>
-      <li>
-         <a href="{% url "alimentos:nutrientes" %}">Nutrientes</a>
-      </li>
-      <li>
-         <a href="{% url "alimentos:alimentos" %}">Alimentos</a>
-      </li>
-   </ul>
-
-</body>
-</html>
+   {% include 'classificacao_table.html' %}
+</div>
+<script>
+  const csrf_token = '{{ csrf_token }}';
+</script>
+<script type="module" src="{% static 'js/classificacao.js' %}"></script>
+{% endblock %}
