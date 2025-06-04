@@ -4,14 +4,27 @@
 <div class="container">
    <div class="form-group row align-items-center mb-4">
       <div class="col-12 text-center">
-         <h1 class="display-5 font-weight-bold fonte-h1">
-            <i class="fas fa-book-open"></i> Alimentos
-         </h1>
-         <hr class="mt-2 mb-3" style="border-color:green">
+         <h1>Alimentos</h1>
       </div>
    </div>
-   <fieldset class="fieldset-custom">
-      <legend>
+      <form method="get" class="form-group row mb-4 d-flex justify-content-center">
+   <div class="col-4">
+    <div class="input-group">
+      <input class="form-control"
+             id="txtBuscaNome"
+             name="query"
+             value="{{ query }}"
+             type="text"
+             placeholder="Pesquise por nome"
+             style="border-radius: 20px 0 0 20px;">
+      <div class="input-group-append">
+        <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
+      </div>
+    </div>
+  </div>
+</form>
+
+      <legend class="text-center small">
          {% if page_obj.paginator.count == 0 %}
             Nenhum registro cadastrado
          {% elif page_obj.paginator.count == 1 %}
@@ -20,17 +33,7 @@
             {{ page_obj.paginator.count }} registros encontrados
          {% endif %}
       </legend>
-      <div class="form-group row align-items-center">
-         <div class="col-auto">
-            <img src="{% static 'img/lupa.png' %}" alt="icone de uma lupa" width="20" height="20">
-         </div>
-         <div class="text-left">
-            <label for="txtBuscaNome" class="col-form-label">Pesquisar por nome:</label>
-         </div>
-         <div class="col">
-            <input type="text" class="form-control" id="txtBuscaNome" placeholder="Digite o nome" value="{{ query }}">
-         </div>
-      </div> 
+
       <div id="nutrientes-table">
          {% include 'alimentos_table.html' %}
       </div>

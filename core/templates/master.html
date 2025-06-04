@@ -21,40 +21,87 @@
    <script src="{% static 'js/bootstrap.min.js' %}"></script>
    <script src="{% static 'js/toastr.min.js' %}"></script> 
 </head>
+<div class="background-image" style="background-image:url('/static/img/image.png');"></div>
 <body class="instrument-sans">
    <div class="flex-wrapper">
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{% url 'core:main'%}">Início</a>
+      <nav class="navbar navbar-expand-lg navbar-light bg-transparent align-items-center" style="padding: 1px">
+         <div class="container">
+            <a class="navbar-brand" href="{% url 'core:main'%}"><img src="{% static 'img/logo.png' %}" style="width: 80px" ></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-               <ul class="navbar-nav">
+            <div class="collapse navbar-collapse align-items-center" id="navbarNav">
+               <ul class="navbar-nav ml-auto">
                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <a class="item nav-link dropdown-toggle mx-4" href="#" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size:16px;">
                   Cadastros
                   </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Exigencias</a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="font-size:14px">
+                        <a class="dropdown-item" href="#">Exigências</a>
                         <a class="dropdown-item" href="{% url 'alimentos:alimentos'%}">Alimentos</a>
                         <a class="dropdown-item" href="{% url 'alimentos:nutrientes'%}">Nutrientes</a>
                         <a class="dropdown-item" href="{% url 'alimentos:classificacao'%}">Classificação</a>
                   </div>
                </li>
-               <li class="nav-item">
-                  <a class="nav-link disabled" href="#">Dieta</a>
+               <li class="nav-item" style="font-size:16px">
+                  <a class="item nav-link disabled mx-4" href="#">Dieta</a>
                </li>
-               <li class="nav-item">
-                  <a class="nav-link disabled" href="#">Animais</a>
+               <li class="item nav-item" style="font-size:16px">
+                  <a class="nav-link disabled mx-4" href="#">Animais</a>
+               </li>
+               <li class="item dropdown-item" style="font-size:16px;">
+                  <button type="button" class="botao" style="font-weight:200">Login</button>
                </li>
                </ul>
             </div>
+         </div>
       </nav>
       <div class="content">
          {% block conteudo %}
          {% endblock %}
       </div>
    </div>
+
+   <footer class="text-light pt-5 pb-4 footer">
+   <div class="container">
+   <div class="row">
+      
+      <!-- Logo e nome -->
+      <div class="col-md-3 mb-4">
+        <img src="{% static 'img/logo.png' %}" alt="Logo" style="width: 100px; filter: brightness(0) invert(1)">
+      </div>
+
+      <!-- Contato -->
+      <div class="col-md-5 mb-4">
+        <h6 class="mb-3">Nosso Contato</h6>
+        <ul class="list-unstyled">
+          <li>&#45; gomides.augustog@gmail.com</li>
+          <li>&#45; joaodirceuconstantinocarvalho@gmail.com</li>
+          <li>&#45; luancarlos1201@gmail.com</li>
+          <li>&#45; nicolecarolinesantos07@gmail.com</li>
+        </ul>
+      </div>
+
+      <!-- Membros da equipe -->
+      <div class="col-md-3 mb-4">
+        <h6 class="mb-3">Membros da Equipe</h6>
+        <ul class="list-unstyled">
+          <li>&#45; Prof. Orientador: Eduardo Cardoso Melo</li>
+          <li>&#45; Gabriel</li>
+          <li>&#45; João</li>
+          <li>&#45; Luan</li>
+          <li>&#45; Nicole</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="bg-light">
+    <div class="text-center small">
+      &copy; 2025 Escola de Saúde Digestiva do Cavalo. Todos os direitos reservados.
+    </div>
+  </div>
+</footer>
+
 <script>
    //exibir modal sobre
    $('#btnSobre').click(function() {

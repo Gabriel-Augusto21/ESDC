@@ -39,11 +39,19 @@ html {
     padding: 5px 0;
 }*/
 
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 5px 0;
-    font-size: 0.75em;
+.footer {
+    font-family: 'Instrument Sans', sans-serif;
+    background-color: #2f453a !important; 
     flex-shrink: 0; /* garante que o footer nao encolha */
+}
+
+footer ul li {
+  padding-bottom: 4px;
+}
+
+/* navbar */
+
+.item {
+    font-weight: 500;
+    color: black;   
 }

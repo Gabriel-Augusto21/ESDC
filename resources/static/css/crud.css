@@ -1,3 +1,8 @@
+h1 {
+    text-align:left; 
+    color:rgb(71, 71, 71);
+}
+
 /* CSS para estilizar a tabela */
 
 .table-hover tbody tr:hover {
@@ -14,8 +19,9 @@ form {
 form input,
 form textarea {
     width: 100%;
-    border: 1px solid #92c008;
+    border: 1px solid #000000;
     border-radius: 4px;
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);
 }
 
 form button:hover {
@@ -27,14 +33,26 @@ form button:disabled {
     cursor: not-allowed;
 }
 
-/* CSS para botão */
+.tabela {
+    border-collapse: separate; /* necessário para o espaçamento funcionar */
+    border-spacing: 0 13px;    /* espaçamento entre as linhas */
+    width: 100%;
+}
 
-.basic {
-    background-color: #39D98B;
+.tabela tr{
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+
+.botao {
+    background-color: #2f453a;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    padding: 5px 15px 5px 15px;
+    font-weight: 650;
+    display: flex;
+    align-items: center;
 }
 
 /* Fonte de tudo */
@@ -46,3 +64,52 @@ form button:disabled {
   font-style: normal;
   font-variation-settings: "width" 100;
 }
+
+/* Remove margens entre os botões */
+
+.pagination .page-item {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Estilo base dos botões */
+.pagination .page-link {
+  color: gray;
+  border-color: #a7a4a469;
+  border-radius: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Primeiro botão com borda arredondada à esquerda */
+.pagination .page-item:first-child .page-link {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+/* Último botão com borda arredondada à direita */
+.pagination .page-item:last-child .page-link {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Hover */
+.pagination .page-link:hover {
+  background-color: #2f453a;
+  border: 1px solid #2f453a;
+  color: white;
+}
+
+/* Ativo */
+.pagination .page-item.active .page-link {
+  background-color: #2f453a;
+  color: white;
+  border-color: #2f453a;
+}
+
+/* Desabilitado */
+.pagination .page-item.disabled .page-link {
+  color: #aaa;
+  background-color: #f5f5f5;
+  border-color: #ddd;
+}
+

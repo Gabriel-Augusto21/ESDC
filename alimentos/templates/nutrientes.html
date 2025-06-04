@@ -2,32 +2,45 @@
 {% load static %}
 
 {% block conteudo %}
-<div class="container mt-5">
-   <h1 style="text-align:left; color:gray">Nutrientes</h1>
+<div class="container mt-3">
+   <h1>Nutrientes</h1>
    <!-- Formulário de busca -->
    <form method="get" class="form-group row mb-4 d-flex justify-content-center">
-      <div class="col-3">
-         <input class="form-control"
-                  id="txtBuscaNome"
-                  name="query"
-                  value="{{ query }}"
-                  type="text"
-                  placeholder="Informe o nome do nutriente..."
-                  style="border-radius: 20px">
+   <div class="col-4">
+    <div class="input-group">
+      <input class="form-control"
+             id="txtBuscaNome"
+             name="query"
+             value="{{ query }}"
+             type="text"
+             placeholder="Informe o nome de um nutriente..."
+             style="border-radius: 20px 0 0 20px;">
+      <div class="input-group-append">
+        <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
       </div>
-      <div class="col-auto">
-         <button type="submit" class="btn btn-primary">Buscar</button>
-      </div>
-   </form>
+    </div>
+  </div>
+</form>
+
    <!-- Botão de inserir -->
    <div class="form-group row mr-1 justify-content-end">
-      <button type="button" class="basic insert-btn" data-url="{% url 'alimentos:inserir_nutriente' %}">
-         Inserir nutriente
+      <button type="button" class="botao insert-btn" data-url="{% url 'alimentos:inserir_nutriente' %}">
+         <img src="{% static 'img/add_circle.png' %}" width="20" style= "margin-right: 3px; filter: brightness(0) invert(1)">
+         Inserir
       </button>
    </div>
-
+   <legend class="text-center small">
+         {% if page_obj.paginator.count == 0 %}
+            Nenhum registro cadastrado
+         {% elif page_obj.paginator.count == 1 %}
+            1 registro encontrado
+         {% else %}
+            {{ page_obj.paginator.count }} registros encontrados
+         {% endif %}
+      </legend>
     <!-- Tabela -->
     {% include 'nutrientes_table.html' %}
+    <br>
 </div>
 
 <script>
