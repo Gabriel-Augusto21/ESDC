@@ -144,19 +144,24 @@ def inserir_classificacao(req):
          return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
    return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
-def atualizar_classificacao(req):
-   id = req.GET.get('id')
-   nome = req.GET.get('nome')
-   if id:   
-      item = Classificacao.objects.get(id=id)
-      item.nome = nome
-      if not Classificacao.objects.filter(nome__iexact=nome).exists():
-        item.save()
-        return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
-      else:
-        return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
-      
-   return js({'Mensagem': f'{nome} não pode ser atualizada!'})
+def atualizar_classificacao(request):
+    id = request.GET.get('id')
+    nome = request.GET.get('nome')
+
+    if not id or not nome:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+
+    classificacao = get_object_or_404(Classificacao, pk=id)
+
+    if Classificacao.objects.filter(nome=nome).exists():
+        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+
+    if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outra classificação já existe com esse nome.'}, status=400)
+
+    classificacao.nome = nome
+    classificacao.save()
+    return js({'Mensagem': 'Classificação atualizada com sucesso!'}, status=200)
 
 def ativar_classificacao(req):
    teste = req.GET.get('id')
