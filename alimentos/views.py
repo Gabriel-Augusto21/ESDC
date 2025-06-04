@@ -132,7 +132,7 @@ def get_classificacao(request):
 def inserir_classificacao(req):
    nome = req.GET.get('nome')
    if nome:
-      if not Classificacao.objects.filter(nome=nome).exists():
+      if not Classificacao.objects.filter(nome__iexact=nome).exists():
          Classificacao.objects.create(nome=nome)
          return js({'Mensagem': f'{nome} inserido com sucesso!'})
       else:
@@ -145,9 +145,12 @@ def atualizar_classificacao(req):
    if id:   
       item = Classificacao.objects.get(id=id)
       item.nome = nome
-      item.save()
-      return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
-
+      if not Classificacao.objects.filter(nome__iexact=nome).exists():
+        item.save()
+        return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
+      else:
+        return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
+      
    return js({'Mensagem': f'{nome} não pode ser atualizada!'})
 
 def ativar_classificacao(req):
@@ -166,9 +169,26 @@ def desativar_classificacao(req):
       item.save()
    return js({'Mensagem': f'{item.nome} foi desativado'})
 
+def listar_classificacoes(request):
+    query = request.GET.get('query', '').strip()
+    classificacoes = Classificacao.objects.all()
 
+    if query:
+        classificacoes = classificacoes.filter(nome__icontains=query)
 
+    classificacoes = classificacoes.order_by('nome')
 
+    paginator = Paginator(classificacoes, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'classificacoes': page_obj, 
+        'page_obj': page_obj,
+        'query': query,
+    }
+    
+    
 # ALIMENTOS
 def alimentos(request):
    nutriente_lista = Alimento.objects.all().order_by('nome')

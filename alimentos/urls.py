@@ -27,4 +27,5 @@ urlpatterns = [
    path("desativar_classificacao/", views.desativar_classificacao, name="ativar_classificacao"),
    path("ativar_classificacao/", views.ativar_classificacao, name="ativar_classificacao"),
    path("atualizar_classificacao/", views.atualizar_classificacao, name="atualizar_classificacao"),
+   path("listar_classificacoes/", views.listar_classificacoes, name="listar_classificacoes"),
 ]

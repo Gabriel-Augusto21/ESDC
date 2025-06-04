@@ -61,9 +61,10 @@
       {% endif %}
     </ul>
 </nav>
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- CSRF Token (pode ser usado com HTMX ou Ajax) -->
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 
-<!-- HTMX -->
+<!-- Importar SweetAlert2 e HTMX -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 
