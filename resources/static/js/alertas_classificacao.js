@@ -8,6 +8,7 @@ export function alerta_inserir(btn) {
       inputLabel: "Informe um nome para a nova classificação",
       confirmButtonColor: '#0d6efd',
       confirmButtonText: 'Criar',
+      cancelButtonText: 'Apagar',
       showCancelButton: true,
    }).then((resultado) => {
       if (resultado.isConfirmed){
