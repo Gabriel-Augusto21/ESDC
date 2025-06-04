@@ -1,36 +1,32 @@
+// 🔔 Inserir Classificação
 export function alerta_inserir(btn) {
-   console.log("alerta_inserir_classificacao.js carregado");
-
-   Swal.fire({
-      title: 'Inserir classificação',
-      icon: 'question',
-      input: "text",
-      inputLabel: "Informe um nome para a nova classificação",
-      confirmButtonColor: '#0d6efd',
-      confirmButtonText: 'Criar',
-      showCancelButton: true,
-   }).then((resultado) => {
-      if (resultado.isConfirmed){
-         const nome = resultado.value;
-         const  url = `${btn.dataset.url}?nome=${nome}`;
-         if (nome!="") {
-            htmx.ajax('GET', url,{
-               swap: 'none',
-               target: 'body'
+    Swal.fire({
+        title: 'Inserir Classificação',
+        html: `<input id="swal-nome" class="swal2-input" placeholder="Nome da Classificação">`,
+        confirmButtonText: 'Inserir',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+        focusConfirm: false,
+        preConfirm: () => {
+            const nome = document.getElementById('swal-nome').value.trim();
+            if (!nome) {
+                Swal.showValidationMessage('O nome da classificação é obrigatório!');
+                return false;
+            }
+            return { nome };
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const { nome } = result.value;
+            const url = `${btn.dataset.url}?nome=${encodeURIComponent(nome)}`;
+            htmx.ajax('GET', url, {
+                swap: 'none',
+                target: 'body'
             });
-         }else{
-            Swal.fire({
-               title: 'Erro!',
-               text: `Você precisa informar um nome!`,
-               icon: 'error',
-               confirmButtonColor: '#3085d6',
-            }).then(() => {
-               alerta_inserir(btn)
-            });
-         }
-      }
-   });
+        }
+    });
 }
+
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
    const resp = JSON.parse(event.detail.xhr.response);

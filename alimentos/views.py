@@ -120,11 +120,16 @@ def listar_nutrientes(request):
 
 # CLASSIFICAÇÃO
 def classificacao(request):
-   classificacao_lista = Classificacao.objects.all().order_by('-is_active', 'nome')
-   paginator = Paginator(classificacao_lista, settings.NUMBER_GRID_PAGES)
-   numero_pagina = request.GET.get('page')
-   page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'classificacao.html', {"classificacoes": page_obj, 'page_obj': page_obj})
+    query = request.GET.get('query', '')
+    classificacoes_lista = Classificacao.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    paginator = Paginator(classificacoes_lista, getattr(settings, 'NUMBER_GRID_PAGES', 10))
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'classificacao.html', {
+        'classificacoes': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
 
 def get_classificacao(request):
    return render(request, 'classificacao.html', {})
