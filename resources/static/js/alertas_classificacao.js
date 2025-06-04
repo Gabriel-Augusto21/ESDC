@@ -20,7 +20,7 @@ export function alerta_inserir(btn) {
             });
          }else{
             Swal.fire({
-               title: 'Opa!',
+               title: 'Erro!',
                text: `Você precisa informar um nome!`,
                icon: 'error',
                confirmButtonColor: '#3085d6',
@@ -36,7 +36,7 @@ htmx.on("htmx:afterOnLoad", (event) => {
    const resp = JSON.parse(event.detail.xhr.response);
    if (resp.Mensagem?.includes("inserido com sucesso")) {
       Swal.fire({
-         title: 'Tudo certo!',
+         title: 'Sucesso!',
          text: resp.Mensagem,
          icon: 'success',
          confirmButtonColor: '#3085d6',
@@ -100,7 +100,7 @@ export function alerta_update(update_btn){
             });
          }else{
             Swal.fire({
-               title: 'Opa!',
+               title: 'Erro!',
                text: `Não tem por que renomear '${nomeAnt}' como '${nome}'!
                Tente um nome diferente da próxima vez`,
                icon: 'error',
