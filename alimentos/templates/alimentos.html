@@ -2,22 +2,23 @@
 {%load static%}
 {% block conteudo %}
 <div class="container">
-    <div class="text-center mb-5">
-        <h1>Alimentos</h1>
-        <hr>
+    <div class="form-group row align-items-center mb-4">
+        <div class="col-12 text-center">
+            <h1>Alimentos</h1>
+        </div>
     </div>
     <!-- Formulário de busca -->
     <form method="get" class="form-group row mb-4 d-flex justify-content-center">
         <div class="col-3">
             <input class="form-control"
-                    id="txtBuscaNomeClassificacao"
+                    id="txtBuscaNome"
                     name="btnBusca"
                     value="{{ query }}"
                     type="text"
                     placeholder="Informe uma classificação...">
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Buscar</button>
+        <div class="input-group-append">
+            <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
         </div>
     </form> 
     <!-- Botão de inserir -->
@@ -27,10 +28,19 @@
         data-url="/inserir_classificacao/"
         >Inserir Alimentos</button>
     </div>
-    <!-- Tabela -->
-    <div id="nutrientes-table">
-        {% include 'alimentos_table.html' %}
-    </div>
+    <legend class="text-center small">
+         {% if page_obj.paginator.count == 0 %}
+            Nenhum registro cadastrado
+         {% elif page_obj.paginator.count == 1 %}
+            1 registro encontrado
+         {% else %}
+            {{ page_obj.paginator.count }} registros encontrados
+         {% endif %}
+      </legend>
+
+      <div id="nutrientes-table">
+         {% include 'alimentos_table.html' %}
+      </div>
 </div>
 <script>const csrf_token = '{{ csrf_token }}';</script>
 <script type="module" src="{% static 'js/crud_alimentos.js' %}">
