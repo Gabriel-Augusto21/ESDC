@@ -2,7 +2,6 @@
 {%load static%}
 {% block conteudo %}
 <div class='container mt-5'>
-
    <!-- Formulário de busca -->
    <form method="get" class="form-group row mb-4 d-flex justify-content-center">
       <div class="col-3">
@@ -17,7 +16,6 @@
          <button type="submit" class="btn btn-primary">Buscar</button>
       </div>
    </form>
-   
    <!-- Botão de inserir -->
    <div class="form-group row mr-1 justify-content-end">
       <button type="button" 
@@ -25,7 +23,6 @@
       data-url="/inserir_classificacao/"
       >Inserir Classificação</button>
    </div>
-
    {% include 'classificacao_table.html' %}
 </div>
 <script>

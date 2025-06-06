@@ -1,29 +1,20 @@
+import {ativar, desativar, atualizar} from './alertas_alimentos.js'
+
 // criei um escutador que espera um evento de click no body
 document.body.addEventListener('click', function (evento){ 
-    const desativar_btn = evento.target.closest('.desativar-btn');
-    const ativar_btn = evento.target.closest('.ativar-btn');
-    const atualizar_btn = evento.target.closest('.update-btn');
-    if (desativar_btn) {
+    const btn_desativar = evento.target.closest('.desativar-btn');
+    const btn_ativar = evento.target.closest('.ativar-btn');
+    const btn_atualizar = evento.target.closest('.update-btn');
+    if (btn_desativar) {
         evento.preventDefault()
-        console.log('Permissão para desativar: ', desativar_btn.dataset.id);
-        ativar(desativar_btn)
+        desativar(btn_desativar)
     }
-    if (ativar_btn) {
+    if (btn_ativar) {
         evento.preventDefault()
-        console.log('Permissão para ativar   : ', ativar_btn.dataset.id);
+        ativar(btn_ativar)
     }
-    if (atualizar_btn) {
+    if (btn_atualizar) {
         evento.preventDefault()
-        console.log('Permissão para atualizar: ', atualizar_btn.dataset.id);
+        atualizar(btn_atualizar)
     }
 });
-
-function ativar(elemento){
-    const url = 'teste'
-    Swal.fire({
-        icon: 'info',
-        confirmButtonColor: ''
-    }).then(resp => {
-        console.log('Saída: '+url+resp)
-    });
-}
