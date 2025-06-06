@@ -1,43 +1,38 @@
+// 🔔 Inserir Classificação
 export function alerta_inserir(btn) {
-   console.log("alerta_inserir_classificacao.js carregado");
-
-   Swal.fire({
-      title: 'Inserir classificação',
-      icon: 'question',
-      input: "text",
-      inputLabel: "Informe um nome para a nova classificação",
-      confirmButtonColor: '#0d6efd',
-      confirmButtonText: 'Criar',
-      cancelButtonText: 'Apagar',
-      showCancelButton: true,
-   }).then((resultado) => {
-      if (resultado.isConfirmed){
-         const nome = resultado.value;
-         const  url = `${btn.dataset.url}?nome=${nome}`;
-         if (nome!="") {
-            htmx.ajax('GET', url,{
-               swap: 'none',
-               target: 'body'
+    Swal.fire({
+        title: 'Inserir Classificação',
+        html: `<input id="swal-nome" class="swal2-input" placeholder="Nome da Classificação">`,
+        confirmButtonText: 'Inserir',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+        focusConfirm: false,
+        preConfirm: () => {
+            const nome = document.getElementById('swal-nome').value.trim();
+            if (!nome) {
+                Swal.showValidationMessage('O nome da classificação é obrigatório!');
+                return false;
+            }
+            return { nome };
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const { nome } = result.value;
+            const url = `${btn.dataset.url}?nome=${encodeURIComponent(nome)}`;
+            htmx.ajax('GET', url, {
+                swap: 'none',
+                target: 'body'
             });
-         }else{
-            Swal.fire({
-               title: 'Opa!',
-               text: `Você precisa informar um nome!`,
-               icon: 'error',
-               confirmButtonColor: '#3085d6',
-            }).then(() => {
-               alerta_inserir(btn)
-            });
-         }
-      }
-   });
+        }
+    });
 }
+
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
    const resp = JSON.parse(event.detail.xhr.response);
    if (resp.Mensagem?.includes("inserido com sucesso")) {
       Swal.fire({
-         title: 'Tudo certo!',
+         title: 'Sucesso!',
          text: resp.Mensagem,
          icon: 'success',
          confirmButtonColor: '#3085d6',
@@ -67,52 +62,72 @@ htmx.on("htmx:responseError", (event) => {
       });
    }
 });
-export function alerta_update(update_btn){
-   const tr = update_btn.closest('tr');
-   const nomeAnt = tr.querySelector('#txtNome')?.textContent.trim() || 'Item';
-   Swal.fire({
-      title: 'Renomear classificação',
-      icon: 'info',
-      input: "text",
-      inputLabel: "Informe um novo nome de classificacao",
-      inputValue: nomeAnt,
-      confirmButtonColor: '#32CD32',
-      confirmButtonText: 'Alterar',
-      showCancelButton: true,
-   }).then((resultado) => {
-      if (resultado.isConfirmed){
-         const id = update_btn.dataset.id; // se não tiver, adicione no HTML: data-id="{{ classificacao.id }}"
-         const nome = resultado.value;
-         const url = `/atualizar_classificacao/?id=${id}&nome=${nome}`;
-         console.log(url) 
 
-         
-         if(nomeAnt!=nome){
-            htmx.ajax('GET', url, {
-               swap: 'none'
-            });
-            Swal.fire({
-               title: 'Tudo certo!',
-               text: `Classificação '${nomeAnt}' renomeada para '${nome}!'`,
-               icon: 'success',
-               confirmButtonColor: '#3085d6',
-            }).then(() => {
-               window.location.reload();
-            });
-         }else{
-            Swal.fire({
-               title: 'Opa!',
-               text: `Não tem por que renomear '${nomeAnt}' como '${nome}'!
-               Tente um nome diferente da próxima vez`,
-               icon: 'error',
-               confirmButtonColor: '#3085d6',
-            }).then(() => {
-               window.location.reload();
-            });
-         }
-      }
-   });
+// 🔁 Atualizar Classificação
+export function alerta_update(btn) {
+    const id = btn.dataset.id;
+    const tr = btn.closest('tr');
+    const nomeAntigo = tr.querySelector('#txtNome')?.textContent.trim() || '';
+
+    Swal.fire({
+        title: 'Atualizar Classificação',
+        html: `
+            <input id="swal-nome" class="swal2-input" placeholder="Nome da Classificação" value="${nomeAntigo}">
+        `,
+        confirmButtonText: 'Atualizar',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+        focusConfirm: false,
+        preConfirm: () => {
+            const nome = document.getElementById('swal-nome').value.trim();
+            if (!nome) {
+                Swal.showValidationMessage('O nome da classificação é obrigatório!');
+                return false;
+            }
+            return { nome };
+        }
+    }).then(result => {
+        if (result.isConfirmed) {
+            const { nome } = result.value;
+
+            if (nome === nomeAntigo) {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: `O novo nome é igual ao atual. Tente um nome diferente.`,
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                });
+                return;
+            }
+
+            const url = `/atualizar_classificacao/?id=${id}&nome=${encodeURIComponent(nome)}`;
+
+            htmx.ajax('GET', url, { swap: 'none' })
+                .then(response => {
+                    const resp = JSON.parse(response.xhr.response);
+                    if (resp.Mensagem && resp.Mensagem.includes('atualizado com sucesso')) {
+                        Swal.fire({
+                            title: 'Tudo certo!',
+                            text: resp.Mensagem,
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: resp.Mensagem || 'Ocorreu um erro na atualização.',
+                            icon: 'error',
+                            confirmButtonColor: '#d33',
+                        });
+                    }
+                });
+        }
+    });
 }
+
+
 export function alerta_ativar(ativar_btn){
    const url = ativar_btn.dataset.url;
    Swal.fire({
@@ -143,8 +158,7 @@ export function alerta_ativar(ativar_btn){
    });
 }
 export function alerta_desativar(desativar_btn){
-   const btn = desativar_btn;
-   const url = btn.dataset.url;
+   const url = desativar_btn.dataset.url;
    
    Swal.fire({
       title: 'Tem certeza que deseja desativar essa Classificação?',

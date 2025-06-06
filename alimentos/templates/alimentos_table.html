@@ -1,4 +1,3 @@
-
 {% load static %}
 <table class="table table-striped table-bordered table-hover w-100">
    <thead>
@@ -15,14 +14,18 @@
             {{ alimento.nome }}
          </td>
          <td>
-            {{ alimento.classificacao.nome }}
+            {{alimento.classificacao.nome}}
          </td>
          <td>
             {% if alimento.is_active %}
-               <button class="btn btn-sm desativar-btn">
+               <button class="btn btn-sm desativar-btn" 
+                     data-id="{{ alimento.id }}"
+                     data-url="/desativar_alimento/?id={{ alimento.id }}">
                   <img src="{% static 'img/unlock.png' %}" alt="Excluir" width="20" height="20">
                {% else %}
-               <button class="btn btn-sm ativar-btn">
+               <button class="btn btn-sm ativar-btn" 
+                     data-id="{{ alimento.id }}"
+                     data-url="/ativar_alimento/?id={{ alimento.id }}">
                   <img src="{% static 'img/lock.png' %}" alt="Excluir" width="20" height="20">
                {% endif %}
                </button>

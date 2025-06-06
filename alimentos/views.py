@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from alimentos.models import Classificacao, Alimento, Nutriente
-from django.http import JsonResponse as js
+from django.http import  JsonResponse as js
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -8,63 +8,127 @@ from django.forms.models import model_to_dict
 
 # NUTRIENTES
 def nutrientes(request):
-   nutriente_lista = Nutriente.objects.all().order_by('nome')
-   paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
-   numero_pagina = request.GET.get('page')
-   page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'nutrientes.html', {"nutrientes": page_obj, "page_obj": page_obj})
+    query = request.GET.get('query', '')
+    nutrientes_lista = Nutriente.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    paginator = Paginator(nutrientes_lista, getattr(settings, 'NUMBER_GRID_PAGES', 10))
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'nutrientes.html', {
+        'nutrientes': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
+
+def get_nutriente(request):
+    if request.method == "GET":
+        id = request.GET.get("id")
+        try:
+            nutriente = Nutriente.objects.get(id=id)
+            data = {
+                "id": nutriente.id,
+                "nome": nutriente.nome,
+                "descricao": nutriente.descricao,
+                # adicione outros campos que desejar
+            }
+            return js(data)
+        except Nutriente.DoesNotExist:
+            return js({"error": "Nutriente não encontrado"}, status=404)
 
 def busca_nutriente_nome(request):
-   if request.GET.get('nome'):
-      nutriente = Nutriente.objects.filter(nome=request.GET.get('nome'))
-      if not nutriente.exists():
-         return js({'nutrientes': 'Não existe'})
-      return js({'nutriente': list(nutriente.values())})
-   return js({'nutriente': 'Informe um nome'})
+    nome = request.GET.get('nome', '')
+    if nome:
+        nutrientes = Nutriente.objects.filter(nome__icontains=nome)
+        if nutrientes.exists():
+            return js({'nutrientes': list(nutrientes.values())})
+        return js({'mensagem': 'Nutriente não encontrado'})
+    return js({'mensagem': 'Informe um nome para busca'}, status=400)
 
-# CRUD NURIENTES
+
 def inserir_nutriente(request):
-   if request.GET.get('nome') and request.GET.get('unidade'):
-      nome = request.GET.get('nome')
-      unidade = request.GET.get('unidade')
-      nutriente = Nutriente.objects.filter(nome=nome)
+    nome = request.GET.get('nome', '')
+    unidade = request.GET.get('unidade', '')
+    categoria = request.GET.get('categoria', '')
 
-      if not nutriente.exists():
-         Nutriente.objects.create(nome=nome, unidade=unidade)
-         return js({'nutrientes': f'{nome} adicionado com sucesso!'})
-      return js({'nutrientes': 'Nutriente já existente'})
-   return js({'nutrientes': 'Informe nome e unidade'})
+    if nome and unidade:
+        if Nutriente.objects.filter(nome__iexact=nome).exists():
+            
+            return js({'Mensagem': f'{nome} já existe'}, status=400)
+        Nutriente.objects.create(nome=nome, unidade=unidade, categoria=categoria)
+        return js({'Mensagem': f'{nome} inserido com sucesso!'}, status=400)
+    return js({'Mensagem': 'Informe nome e unidade'}, status=400)
 
 def atualizar_nutriente(request):
-   if request.GET.get('id') and request.GET.get('nome'):
-      id = request.GET.get('id')
-      nome = request.GET.get('nome')
-      nutriente = Nutriente.objects.get(id=id)
-      if nutriente.nome != nome and not Nutriente.objects.filter(nome=nome).exists():
-         nutriente.nome = nome
-         nutriente.save()
-         return js({'nutriente': "Nutriente Salvo"})
-      return js({'nutriente': 'Esse de nutriente já existe'})
-   return js({'nutriente': 'Preciso de um nome e uma id'})
-   
-def apagar_nutriente(request):
-   if request.POST.get('id'):
-      id = request.GET.get('id')
-      
-      nutriente = Nutriente.objects.get(id=id)
-      if not nutriente:
-         return js({'nutriente': 'Não existe'})
-      nutriente.delete()
-      return js({'nutriente': 'DELETADO'})
-   return js({'nutriente': 'Preciso de uma id'})
-   
+    id = request.GET.get('id')
+    nome = request.GET.get('nome')
+    unidade = request.GET.get('unidade')
+    categoria = request.GET.get('categoria')
+
+    if not id or not nome or not unidade:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+
+    nutriente = get_object_or_404(Nutriente, pk=id)
+
+    if Nutriente.objects.filter(nome=nome).exists():
+        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+
+    if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
+
+    nutriente.nome = nome
+    nutriente.unidade = unidade
+    nutriente.categoria = categoria or None
+    nutriente.save()
+    return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
+
+
+def ativar_nutriente(request):
+    id = request.GET.get('id')
+    nutriente = get_object_or_404(Nutriente, pk=id)
+    nutriente.is_active = True
+    nutriente.save()
+    return js({'Mensagem': f'{nutriente.nome} foi ativado'})
+
+
+def desativar_nutriente(request):
+    id = request.GET.get('id')
+    if id:
+      nutriente = get_object_or_404(Nutriente, pk=id)
+      nutriente.is_active = False
+      nutriente.save()
+      return js({'Mensagem': f'{nutriente.nome} foi desativado'})
+    return js({'Mensagem': f'Não foi possível desativar {nutriente.nome}'}, status=400)
+
+def listar_nutrientes(request):
+    query = request.GET.get('query', '').strip()
+    nutrientes = Nutriente.objects.all()
+
+    if query:
+        nutrientes = nutrientes.filter(nome__icontains=query)
+    
+    nutrientes = nutrientes.order_by('nome')
+
+    paginator = Paginator(nutrientes, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'nutrientes': page_obj.object_list,
+        'page_obj': page_obj,
+        'query': query,
+    }
+
 # CLASSIFICAÇÃO
 def classificacao(request):
-   classificacao_lista = Classificacao.objects.all().order_by('-is_active', 'nome')
-   paginator = Paginator(classificacao_lista, settings.NUMBER_GRID_PAGES)
-   numero_pagina = request.GET.get('page')
-   page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'classificacao.html', {"classificacoes": page_obj, 'page_obj': page_obj})
+    query = request.GET.get('query', '')
+    classificacoes_lista = Classificacao.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    paginator = Paginator(classificacoes_lista, getattr(settings, 'NUMBER_GRID_PAGES', 10))
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'classificacao.html', {
+        'classificacoes': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
 
 def get_classificacao(request):
    return render(request, 'classificacao.html', {})
@@ -72,23 +136,31 @@ def get_classificacao(request):
 def inserir_classificacao(req):
    nome = req.GET.get('nome')
    if nome:
-      if not Classificacao.objects.filter(nome=nome).exists():
+      if not Classificacao.objects.filter(nome__iexact=nome).exists():
          Classificacao.objects.create(nome=nome)
          return js({'Mensagem': f'{nome} inserido com sucesso!'})
       else:
          return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
    return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
-def atualizar_classificacao(req):
-   id = req.GET.get('id')
-   nome = req.GET.get('nome')
-   if id:   
-      item = Classificacao.objects.get(id=id)
-      item.nome = nome
-      item.save()
-      return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
+def atualizar_classificacao(request):
+    id = request.GET.get('id')
+    nome = request.GET.get('nome')
 
-   return js({'Mensagem': f'{nome} não pode ser atualizada!'})
+    if not id or not nome:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+
+    classificacao = get_object_or_404(Classificacao, pk=id)
+
+    if Classificacao.objects.filter(nome=nome).exists():
+        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+
+    if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outra classificação já existe com esse nome.'}, status=400)
+
+    classificacao.nome = nome
+    classificacao.save()
+    return js({'Mensagem': 'Classificação atualizada com sucesso!'}, status=200)
 
 def ativar_classificacao(req):
    teste = req.GET.get('id')
@@ -106,6 +178,26 @@ def desativar_classificacao(req):
       item.save()
    return js({'Mensagem': f'{item.nome} foi desativado'})
 
+def listar_classificacoes(request):
+    query = request.GET.get('query', '').strip()
+    classificacoes = Classificacao.objects.all()
+
+    if query:
+        classificacoes = classificacoes.filter(nome__icontains=query)
+
+    classificacoes = classificacoes.order_by('nome')
+
+    paginator = Paginator(classificacoes, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'classificacoes': page_obj, 
+        'page_obj': page_obj,
+        'query': query,
+    }
+    
+    
 # ALIMENTOS
 def alimentos(request):
    nutriente_lista = Alimento.objects.all().order_by('nome')
@@ -173,3 +265,9 @@ def apagar_alimento(request):
         except Alimento.DoesNotExist:
             return js({'alimento': 'Alimento não encontrado'})
     return js({'alimento': 'Preciso de uma id'})
+
+def ativar_alimento(request):
+    pass
+
+def desativar_alimento(request):
+    pass
