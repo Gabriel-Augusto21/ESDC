@@ -1,6 +1,4 @@
 import {ativar, desativar, atualizar} from './alertas_alimentos.js'
-
-// criei um escutador que espera um evento de click no body
 document.body.addEventListener('click', function (evento){ 
     const btn_desativar = evento.target.closest('.desativar-btn');
     const btn_ativar = evento.target.closest('.ativar-btn');

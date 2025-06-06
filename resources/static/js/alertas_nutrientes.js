@@ -59,8 +59,6 @@ htmx.on("htmx:afterOnLoad", (event) => {
     }
 });
 
-
-
 // Erro de inserção
 htmx.on("htmx:responseError", (event) => {
    const status = event.detail.xhr.status;

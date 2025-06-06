@@ -1,5 +1,4 @@
 import { alerta_inserir, alerta_update, alerta_ativar, alerta_desativar } from './alertas_nutrientes.js';
-
 document.body.addEventListener('click', function (e) {
     const insert_btn = e.target.closest('.insert-btn');
     const update_btn = e.target.closest('.update-btn');

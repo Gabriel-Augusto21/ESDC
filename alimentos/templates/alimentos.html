@@ -32,9 +32,7 @@
         {% include 'alimentos_table.html' %}
     </div>
 </div>
-<script>
-    const csrf_token = '{{ csrf_token }}';
-</script>
+<script>const csrf_token = '{{ csrf_token }}';</script>
 <script type="module" src="{% static 'js/crud_alimentos.js' %}">
 </script>
 {% endblock %}
