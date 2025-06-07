@@ -267,7 +267,20 @@ def apagar_alimento(request):
     return js({'alimento': 'Preciso de uma id'})
 
 def ativar_alimento(request):
-    pass
+    id = request.POST.get('id')
+    print(id)
+    if id:
+        item = Alimento.objects.get(id=id)
+        if item.is_active == False:
+            item.is_active = True
+            item.save()
+            return js({'alimento': 'Tudo certo!'}, status=200)
+        else:
+            return js({'alimento': 'Esse alimento ja esta ativo!'}, status=400)
+
+    else:
+        return js({'alimento': 'Alguma coisa deu errado'})
+    
 
 def desativar_alimento(request):
     pass

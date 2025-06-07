@@ -20,8 +20,8 @@ urlpatterns = [
    path("inserir_alimento/", views.inserir_alimento, name="inserir_alimento"),
    path("atualizar_alimento/", views.atualizar_alimento, name="atualizar_alimento"),
    path("apagar_alimento/", views.apagar_alimento, name="apagar_alimento"),
-   path("ativar_alimento/", views.ativar_alimento, name="ativar_alimento"),
    path("desativar_alimento/", views.desativar_alimento, name="desativar_alimento"),
+   path("ativar_alimento/", views.ativar_alimento, name="ativar_alimento"),
 
 
    path("classificacao/", views.classificacao, name="classificacao"),   

@@ -1,17 +1,32 @@
 export function ativar(elemento){
-    const url = 'url'
     Swal.fire({
         title: 'Tem certeza que deseja ativar essa Alimento?',
-      text: "Você poderá desfazer isso mais tarde!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#32CD32',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sim, ativar',
-      cancelButtonText: 'Cancelar'
+        text: "Você poderá desfazer isso mais tarde!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#32CD32',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, ativar',
+        cancelButtonText: 'Cancelar'
     }).then(resp => {
         if (resp.isConfirmed) {
-            console.log("A ativar: ", elemento.dataset.nome)
+            const url = '/ativar_alimento/';
+            console.log("A ativar: ", elemento.dataset.nome);
+            htmx.ajax('POST', url, {
+                values: {
+                    id:elemento.dataset.id
+                },
+                swap: 'none'
+            });
+            Swal.fire({
+                title: 'Tudo certo!',
+                text: `Esse alimento agora está ativo!`,
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+            }).then(() => {
+                // Redireciona após o usuário fechar o alerta
+                window.location.reload();
+            });
 
         }else{
             console.log("O usuário deseja cancelar")
@@ -19,7 +34,6 @@ export function ativar(elemento){
     });
 }
 export function desativar(elemento){
-    const url = 'url'
     Swal.fire({
         title: 'Tem certeza que deseja desativar ess Alimento?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -31,7 +45,17 @@ export function desativar(elemento){
         cancelButtonText: 'Cancelar'
     }).then(resp => {
         if (resp.isConfirmed) {
+            const url = '/desativar_alimento/';
             console.log("A desativar: ", elemento.dataset.nome)
+            htmx.ajax('POST', url, {
+                id:alimento.dataset.id,
+                swap: 'none'
+            });
+            swal.fire({
+                title: 'Tudo certo!',
+                icon: 'success',
+                confirmButtonColor: ''
+            })
         }else{
             console.log("O usuário deseja cancelar")
         }
