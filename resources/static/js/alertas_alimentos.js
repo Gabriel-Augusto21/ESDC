@@ -14,18 +14,10 @@ export function ativar(elemento){
             console.log("A ativar: ", elemento.dataset.nome);
             htmx.ajax('POST', url, {
                 values: {
-                    id:elemento.dataset.id
+                    id: elemento.dataset.id,
+                    nome: elemento.dataset.nome 
                 },
                 swap: 'none'
-            });
-            Swal.fire({
-                title: 'Tudo certo!',
-                text: `Esse alimento agora está ativo!`,
-                icon: 'success',
-                confirmButtonColor: '#3085d6',
-            }).then(() => {
-                // Redireciona após o usuário fechar o alerta
-                window.location.reload();
             });
 
         }else{
@@ -33,6 +25,29 @@ export function ativar(elemento){
         }
     });
 }
+// Tratamento das responses
+htmx.on("htmx:afterOnLoad", (event) => {
+    const resp = JSON.parse(event.detail.xhr.response);
+    if (event.detail.xhr.status === 200 && resp.Mensagem?.includes('ativado')) {
+        Swal.fire({
+            title: 'Sucesso!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonColor: '#3085d6'
+        }).then(() => {
+            window.location.reload();
+        });
+    }else if(event.detail.xhr.status === 200 && resp.Mensagem?.includes('desativado')){
+        Swal.fire({
+         title: 'Sucesso!',
+         text: resp.Mensagem,
+         icon: 'success',
+         confirmButtonColor: '#3085d6'
+      }).then(() => {
+         window.location.reload();
+      });
+    }
+});
 export function desativar(elemento){
     Swal.fire({
         title: 'Tem certeza que deseja desativar ess Alimento?',
@@ -48,14 +63,12 @@ export function desativar(elemento){
             const url = '/desativar_alimento/';
             console.log("A desativar: ", elemento.dataset.nome)
             htmx.ajax('POST', url, {
-                id:alimento.dataset.id,
+                values: {
+                    id: elemento.dataset.id,
+                    nome: elemento.dataset.nome
+                },
                 swap: 'none'
             });
-            swal.fire({
-                title: 'Tudo certo!',
-                icon: 'success',
-                confirmButtonColor: ''
-            })
         }else{
             console.log("O usuário deseja cancelar")
         }
@@ -88,3 +101,4 @@ export function atualizar(elemento){
         }
     });
 }
+

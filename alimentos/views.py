@@ -268,19 +268,32 @@ def apagar_alimento(request):
 
 def ativar_alimento(request):
     id = request.POST.get('id')
+    nome = request.POST.get('nome')
     print(id)
     if id:
         item = Alimento.objects.get(id=id)
         if item.is_active == False:
             item.is_active = True
             item.save()
-            return js({'alimento': 'Tudo certo!'}, status=200)
+            return js({'Mensagem': f'"{nome}" ativado com sucesso!'}, status=200)
         else:
-            return js({'alimento': 'Esse alimento ja esta ativo!'}, status=400)
+            return js({'Mensagem': 'Esse alimento ja esta ativo!'}, status=400)
 
     else:
-        return js({'alimento': 'Alguma coisa deu errado'})
+        return js({'Mensagem': 'Alguma coisa deu errado'}, status=400)
     
 
 def desativar_alimento(request):
-    pass
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nome = request.POST.get('nome')
+        if id:
+            item = Alimento.objects.get(id=id)
+            if item.is_active == True:
+                item.is_active = False
+                item.save()
+                return js({'Mensagem': f'"{nome}" desativado com sucesso!'}, status=200)
+            else:
+                return js({'Mensagem': 'Esse alimento ja esta desativado!'}, status=400)
+
+    return js({'Mensagem': 'Alguma coisa deu errado'}, status=400)
