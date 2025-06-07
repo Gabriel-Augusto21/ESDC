@@ -25,29 +25,6 @@ export function ativar(elemento){
         }
     });
 }
-// Tratamento das responses
-htmx.on("htmx:afterOnLoad", (event) => {
-    const resp = JSON.parse(event.detail.xhr.response);
-    if (event.detail.xhr.status === 200 && resp.Mensagem?.includes('ativado')) {
-        Swal.fire({
-            title: 'Sucesso!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonColor: '#3085d6'
-        }).then(() => {
-            window.location.reload();
-        });
-    }else if(event.detail.xhr.status === 200 && resp.Mensagem?.includes('desativado')){
-        Swal.fire({
-         title: 'Sucesso!',
-         text: resp.Mensagem,
-         icon: 'success',
-         confirmButtonColor: '#3085d6'
-      }).then(() => {
-         window.location.reload();
-      });
-    }
-});
 export function desativar(elemento){
     Swal.fire({
         title: 'Tem certeza que deseja desativar ess Alimento?',
@@ -102,3 +79,26 @@ export function atualizar(elemento){
     });
 }
 
+// Tratamento das responses
+htmx.on("htmx:afterOnLoad", (event) => {
+    const resp = JSON.parse(event.detail.xhr.response);
+    if (event.detail.xhr.status === 200 && resp.Mensagem?.includes('ativado')) {
+        Swal.fire({
+            title: 'Sucesso!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonColor: '#3085d6'
+        }).then(() => {
+            window.location.reload();
+        });
+    }else if(event.detail.xhr.status === 200 && resp.Mensagem?.includes('desativado')){
+        Swal.fire({
+         title: 'Sucesso!',
+         text: resp.Mensagem,
+         icon: 'success',
+         confirmButtonColor: '#3085d6'
+      }).then(() => {
+         window.location.reload();
+      });
+    }
+});
