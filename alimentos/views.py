@@ -1,10 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import  JsonResponse as js
-from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.conf import settings
-from django.forms.models import model_to_dict
 
 # NUTRIENTES
 def nutrientes(request):
