@@ -10,7 +10,7 @@
     <tbody>
         {% for alimento in alimentos %}
         <tr class="alimentos-row">
-            <td id="txtNome">{{ alimento.nome }}</td>
+            <td>{{ alimento.nome }}</td>
             <td>{{alimento.classificacao.nome}}</td>
             <td>
                 {% if alimento.is_active %}
@@ -39,7 +39,7 @@
 </table>
 <!-- Paginador -->
 {% include "paginador.html" %}
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- HTMX -->
-<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<!-- SweetAlert2 e HTMX
+Copiei todo o js e joguei dentro da pasta de estaticos -->
+<script src="{% static 'js/sweetalert2@11.js'%}"></script>
+<script src="{% static 'js/htmx.js'%}"></script>
