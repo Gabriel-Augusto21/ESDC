@@ -1,11 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from alimentos.models import Classificacao, Alimento, Nutriente
 from django.http import  JsonResponse as js
-from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.conf import settings
-from django.forms.models import model_to_dict
-
 
 # NUTRIENTES
 def nutrientes(request):
@@ -51,30 +48,35 @@ def inserir_nutriente(request):
     categoria = request.GET.get('categoria', '')
 
     if nome and unidade:
-        if Nutriente.objects.filter(nome=nome).exists():
+        if Nutriente.objects.filter(nome__iexact=nome).exists():
             
             return js({'Mensagem': f'{nome} já existe'}, status=400)
         Nutriente.objects.create(nome=nome, unidade=unidade, categoria=categoria)
         return js({'Mensagem': f'{nome} inserido com sucesso!'}, status=400)
     return js({'Mensagem': 'Informe nome e unidade'}, status=400)
 
-
 def atualizar_nutriente(request):
-   id = request.GET.get('id')
-   nome = request.GET.get('nome')
-   unidade = request.GET.get('unidade')
-   categoria = request.GET.get('categoria')
+    id = request.GET.get('id')
+    nome = request.GET.get('nome')
+    unidade = request.GET.get('unidade')
+    categoria = request.GET.get('categoria')
 
-   if not id or not nome or not unidade:
-      return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+    if not id or not nome or not unidade:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
-   nutriente = get_object_or_404(Nutriente, pk=id)
-   nutriente.nome = nome
-   nutriente.unidade = unidade
-   nutriente.categoria = categoria or None
-   nutriente.save()
+    nutriente = get_object_or_404(Nutriente, pk=id)
 
-   return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=400)
+    if Nutriente.objects.filter(nome=nome).exists():
+        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+
+    if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
+
+    nutriente.nome = nome
+    nutriente.unidade = unidade
+    nutriente.categoria = categoria or None
+    nutriente.save()
+    return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
 
 
 def ativar_nutriente(request):
@@ -115,11 +117,16 @@ def listar_nutrientes(request):
 
 # CLASSIFICAÇÃO
 def classificacao(request):
-   classificacao_lista = Classificacao.objects.all().order_by('-is_active', 'nome')
-   paginator = Paginator(classificacao_lista, settings.NUMBER_GRID_PAGES)
-   numero_pagina = request.GET.get('page')
-   page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'classificacao.html', {"classificacoes": page_obj, 'page_obj': page_obj})
+    query = request.GET.get('query', '')
+    classificacoes_lista = Classificacao.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    paginator = Paginator(classificacoes_lista, getattr(settings, 'NUMBER_GRID_PAGES', 10))
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'classificacao.html', {
+        'classificacoes': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
 
 def get_classificacao(request):
    return render(request, 'classificacao.html', {})
@@ -127,23 +134,31 @@ def get_classificacao(request):
 def inserir_classificacao(req):
    nome = req.GET.get('nome')
    if nome:
-      if not Classificacao.objects.filter(nome=nome).exists():
+      if not Classificacao.objects.filter(nome__iexact=nome).exists():
          Classificacao.objects.create(nome=nome)
          return js({'Mensagem': f'{nome} inserido com sucesso!'})
       else:
          return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
    return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
-def atualizar_classificacao(req):
-   id = req.GET.get('id')
-   nome = req.GET.get('nome')
-   if id:   
-      item = Classificacao.objects.get(id=id)
-      item.nome = nome
-      item.save()
-      return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
+def atualizar_classificacao(request):
+    id = request.GET.get('id')
+    nome = request.GET.get('nome')
 
-   return js({'Mensagem': f'{nome} não pode ser atualizada!'})
+    if not id or not nome:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+
+    classificacao = get_object_or_404(Classificacao, pk=id)
+
+    if Classificacao.objects.filter(nome=nome).exists():
+        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+
+    if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outra classificação já existe com esse nome.'}, status=400)
+
+    classificacao.nome = nome
+    classificacao.save()
+    return js({'Mensagem': 'Classificação atualizada com sucesso!'}, status=200)
 
 def ativar_classificacao(req):
    teste = req.GET.get('id')
@@ -161,16 +176,34 @@ def desativar_classificacao(req):
       item.save()
    return js({'Mensagem': f'{item.nome} foi desativado'})
 
+def listar_classificacoes(request):
+    query = request.GET.get('query', '').strip()
+    classificacoes = Classificacao.objects.all()
 
+    if query:
+        classificacoes = classificacoes.filter(nome__icontains=query)
 
+    classificacoes = classificacoes.order_by('nome')
 
+    paginator = Paginator(classificacoes, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'classificacoes': page_obj, 
+        'page_obj': page_obj,
+        'query': query,
+    }
+    
+    
 # ALIMENTOS
 def alimentos(request):
    nutriente_lista = Alimento.objects.all().order_by('nome')
    paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
    numero_pagina = request.GET.get('page')
    page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+   classificacoes = list(Classificacao.objects.values('nome')) 
+   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj, "classificacoes": classificacoes})
 
 def busca_alimento_nome(request):
    if request.GET.get('nome'):
@@ -231,3 +264,35 @@ def apagar_alimento(request):
         except Alimento.DoesNotExist:
             return js({'alimento': 'Alimento não encontrado'})
     return js({'alimento': 'Preciso de uma id'})
+
+def ativar_alimento(request):
+    id = request.POST.get('id')
+    nome = request.POST.get('nome')
+    print(id)
+    if id:
+        item = Alimento.objects.get(id=id)
+        if item.is_active == False:
+            item.is_active = True
+            item.save()
+            return js({'Mensagem': f'"{nome}" ativado com sucesso!'}, status=200)
+        else:
+            return js({'Mensagem': 'Esse alimento ja esta ativo!'}, status=400)
+
+    else:
+        return js({'Mensagem': 'Alguma coisa deu errado'}, status=400)
+    
+
+def desativar_alimento(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nome = request.POST.get('nome')
+        if id:
+            item = Alimento.objects.get(id=id)
+            if item.is_active == True:
+                item.is_active = False
+                item.save()
+                return js({'Mensagem': f'"{nome}" desativado com sucesso!'}, status=200)
+            else:
+                return js({'Mensagem': 'Esse alimento ja esta desativado!'}, status=400)
+
+    return js({'Mensagem': 'Alguma coisa deu errado'}, status=400)

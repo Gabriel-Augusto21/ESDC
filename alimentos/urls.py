@@ -20,11 +20,15 @@ urlpatterns = [
    path("inserir_alimento/", views.inserir_alimento, name="inserir_alimento"),
    path("atualizar_alimento/", views.atualizar_alimento, name="atualizar_alimento"),
    path("apagar_alimento/", views.apagar_alimento, name="apagar_alimento"),
+   path("desativar_alimento/", views.desativar_alimento, name="desativar_alimento"),
+   path("ativar_alimento/", views.ativar_alimento, name="ativar_alimento"),
+
 
    path("classificacao/", views.classificacao, name="classificacao"),   
    path("get_classificacao/", views.get_classificacao, name="get_classificacao"),
    path("inserir_classificacao/", views.inserir_classificacao, name="inserir_classificacao"),
-   path("desativar_classificacao/", views.desativar_classificacao, name="ativar_classificacao"),
    path("ativar_classificacao/", views.ativar_classificacao, name="ativar_classificacao"),
+   path("desativar_classificacao/", views.desativar_classificacao, name="desativar_classificacao"),
    path("atualizar_classificacao/", views.atualizar_classificacao, name="atualizar_classificacao"),
+   path("listar_classificacoes/", views.listar_classificacoes, name="listar_classificacoes"),
 ]

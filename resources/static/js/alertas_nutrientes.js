@@ -7,7 +7,9 @@ export function alerta_inserir(btn) {
             <input id="swal-unidade" class="swal2-input" placeholder="Unidade">
             <input id="swal-categoria" class="swal2-input" placeholder="Categoria (opcional)">
         `,
+        
         confirmButtonText: 'Inserir',
+        cancelButtonText: 'Cancelar',
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
@@ -23,7 +25,11 @@ export function alerta_inserir(btn) {
     }).then(result => {
         if (result.isConfirmed) {
             const { nome, unidade, categoria } = result.value;
-            const url = `${btn.dataset.url}?nome=${encodeURIComponent(nome)}&unidade=${encodeURIComponent(unidade)}&categoria=${encodeURIComponent(categoria)}`;
+           const url = `${btn.dataset.url}` +
+            `?nome=${encodeURIComponent(nome)}` +
+            `&unidade=${encodeURIComponent(unidade)}` +
+            `&categoria=${encodeURIComponent(categoria)}`;
+
             htmx.ajax('GET', url, { swap: 'none' });
         }
     });
@@ -31,18 +37,28 @@ export function alerta_inserir(btn) {
 
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
-   const resp = JSON.parse(event.detail.xhr.response);
-   if (resp.Mensagem?.includes("inserido com sucesso")) {
-      Swal.fire({
-         title: 'Tudo certo!',
-         text: resp.Mensagem,
-         icon: 'success',
-         confirmButtonColor: '#3085d6',
-      }).then(() => {
-         window.location.reload();
-      });
-   }
+    const resp = JSON.parse(event.detail.xhr.response);
+    const path = event.detail.requestConfig.path;
+    
+    if (resp.Mensagem) {
+        if (path.includes('/atualizar_nutriente') && resp.Mensagem.includes('atualizado com sucesso')) {
+            Swal.fire({
+                title: 'Tudo certo!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+            }).then(() => window.location.reload());
+        } else if (path.includes('/inserir_nutriente') && resp.Mensagem.includes('inserido com sucesso')) {
+            Swal.fire({
+                title: 'Tudo certo!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+            }).then(() => window.location.reload());
+        } 
+    }
 });
+
 // Erro de inserção
 htmx.on("htmx:responseError", (event) => {
    const status = event.detail.xhr.status;
@@ -95,11 +111,36 @@ export function alerta_update(btn) {
     }).then(result => {
         if (result.isConfirmed) {
             const { nome, unidade, categoria } = result.value;
-            const url = `/atualizar_nutriente/?id=${id}&nome=${encodeURIComponent(nome)}&unidade=${encodeURIComponent(unidade)}&categoria=${encodeURIComponent(categoria)}`;
-            htmx.ajax('GET', url, { swap: 'none' });
+           const url = `/atualizar_nutriente/?id=${id}` +
+            `&nome=${encodeURIComponent(nome)}` +
+            `&unidade=${encodeURIComponent(unidade)}` +
+            `&categoria=${encodeURIComponent(categoria)}`;
+
+            htmx.ajax('GET', url, { swap: 'none' })
+                .then(response => {
+                    const resp = JSON.parse(response.xhr.response);
+                    if (resp.Mensagem && resp.Mensagem.includes('atualizado com sucesso')) {
+                        Swal.fire({
+                            title: 'Tudo certo!',
+                            text: resp.Mensagem,
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Erro!',
+                            text: resp.Mensagem || 'Ocorreu um erro na atualização.',
+                            icon: 'error',
+                            confirmButtonColor: '#d33',
+                        });
+                    }
+                });
         }
     });
 }
+
 
 // 🔒 Ativar Nutriente
 export function alerta_ativar(btn) {

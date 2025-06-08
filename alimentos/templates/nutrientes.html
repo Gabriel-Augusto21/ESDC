@@ -1,9 +1,7 @@
 {% extends 'master.html' %}
 {% load static %}
-
 {% block conteudo %}
 <div class="container mt-5">
-
    <!-- Formulário de busca -->
    <form method="get" class="form-group row mb-4 d-flex justify-content-center">
       <div class="col-3">
@@ -26,11 +24,9 @@
          Inserir nutriente
       </button>
    </div>
-
     <!-- Tabela -->
     {% include 'nutrientes_table.html' %}
 </div>
-
 <script>
     const csrf_token = '{{ csrf_token }}';
 </script>
