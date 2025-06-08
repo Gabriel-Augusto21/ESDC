@@ -11,7 +11,7 @@ document.body.addEventListener('click', function (evento){
     }else if(botao.classList.contains('update-btn')) {
         atualizar(dados)
     }else if(botao.classList.contains('insert-btn')){ // agora é um array real
-        inserir(classificacoes, modalHtml);
+        inserir(modalHtml);
     }
 });
 // Corpo do modal
