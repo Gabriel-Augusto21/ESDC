@@ -202,7 +202,8 @@ def alimentos(request):
    paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
    numero_pagina = request.GET.get('page')
    page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+   classificacoes = list(Classificacao.objects.values('nome')) 
+   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj, "classificacoes": classificacoes})
 
 def busca_alimento_nome(request):
    if request.GET.get('nome'):

@@ -78,7 +78,22 @@ export function atualizar(elemento){
         }
     });
 }
-
+export function inserir(classificacoes, modalHtml){
+    swal.fire({
+        title: "Inserir Alimentos",
+        html: modalHtml,
+        preConfirm: () => {
+            const nome = document.getElementById('txtNomeAlimento').value.trim();
+            if (!nome) {
+                Swal.showValidationMessage('O nome do alimento é obrigatório!');
+                return false;
+            }
+            return { nome };
+        }
+    }).then((resp) => {
+        console.log('Tatudobem')
+    })
+}
 // Tratamento das responses
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
