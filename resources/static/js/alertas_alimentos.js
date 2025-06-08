@@ -78,7 +78,7 @@ export function atualizar(elemento){
         }
     });
 }
-export function inserir(classificacoes, modalHtml){
+export function inserir(modalHtml){
     swal.fire({
         title: "Inserir Alimentos",
         html: modalHtml,
