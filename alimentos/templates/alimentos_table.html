@@ -10,7 +10,7 @@
     <tbody>
         {% for alimento in alimentos %}
         <tr class="alimentos-row" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}">
-            <td>{{ alimento.nome }}</td>
+            <td id="txtNome">{{ alimento.nome }}</td>
             <td>{{alimento.classificacao.nome}}</td>
             <td>{% if alimento.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Ativar">
