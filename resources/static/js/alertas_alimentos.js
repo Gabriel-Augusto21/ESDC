@@ -19,7 +19,6 @@ export function ativar(elemento){
                 },
                 swap: 'none'
             });
-
         }else{
             console.log("O usuário deseja cancelar")
         }
@@ -64,13 +63,13 @@ export function atualizar(elemento, html){
         focusConfirm: false,
         preConfirm: () => {
             const nome = document.getElementById('txtNomeAlimento').value.trim();
+            const classificacao = document.getElementById('idClassificacao').value.trim();
+
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
-            }else if (nomeAnterior == nome){
-                Swal.showValidationMessage('Não é possível atualizar para o mesmo nome!');
             }
-            return { nome, nomeAnterior, idAlimento};
+            return { nome, nomeAnterior, idAlimento, classificacao};
         }
     }).then(resp => {
         if (resp.isConfirmed) {
@@ -80,7 +79,8 @@ export function atualizar(elemento, html){
                 values: {
                     nome: resp.value.nome,
                     nomeAnterior: nomeAnterior,
-                    id: idAlimento
+                    id: idAlimento,
+                    id_classificacao: resp.value.classificacao
                 },
                 swap: 'none'
             });
@@ -106,20 +106,22 @@ export function inserir(modalHtml){
         confirmButtonText: 'Inserir',
         preConfirm: () => {
             const nome = document.getElementById('txtNomeAlimento').value.trim();
+            const classificacao = document.getElementById('idClassificacao').value.trim();
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            return { nome };
+            return { nome, classificacao };
         }
     }).then((resp) => {
         if (resp.isConfirmed) {
-            htmx.ajax('POST', '/alimento_exists/', {
+            htmx.ajax('POST', '/inserir_alimento/', {
                 values: {
-                    nome: resp.value.nome
+                    nome: resp.value.nome,
+                    id_classificacao: resp.value.classificacao
                 },
                 swap: 'none'
-            })
+            });
         } else {
             console.log("O usuário cancelou a ação");
         }
@@ -128,41 +130,79 @@ export function inserir(modalHtml){
 // Tratamento das responses
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
-    if (event.detail.xhr.status === 200 && resp.Mensagem?.includes('ativado')) {
-        Swal.fire({
+    if (event.detail.xhr.status === 200) {
+        if (resp.Mensagem?.includes('ativado')) {            
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                timer: 3000,
+                timerProgressBar: true,   
+                confirmButtonColor: '#3085d6'
+            }).then(() => {
+                window.location.reload();
+            });
+        }else if(resp.Mensagem?.includes('desativado')){
+            Swal.fire({
             title: 'Sucesso!',
             text: resp.Mensagem,
             icon: 'success',
+            confirmButtonColor: '#3085d6',
             timer: 3000,
-            timerProgressBar: true,   
-            confirmButtonColor: '#3085d6'
+            timerProgressBar: true
         }).then(() => {
-            
             window.location.reload();
         });
-    }else if(event.detail.xhr.status === 200 && resp.Mensagem?.includes('desativado')){
+        }else if(resp.Mensagem?.includes('atualizado')){
+            Swal.fire({
+            title: 'Sucesso!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            timer: 10000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+        }else if (resp.Mensagem?.includes('inserido')) {
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                timer: 3000,
+                timerProgressBar: true,   
+                confirmButtonColor: '#3085d6'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+    }
+});
+htmx.on("htmx:responseError", (event) => {
+    event.stopPropagation(); // Evita que o erro suba
+    const status = event.detail.xhr.status;
+    const resp = JSON.parse(event.detail.xhr.response);
+
+    if (status === 400 && resp.Mensagem?.includes("já existente")) {
         Swal.fire({
-        title: 'Sucesso!',
-        text: resp.Mensagem,
-        icon: 'success',
-        confirmButtonColor: '#3085d6',
-        timer: 3000,
-        timerProgressBar: true
-      }).then(() => {
-         window.location.reload();
-      });
-    }else if(event.detail.xhr.status === 200 && resp.Mensagem?.includes('atualizado')){
+            title: 'Erro!',
+            text: resp.Mensagem,
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+        });
+    }else if (status === 400 && resp.Mensagem?.includes("inalterados")) {
         Swal.fire({
-        title: 'Sucesso!',
-        text: resp.Mensagem,
-        icon: 'success',
-        confirmButtonColor: '#3085d6',
-        timer: 3000,
-        timerProgressBar: true
-      }).then(() => {
-         window.location.reload();
-      });
-    }else if(event.detail.xhr.status === 201){
-        console.log('Tratando a resposta da requisicao', resp.alimento)
+            title: 'Erro!',
+            text: resp.Mensagem,
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+        });
+    } else {
+        Swal.fire({
+            title: 'Erro inesperado',
+            text: 'Algo deu errado. Tente novamente mais tarde.',
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+        });
     }
 });
