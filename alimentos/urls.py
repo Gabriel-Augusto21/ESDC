@@ -23,9 +23,6 @@ urlpatterns = [
    path("desativar_alimento/", views.desativar_alimento, name="desativar_alimento"),
    path("ativar_alimento/", views.ativar_alimento, name="ativar_alimento"),
    path('classificacoes_json/', views.classificacoes_json, name='classificacoes_json'),
-   path('alimento_exists/', views.alimento_exists, name='alimento_exists'),
-
-
 
    path("classificacao/", views.classificacao, name="classificacao"),   
    path("get_classificacao/", views.get_classificacao, name="get_classificacao"),

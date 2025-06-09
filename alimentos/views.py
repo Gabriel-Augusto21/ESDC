@@ -204,11 +204,16 @@ def listar_classificacoes(request):
 # ALIMENTOS
 def alimentos(request):
 #    alimentos_lista = Alimento.objects.all().order_by('-is_active','nome')
-   alimentos_lista = Alimento.objects.all().order_by('nome')
-   paginator = Paginator(alimentos_lista, 10)
-   numero_pagina = request.GET.get('page')
-   page_obj = paginator.get_page(numero_pagina)
-   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+    alimentos_lista = Alimento.objects.all().order_by('nome')
+    paginator = Paginator(alimentos_lista, 10)
+    numero_pagina = request.GET.get('page')
+    page_obj = paginator.get_page(numero_pagina)
+    if request.method == 'GET':
+        nome = request.GET.get('txtBuscaNome')
+        print('O cara disse:', nome)
+        # alimento = Alimento.objects.get(nome)
+        return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+    return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
 
 def classificacoes_json(request):
     classificacoes = list(Classificacao.objects.filter(is_active=True).values('id', 'nome'))
@@ -221,13 +226,6 @@ def busca_alimento_nome(request):
          return js({'alimentos': 'Não existe'})
       return js({'alimentos': list(alimento.values())})
    return js({'alimento': 'Informe um nome'})
-
-def alimento_exists(request):
-    nome = request.POST.get('nome')
-    alimento = Alimento.objects.filter(nome=nome).exists()
-    print(alimento)
-    return js({'alimento': alimento}, status=201)
-
 
 def inserir_alimento(request):
     if request.method == 'POST':

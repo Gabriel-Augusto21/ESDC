@@ -4,22 +4,22 @@
 <div class="container mt-3">
    <h1>Alimentos</h1>
    <!-- Formulário de busca -->
-   <form method="get" class="form-group row mb-4 d-flex justify-content-center">
-   <div class="col-4">
-    <div class="input-group">
-      <input class="form-control"
-             id="txtBuscaNome"
-             name="query"
-             value="{{ query }}"
-             type="text"
-             placeholder="Informe o nome de um alimento..."
-             style="border-radius: 20px 0 0 20px;">
-      <div class="input-group-append">
-        <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
-      </div>
-    </div>
-  </div>
-</form>
+    <form method="GET" class="form-group row mb-4 d-flex justify-content-center">
+        <div class="col-4">
+            <div class="input-group">
+                <input class="form-control"
+                        id="txtBuscaNome"
+                        name="txtBuscaNome"
+                        value="{{ alimento }}"
+                        type="text"
+                        placeholder="Informe o nome de um alimento..."
+                        style="border-radius: 20px 0 0 20px;">
+                <div class="input-group-append">
+                    <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
+                </div>
+            </div>
+        </div>
+    </form>
     <!-- Botão de inserir -->
     <div class="form-group row mr-1 justify-content-end">
       <button type="button" class="botao insert-btn" data-url="{% url 'alimentos:inserir_nutriente' %}">
