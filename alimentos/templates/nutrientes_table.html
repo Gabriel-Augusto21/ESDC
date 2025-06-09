@@ -1,39 +1,44 @@
 {% load static %}
 
-<table class="table table-hover">
+<table class="table table-borderless tabela table-hover">
     <thead>
         <tr>
             <th>Nome</th>
-            <th>Unidade</th>
             <th>Categoria</th>
+            <th>Unidade</th>
             <th class="text-end">Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for nutriente in nutrientes %}
-        <tr data-id="{{ nutriente.id }}">
+        <tr class="container" data-id="{{ nutriente.id }}"
+        {% if nutriente.is_active %}
+            style="background-color: #ffffff"
+        {% else %}
+            style="background-color:rgba(190, 190, 190, 0.31)"
+        {% endif %}>
             <td>{{ nutriente.nome }}</td>
-            <td>{{ nutriente.unidade }}</td>
             <td>{{ nutriente.categoria }}</td>
+            <td>{{ nutriente.unidade }}</td>
             <td class="text-end">
                 {% if nutriente.is_active %}
-                    <button class="btn btn-sm desativar-btn"
-                        data-id="{{ nutriente.id }}"
-                        data-url="{% url 'alimentos:desativar_nutriente' %}?id={{ nutriente.id }}">
-                        <img src="{% static 'img/unlock.png' %}" width="20">
-                    </button>
-                    <button class="btn btn-sm update-btn"
+                <button class="btn btn-sm update-btn"
                         data-id="{{ nutriente.id }}"
                         data-nome="{{ nutriente.nome|escapejs }}"
                         data-unidade="{{ nutriente.unidade|escapejs }}"
                         data-categoria="{{ nutriente.categoria|default_if_none:''|escapejs }}">
                         <img src="{% static 'img/update.png' %}" width="20">
                     </button>
+                    <button class="btn btn-sm desativar-btn"
+                        data-id="{{ nutriente.id }}"
+                        data-url="{% url 'alimentos:desativar_nutriente' %}?id={{ nutriente.id }}">
+                        <img src="{% static 'img/visibility.png' %}" width="20">
+                    </button>
                 {% else %}
                     <button class="btn btn-sm ativar-btn"
                         data-id="{{ nutriente.id }}"
                         data-url="{% url 'alimentos:ativar_nutriente' %}?id={{ nutriente.id }}">
-                        <img src="{% static 'img/lock.png' %}" width="20">
+                        <img src="{% static 'img/not_visibility.png' %}" width="20">
                     </button>
                 {% endif %}
             </td>

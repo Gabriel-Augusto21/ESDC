@@ -141,9 +141,14 @@ def inserir_classificacao(req):
          return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
    return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
-def atualizar_classificacao(request):
-    id = request.GET.get('id')
-    nome = request.GET.get('nome')
+def atualizar_classificacao(req):
+    id = req.GET.get('id')
+    nome = req.GET.get('nome')
+    if id:   
+        item = Classificacao.objects.get(id=id)
+        item.nome = nome
+        item.save()
+        return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
 
     if not id or not nome:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
