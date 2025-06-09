@@ -239,7 +239,6 @@ def atualizar_alimento(request):
     return js({'Mensagem': 'Alguma coisa deu errado!'}, status=400)
 
 def ativar_alimento(request):
-    print(id)
     if request.method == 'POST':
         id = request.POST.get('id')
         nome = request.POST.get('nome')
