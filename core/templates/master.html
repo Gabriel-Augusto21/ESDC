@@ -24,7 +24,7 @@
 <div class="background-image" style="background-image:url('/static/img/image.png');"></div>
 <body class="instrument-sans">
    <div class="flex-wrapper">
-      <nav class="navbar navbar-expand-lg navbar-light bg-transparent align-items-center" style="padding: 1px">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white align-items-center" style="padding: 1px">
          <div class="container">
             <a class="navbar-brand" href="{% url 'core:main'%}"><img src="{% static 'img/logo.png' %}" style="width: 80px" ></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@
                         <a class="dropdown-item" href="#">Exigências</a>
                         <a class="dropdown-item" href="{% url 'alimentos:alimentos'%}">Alimentos</a>
                         <a class="dropdown-item" href="{% url 'alimentos:nutrientes'%}">Nutrientes</a>
-                        <a class="dropdown-item" href="#">Composição Alimentar</a>
+                        <a class="dropdown-item" href="{% url 'alimentos:composicaoAlimento'%}">Composição Alimentar</a>
                         <a class="dropdown-item" href="{% url 'alimentos:classificacao'%}">Classificação</a>
                   </div>
                </li>

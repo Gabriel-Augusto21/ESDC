@@ -31,4 +31,14 @@ urlpatterns = [
    path("desativar_classificacao/", views.desativar_classificacao, name="desativar_classificacao"),
    path("atualizar_classificacao/", views.atualizar_classificacao, name="atualizar_classificacao"),
    path("listar_classificacoes/", views.listar_classificacoes, name="listar_classificacoes"),
+
+   path("composicaoAlimento/", views.composicaoAlimento, name="composicaoAlimento"),
+   path("get_composicaoAlimento/", views.get_composicaoAlimento, name="get_composicaoAlimento"),
+   path("inserir_composicaoAlimento/", views.inserir_composicaoAlimento, name="inserir_composicaoAlimento"),
+   path("ativar_composicaoAlimento/", views.ativar_composicaoAlimento, name="ativar_composicaoAlimento"),
+   path("desativar_composicaoAlimento/", views.desativar_composicaoAlimento, name="desativar_composicaoAlimento"),
+   path("atualizar_composicaoAlimento/", views.atualizar_composicaoAlimento, name="atualizar_composicaoAlimento"),
+   path("listar_composicaoAlimento/", views.listar_composicaoAlimento, name="listar_composicaoAlimento"),
+   path('listar_alimentos_nutrientes/', views.listar_alimentos_nutrientes, name='listar_alimentos_nutrientes'),
+
 ]

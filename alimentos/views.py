@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from alimentos.models import Classificacao, Alimento, Nutriente
+from alimentos.models import Classificacao, Alimento, Nutriente, ComposicaoAlimento
 from django.http import  JsonResponse as js
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -40,7 +40,6 @@ def busca_nutriente_nome(request):
             return js({'nutrientes': list(nutrientes.values())})
         return js({'mensagem': 'Nutriente não encontrado'})
     return js({'mensagem': 'Informe um nome para busca'}, status=400)
-
 
 def inserir_nutriente(request):
     nome = request.GET.get('nome', '')
@@ -307,3 +306,127 @@ def apagar_alimento(request):
         except Alimento.DoesNotExist:
             return js({'alimento': 'Alimento não encontrado'})
     return js({'alimento': 'Preciso de uma id'})
+
+
+#COMPOSIÇÃO DE ALIMENTO
+def composicaoAlimento(request):
+    query = request.GET.get('query', '')
+    composicaoAlimento_lista = ComposicaoAlimento.objects.all().order_by('-alimento__is_active', 'alimento__nome')
+    paginator = Paginator(composicaoAlimento_lista, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'composicao_alimento.html', {
+        'composicao_alimento': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
+
+def get_composicaoAlimento(request):
+    if request.method == "GET":
+        id = request.GET.get("id")
+        try:
+            composicao = ComposicaoAlimento.objects.get(id=id)
+            data = {
+                "id": composicao.id,
+                "alimento": composicao.alimento.nome,
+                "nutriente": composicao.nutriente.nome,
+                "valor": composicao.valor,
+            }
+            return js(data)
+        except ComposicaoAlimento.DoesNotExist:
+            return js({"error": "Composição de alimento não encontrada"}, status=404)
+
+def busca_composicaoAlimento_nome(request):
+    nome = request.GET.get('nome', '')
+    if nome:
+        composicoes = ComposicaoAlimento.objects.filter(alimento__nome__icontains=nome)
+        if composicoes.exists():
+            return js({'composicoes': list(composicoes.values())})
+        return js({'mensagem': 'Composição de alimento não encontrada'})
+    return js({'mensagem': 'Informe um nome para busca'}, status=400)
+
+def inserir_composicaoAlimento(request):
+    alimento_id = request.GET.get('alimento_id', '')
+    nutriente_id = request.GET.get('nutriente_id', '')
+    valor = request.GET.get('valor', '')
+
+    if alimento_id and nutriente_id and valor:
+        #if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
+           # return js({'Mensagem': 'Composição de alimento já existe'}, status=400)
+        
+        ComposicaoAlimento.objects.create(
+            alimento_id=alimento_id,
+            nutriente_id=nutriente_id,
+            valor=valor
+        )
+
+        if request.headers.get('HX-Request'):
+            composicoes = ComposicaoAlimento.objects.all().order_by('alimento__nome')[:10]
+            return render(request, 'composicaoAlimento_table.html', {
+                'composicao_alimento': composicoes
+            })
+        
+        return js({'Mensagem': 'Composição de alimento inserida com sucesso!'}, status=200)
+    
+    return js({'Mensagem': 'Informe nome e unidade'}, status=400)
+
+
+def atualizar_composicaoAlimento(request):
+    id = request.GET.get('id')
+    alimento_id = request.GET.get('alimento_id')
+    nutriente_id = request.GET.get('nutriente_id')
+    valor = request.GET.get('valor')
+
+    if not id or not alimento_id or not nutriente_id or not valor:
+        return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
+
+    composicao = get_object_or_404(ComposicaoAlimento, pk=id)
+
+    if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
+        return js({'Mensagem': 'Composição de alimento já existe!'}, status=400)
+
+    composicao.alimento_id = alimento_id
+    composicao.nutriente_id = nutriente_id
+    composicao.valor = valor
+    composicao.save()
+    return js({'Mensagem': 'Composição de alimento atualizada com sucesso!'}, status=200)
+
+def ativar_composicaoAlimento(request):
+    id = request.GET.get('id')
+    composicao = get_object_or_404(ComposicaoAlimento, pk=id)
+    composicao.is_active = True
+    composicao.save()
+    return js({'Mensagem': f'Composição de alimento {composicao.alimento.nome} foi ativada'})
+
+def desativar_composicaoAlimento(request):
+    id = request.GET.get('id')
+    if id:
+      composicao = get_object_or_404(ComposicaoAlimento, pk=id)
+      composicao.is_active = False
+      composicao.save()
+      return js({'Mensagem': f'Composição de alimento {composicao.alimento.nome} foi desativada'})
+    return js({'Mensagem': f'Não foi possível desativar {composicao.alimento.nome}'}, status=400)
+
+def listar_composicaoAlimento(request):
+    query = request.GET.get('query', '').strip()
+    composicoes = ComposicaoAlimento.objects.all()
+
+    if query:
+        composicoes = composicoes.filter(alimento__nome__icontains=query)
+
+    composicoes = composicoes.order_by('alimento__nome')
+
+    paginator = Paginator(composicoes, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'composicoes': page_obj.object_list,
+        'page_obj': page_obj,
+        'query': query,
+    }
+
+def listar_alimentos_nutrientes(request):
+    alimentos = list(Alimento.objects.filter(is_active=True).values('id', 'nome'))
+    nutrientes = list(Nutriente.objects.all().values('id', 'nome'))
+    return js({'alimentos': alimentos, 'nutrientes': nutrientes})
