@@ -202,7 +202,7 @@ def listar_classificacoes(request):
     
     
 # ALIMENTOS
-def alimentos(request):
+def alimentos(request):oo
     alimentos_lista = Alimento.objects.all().order_by('-is_active','nome')
     # alimentos_lista = Alimento.objects.all().order_by('nome')
     paginator = Paginator(alimentos_lista, 10)
