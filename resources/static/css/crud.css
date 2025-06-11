@@ -112,4 +112,10 @@ form button:disabled {
   background-color: #f5f5f5;
   border-color: #ddd;
 }
-
+/* Aqui pode ser usado pra gente criar o css dos alertas
+Precisamos declarar que uma classe pro elemento la no swal.fire()
+*/
+.botao-confirma-alerta{
+    background-color: #57e55e;
+    border-radius: 10px;
+}

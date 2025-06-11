@@ -8,7 +8,7 @@ from django.conf import settings
 def nutrientes(request):
     query = request.GET.get('query', '')
     nutrientes_lista = Nutriente.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
-    paginator = Paginator(nutrientes_lista, getattr(settings, 'NUMBER_GRID_PAGES', 10))
+    paginator = Paginator(nutrientes_lista, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
 
     return render(request, 'nutrientes.html', {
@@ -141,9 +141,14 @@ def inserir_classificacao(req):
          return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
    return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
-def atualizar_classificacao(request):
-    id = request.GET.get('id')
-    nome = request.GET.get('nome')
+def atualizar_classificacao(req):
+    id = req.GET.get('id')
+    nome = req.GET.get('nome')
+    if id:   
+        item = Classificacao.objects.get(id=id)
+        item.nome = nome
+        item.save()
+        return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
 
     if not id or not nome:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
@@ -198,12 +203,21 @@ def listar_classificacoes(request):
     
 # ALIMENTOS
 def alimentos(request):
-   nutriente_lista = Alimento.objects.all().order_by('nome')
-   paginator = Paginator(nutriente_lista, settings.NUMBER_GRID_PAGES)
-   numero_pagina = request.GET.get('page')
-   page_obj = paginator.get_page(numero_pagina)
-   classificacoes = list(Classificacao.objects.values('nome')) 
-   return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj, "classificacoes": classificacoes})
+#    alimentos_lista = Alimento.objects.all().order_by('-is_active','nome')
+    alimentos_lista = Alimento.objects.all().order_by('nome')
+    paginator = Paginator(alimentos_lista, 10)
+    numero_pagina = request.GET.get('page')
+    page_obj = paginator.get_page(numero_pagina)
+    if request.method == 'GET':
+        nome = request.GET.get('txtBuscaNome')
+        print('O cara disse:', nome)
+        # alimento = Alimento.objects.get(nome)
+        return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+    return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+
+def classificacoes_json(request):
+    classificacoes = list(Classificacao.objects.filter(is_active=True).values('id', 'nome'))
+    return js(classificacoes, safe=False)
 
 def busca_alimento_nome(request):
    if request.GET.get('nome'):
@@ -214,74 +228,61 @@ def busca_alimento_nome(request):
    return js({'alimento': 'Informe um nome'})
 
 def inserir_alimento(request):
-    if request.GET.get('nome') and request.GET.get('id_classificacao'):
-        nome = request.GET.get('nome')
-        id_classificacao = request.GET.get('id_classificacao')
-
-        alimento_existente = Alimento.objects.filter(nome=nome)
-        if not alimento_existente.exists():
-            try:
-                classificacao = Classificacao.objects.get(id=id_classificacao)
-
-                Alimento.objects.create(nome=nome, classificacao_id=classificacao.id)
-                return js({'alimento': f'{nome} adicionado com sucesso!'})
-            except Classificacao.DoesNotExist:
-                return js({'alimento': 'Classificação informada não existe'})
-        return js({'alimento': 'Alimento já existente'})
-    return js({'alimento': 'Informe nome e id_classificacao'})
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        classificacao = request.POST.get('id_classificacao')
+        if not Alimento.objects.filter(nome=nome).exists():
+            item = Classificacao.objects.get(id=classificacao)
+            Alimento.objects.create(nome=nome, classificacao=item)
+            return js({'Mensagem': f'"{nome}" inserido com sucesso!'}, status=200)
+        return js({'Mensagem': "Alimento já existente na base de dados!"}, status=400)
 
 def atualizar_alimento(request):
-    if request.GET.get('id') and request.GET.get('nome'):
-        id_alimento = request.GET.get('id')
-        nome = request.GET.get('nome')
-        id_classificacao = request.GET.get('id_classificacao')
-        
-        try:
-            alimento = Alimento.objects.get(id_alimento=id_alimento)
-            if alimento.nome != nome and Alimento.objects.filter(nome=nome).exists():
-                return js({'alimento': 'Esse nome de alimento já existe'})
-            
-            alimento.nome = nome
-            if id_classificacao:
-                try:
-                    classificacao = Classificacao.objects.get(id_classificacao=id_classificacao)
-                    alimento.id_classificacao = classificacao
-                except Classificacao.DoesNotExist:
-                    return js({'alimento': 'Classificação informada não existe'})
-            alimento.save()
-            return js({'alimento': 'Alimento atualizado com sucesso'})
-        except Alimento.DoesNotExist:
-            return js({'alimento': 'Alimento não encontrado'})
-    return js({'alimento': 'Preciso de um id e um nome'})
+    if request.method == 'POST':
+        id_alimento = request.POST.get('id')
+        nomeAnterior = request.POST.get('nomeAnterior')
+        nome = request.POST.get('nome')
 
-def apagar_alimento(request):
-    if request.GET.get('id'):
-        id_alimento = request.GET.get('id')
-        try:
-            alimento = Alimento.objects.get(id=id_alimento)
-            alimento.delete()
-            return js({'alimento': 'DELETADO'})
-        except Alimento.DoesNotExist:
-            return js({'alimento': 'Alimento não encontrado'})
-    return js({'alimento': 'Preciso de uma id'})
+        id_classificacao = request.POST.get('id_classificacao')
+        alimento = Alimento.objects.get(id=id_alimento)
+        classificacaoAnterior = Classificacao.objects.get(id=alimento.classificacao.id)
+        classificacao = Classificacao.objects.get(id=id_classificacao)
+        print(classificacao.nome, nome, nomeAnterior, classificacaoAnterior.nome)
+        if alimento:
+
+            if nome == nomeAnterior and classificacaoAnterior.nome != classificacao.nome: 
+                alimento.classificacao = classificacao
+                alimento.save()
+                return js({'Mensagem': f'"{classificacaoAnterior.nome}" atualizado para {classificacao.nome}!'}, status=200)
+            elif nome != nomeAnterior and classificacaoAnterior.nome != classificacao.nome:
+                alimento.classificacao = classificacao
+                alimento.nome = nome
+                alimento.save()
+                
+                return js({'Mensagem': f'"{nomeAnterior} - {classificacaoAnterior.nome}" atualizado para "{nome} - {alimento.classificacao.nome}"!'}, status=200)
+            elif nome != nomeAnterior and classificacaoAnterior.nome == classificacao.nome:
+                alimento.nome = nome
+                alimento.save()
+                return js({'Mensagem': f'"{nomeAnterior}" atualizado para {nome}!'}, status=200)
+            else:
+                return js({'Mensagem': 'Náo há o que fazer, dados inalterados!'}, status=400)
+    return js({'Mensagem': 'Alguma coisa deu errado!'}, status=400)
 
 def ativar_alimento(request):
-    id = request.POST.get('id')
-    nome = request.POST.get('nome')
-    print(id)
-    if id:
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nome = request.POST.get('nome')
         item = Alimento.objects.get(id=id)
-        if item.is_active == False:
-            item.is_active = True
-            item.save()
-            return js({'Mensagem': f'"{nome}" ativado com sucesso!'}, status=200)
-        else:
-            return js({'Mensagem': 'Esse alimento ja esta ativo!'}, status=400)
-
+        if item:
+            if item.is_active == False:
+                item.is_active = True
+                item.save()
+                return js({'Mensagem': f'"{nome}" ativado com sucesso!'}, status=200)
+            else:
+                return js({'Mensagem': 'Esse alimento ja esta ativo!'}, status=400)
     else:
         return js({'Mensagem': 'Alguma coisa deu errado'}, status=400)
     
-
 def desativar_alimento(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -294,5 +295,15 @@ def desativar_alimento(request):
                 return js({'Mensagem': f'"{nome}" desativado com sucesso!'}, status=200)
             else:
                 return js({'Mensagem': 'Esse alimento ja esta desativado!'}, status=400)
-
     return js({'Mensagem': 'Alguma coisa deu errado'}, status=400)
+
+def apagar_alimento(request):
+    if request.GET.get('id'):
+        id_alimento = request.GET.get('id')
+        try:
+            alimento = Alimento.objects.get(id=id_alimento)
+            alimento.delete()
+            return js({'alimento': 'DELETADO'})
+        except Alimento.DoesNotExist:
+            return js({'alimento': 'Alimento não encontrado'})
+    return js({'alimento': 'Preciso de uma id'})

@@ -9,28 +9,65 @@ document.body.addEventListener('click', function (evento){
     }else if(botao.classList.contains('ativar-btn')) {
         ativar(dados)
     }else if(botao.classList.contains('update-btn')) {
-        atualizar(dados)
-    }else if(botao.classList.contains('insert-btn')){ // agora é um array real
-        inserir(modalHtml);
+        console.log(dados.dataset.idClassificacao)
+        fetch('/classificacoes_json/')
+            .then(response => response.json())
+            .then(classificacoes => {
+                const optionsHtml = classificacoes.map(n => 
+                `<option value="${n.id}" ${n.id == dados.dataset.idClassificacao ? 'selected' : ''}>
+                    ${n.nome}
+                </option>`).join("");
+
+                const modalHtml = `
+                    <div class="container my-3" style="text-align: start;">
+                        <div class="row">
+                            <div class="container my-3" style="text-align: start;">
+                                <label for="txtNomeAlimento" class="form-label">Nome do alimento</label>
+                                <input id="txtNomeAlimento" class="form-control" type="text" placeholder="Nome do alimento" value="${dados.dataset.nome}">
+                            </div>
+                            <div class="col">
+                                <label for="idClassificacao" class="form-label">Classificação</label>
+                                <select class="form-control" id="idClassificacao">
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                atualizar(dados, modalHtml)
+            })
+            .catch(error => {
+                console.error('Erro ao carregar classificações:', error);
+                Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
+        });
+    }else if(botao.classList.contains('insert-btn')){
+        fetch('/classificacoes_json/')
+            .then(response => response.json())
+            .then(classificacoes => {
+                const optionsHtml = classificacoes.map(n =>
+                    `<option value="${n.id}">${n.nome}</option>`).join("");
+
+                const modalHtml = `
+                    <div class="container my-3" style="text-align: start;">
+                        <div class="row">
+                            <div class="col">
+                                <label for="txtNomeAlimento" class="form-label">Nome do alimento</label>
+                                <input id="txtNomeAlimento" class="form-control" type="text" placeholder="Nome do alimento">
+                            </div>
+                            <div class="col">
+                                <label for="idClassificacao" class="form-label">Classificação</label>
+                                <select class="form-control" id="idClassificacao">
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                inserir(modalHtml);
+            })
+            .catch(error => {
+                console.error('Erro ao carregar classificações:', error);
+                Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
+        });
     }
 });
-// Corpo do modal
-let optionsHtml = classificacoes.map(n => `<option value="${n.nome}">${n.nome}</option>`).join("");
-const modalHtml = `
-    <div class="container my-5" style="text-align: start;">
-        <div class="row">
-            <div class="col">
-                <label for="txtNomeAlimento" class="form-label" >Selecione o nutriente</label>
-                <input id="txtNomeAlimento" class="form-control" type="text" placeholder="Nome do alimento">
-            </div>
-            <div class="col">
-                <label for="floatingSelect">Classificação</label>
-                <select class="form-control" id="floatingSelect">
-                    <option value="Sem classificacao">Escolher mais tarde</option>
-                    ${optionsHtml}
-                </select>
-            </div>
-        </div>
-    </div>
-`;
-

@@ -141,7 +141,6 @@ export function alerta_update(btn) {
     });
 }
 
-
 // 🔒 Ativar Nutriente
 export function alerta_ativar(btn) {
     const url = btn.dataset.url;

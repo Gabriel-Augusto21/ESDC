@@ -1,26 +1,33 @@
 {% load static %}
-<table class="table tabela table-hover">
+<table class="table table-borderless tabela table-hover">
     <thead>
         <tr>
-            <th scope="col">Nome</th>
-            <th scope="col">Classificação</th>
-            <th scope="col">Ações</th>
+            <th>Nome</th>
+            <th>Classificação</th>
+            <th class="text-end">Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for alimento in alimentos %}
-        <tr class="alimentos-row" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}">
-            <td>{{ alimento.nome }}</td>
+        <tr class="container" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}" data-id-classificacao="{{ alimento.classificacao.id }}"
+        {% if alimento.is_active %}
+            style="background-color: #ffffff"
+        {% else %}
+            style="background-color:rgba(190, 190, 190, 0.31)"
+        {% endif %}>
+            <td id="txtNome">{{ alimento.nome }}</td>
             <td>{{alimento.classificacao.nome}}</td>
-            <td>{% if alimento.is_active %}
-                <button class="btn btn-sm desativar-btn" alt="Ativar">
-                    <img src="{% static 'img/unlock.png' %}"  width="20" height="20">{% else %}
-                <button class="btn btn-sm ativar-btn" alt="Desativar">
-                    <img src="{% static 'img/lock.png' %}"  width="20" height="20">
-                {% endif %}</button>
-                {% if alimento.is_active %}
+            
+            <td class="text-end">{% if alimento.is_active %}
                 <button class="btn btn-sm update-btn">
                     <img src="{% static 'img/update.png' %}" alt="Alterar" width="20" height="20">
+                </button>
+                <button class="btn btn-sm desativar-btn" alt="Ativar">
+                    <img src="{% static 'img/visibility.png' %}" width="20">
+                </button>
+                {% else %}
+                <button class="btn btn-sm ativar-btn" alt="Desativar">
+                    <img src="{% static 'img/not_visibility.png' %}" width="20">
                 </button>
                 {% endif %}
             </td>
