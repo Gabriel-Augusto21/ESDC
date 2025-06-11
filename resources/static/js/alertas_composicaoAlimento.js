@@ -1,39 +1,55 @@
-// 🔔 Inserir Nutriente
+// 🔔 Inserir Nutriente com alimentos e nutrientes do banco
 export function alerta_inserir(btn) {
-    Swal.fire({
-        title: 'Inserir Nutriente',
-        html: `
-            <input id="swal-nome" class="swal2-input" placeholder="Nome">
-            <input id="swal-unidade" class="swal2-input" placeholder="Unidade">
-            <input id="swal-categoria" class="swal2-input" placeholder="Categoria (opcional)">
-        `,
-        
-        confirmButtonText: 'Inserir',
-        cancelButtonText: 'Cancelar',
-        showCancelButton: true,
-        focusConfirm: false,
-        preConfirm: () => {
-            const nome = document.getElementById('swal-nome').value.trim();
-            const unidade = document.getElementById('swal-unidade').value.trim();
-            const categoria = document.getElementById('swal-categoria').value.trim();
-            if (!nome || !unidade) {
-                Swal.showValidationMessage('Nome e Unidade são obrigatórios');
-                return false;
-            }
-            return { nome, unidade, categoria };
-        }
-    }).then(result => {
-        if (result.isConfirmed) {
-            const { nome, unidade, categoria } = result.value;
-           const url = `${btn.dataset.url}` +
-            `?nome=${encodeURIComponent(nome)}` +
-            `&unidade=${encodeURIComponent(unidade)}` +
-            `&categoria=${encodeURIComponent(categoria)}`;
+    fetch('/listar_alimentos_nutrientes/')
+        .then(response => response.json())
+        .then(data => {
+            const alimentosOptions = data.alimentos.map(alimento =>
+                `<option value="${alimento.id}">${alimento.nome}</option>`).join('');
 
-            htmx.ajax('GET', url, { swap: 'none' });
-        }
-    });
+            const nutrientesOptions = data.nutrientes.map(nutriente =>
+                `<option value="${nutriente.id}">${nutriente.nome}</option>`).join('');
+
+            Swal.fire({
+                title: 'Inserir Composição de Alimento',
+                html: `
+                    <select id="swal-alimento" class="swal2-select">${alimentosOptions}</select>
+                    <select id="swal-nutriente" class="swal2-select">${nutrientesOptions}</select>
+                    <input id="swal-valor" class="swal2-input" placeholder="Valor">
+                `,
+                confirmButtonText: 'Inserir',
+                cancelButtonText: 'Cancelar',
+                showCancelButton: true,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const alimento_id = document.getElementById('swal-alimento').value;
+                    const nutriente_id = document.getElementById('swal-nutriente').value;
+                    const valor = document.getElementById('swal-valor').value.trim();
+
+                    if (!valor) {
+                        Swal.showValidationMessage('Informe o valor');
+                        return false;
+                    }
+
+                    return { alimento_id, nutriente_id, valor };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const { alimento_id, nutriente_id, valor } = result.value;
+                    const url = `${btn.dataset.url}` +
+                        `?alimento_id=${encodeURIComponent(alimento_id)}` +
+                        `&nutriente_id=${encodeURIComponent(nutriente_id)}` +
+                        `&valor=${encodeURIComponent(valor)}`;
+
+                    htmx.ajax('GET', url, { swap: 'none' });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar alimentos e nutrientes:', error);
+            Swal.fire('Erro', 'Não foi possível carregar alimentos e nutrientes.', 'error');
+        });
 }
+
 
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
@@ -41,14 +57,14 @@ htmx.on("htmx:afterOnLoad", (event) => {
     const path = event.detail.requestConfig.path;
     
     if (resp.Mensagem) {
-        if (path.includes('/atualizar_nutriente') && resp.Mensagem.includes('atualizado com sucesso')) {
+        if (path.includes('/atualizar_composicaoAlimento') && resp.Mensagem.includes('atualizado com sucesso')) {
             Swal.fire({
                 title: 'Tudo certo!',
                 text: resp.Mensagem,
                 icon: 'success',
                 confirmButtonColor: '#3085d6',
             }).then(() => window.location.reload());
-        } else if (path.includes('/inserir_nutriente') && resp.Mensagem.includes('inserido com sucesso')) {
+        } else if (path.includes('/inserir_composicaoAlimento') && resp.Mensagem.includes('inserido com sucesso')) {
             Swal.fire({
                 title: 'Tudo certo!',
                 text: resp.Mensagem,
@@ -84,37 +100,37 @@ htmx.on("htmx:responseError", (event) => {
 // 🔔 Atualizar Nutriente
 export function alerta_update(btn) {
     const id = btn.dataset.id;
-    const nome_antigo = btn.dataset.nome;
-    const unidade_antiga = btn.dataset.unidade;
-    const categoria_antiga = btn.dataset.categoria;
+    const alimento_antigo = btn.dataset.nome;
+    const nutriente_antigo = btn.dataset.unidade;
+    const valor_antigo = btn.dataset.categoria;
 
     Swal.fire({
-        title: 'Atualizar Nutriente',
+        title: 'Atualizar Composição de Alimento',
         html: `
-            <input id="swal-nome" class="swal2-input" placeholder="Nome" value="${nome_antigo}">
-            <input id="swal-unidade" class="swal2-input" placeholder="Unidade" value="${unidade_antiga}">
-            <input id="swal-categoria" class="swal2-input" placeholder="Categoria" value="${categoria_antiga}">
+            <input id="swal-nome" class="swal2-input" placeholder="Alimento" value="${alimento_antigo}">
+            <input id="swal-unidade" class="swal2-input" placeholder="Nutriente" value="${nutriente_antigo}">
+            <input id="swal-categoria" class="swal2-input" placeholder="Valor" value="${valor_antigo}">
         `,
         confirmButtonText: 'Atualizar',
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
-            const nome = document.getElementById('swal-nome').value.trim();
-            const unidade = document.getElementById('swal-unidade').value.trim();
-            const categoria = document.getElementById('swal-categoria').value.trim();
-            if (!nome || !unidade) {
-                Swal.showValidationMessage('Nome e Unidade são obrigatórios');
+            const alimento = document.getElementById('swal-alimento').value.trim();
+            const nutriente = document.getElementById('swal-nutriente').value.trim();
+            const valor = document.getElementById('swal-valor').value.trim();
+            if (!alimento || !nutriente) {
+                Swal.showValidationMessage('Alimento e Nutriente são obrigatórios');
                 return false;
             }
-            return { nome, unidade, categoria };
+            return { alimento, nutriente, valor };
         }
     }).then(result => {
         if (result.isConfirmed) {
-            const { nome, unidade, categoria } = result.value;
-           const url = `/atualizar_nutriente/?id=${id}` +
-            `&nome=${encodeURIComponent(nome)}` +
-            `&unidade=${encodeURIComponent(unidade)}` +
-            `&categoria=${encodeURIComponent(categoria)}`;
+            const { alimento, nutriente, quantidade } = result.value;
+           const url = `/atualizar_composicaoAlimento/?id=${id}` +
+            `&alimento=${encodeURIComponent(alimento)}` +
+            `&nutriente=${encodeURIComponent(nutriente)}` +
+            `&valor=${encodeURIComponent(valor)}`;
 
             htmx.ajax('GET', url, { swap: 'none' })
                 .then(response => {

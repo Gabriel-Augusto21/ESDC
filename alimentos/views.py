@@ -77,12 +77,14 @@ def atualizar_nutriente(request):
     nutriente.save()
     return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
 
+
 def ativar_nutriente(request):
     id = request.GET.get('id')
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.is_active = True
     nutriente.save()
     return js({'Mensagem': f'{nutriente.nome} foi ativado'})
+
 
 def desativar_nutriente(request):
     id = request.GET.get('id')
@@ -328,7 +330,7 @@ def get_composicaoAlimento(request):
                 "id": composicao.id,
                 "alimento": composicao.alimento.nome,
                 "nutriente": composicao.nutriente.nome,
-                "quantidade": composicao.quantidade,
+                "valor": composicao.valor,
             }
             return js(data)
         except ComposicaoAlimento.DoesNotExist:
@@ -346,22 +348,36 @@ def busca_composicaoAlimento_nome(request):
 def inserir_composicaoAlimento(request):
     alimento_id = request.GET.get('alimento_id', '')
     nutriente_id = request.GET.get('nutriente_id', '')
-    quantidade = request.GET.get('quantidade', '')
+    valor = request.GET.get('valor', '')
 
-    if alimento_id and nutriente_id and quantidade:
-        if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
-            return js({'Mensagem': 'Composição de alimento já existe'}, status=400)
-        ComposicaoAlimento.objects.create(alimento_id=alimento_id, nutriente_id=nutriente_id, quantidade=quantidade)
+    if alimento_id and nutriente_id and valor:
+        #if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
+           # return js({'Mensagem': 'Composição de alimento já existe'}, status=400)
+        
+        ComposicaoAlimento.objects.create(
+            alimento_id=alimento_id,
+            nutriente_id=nutriente_id,
+            valor=valor
+        )
+
+        if request.headers.get('HX-Request'):
+            composicoes = ComposicaoAlimento.objects.all().order_by('alimento__nome')[:10]
+            return render(request, 'composicaoAlimento_table.html', {
+                'composicao_alimento': composicoes
+            })
+        
         return js({'Mensagem': 'Composição de alimento inserida com sucesso!'}, status=200)
+    
     return js({'Mensagem': 'Informe nome e unidade'}, status=400)
+
 
 def atualizar_composicaoAlimento(request):
     id = request.GET.get('id')
     alimento_id = request.GET.get('alimento_id')
     nutriente_id = request.GET.get('nutriente_id')
-    quantidade = request.GET.get('quantidade')
+    valor = request.GET.get('valor')
 
-    if not id or not alimento_id or not nutriente_id or not quantidade:
+    if not id or not alimento_id or not nutriente_id or not valor:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
     composicao = get_object_or_404(ComposicaoAlimento, pk=id)
@@ -371,7 +387,7 @@ def atualizar_composicaoAlimento(request):
 
     composicao.alimento_id = alimento_id
     composicao.nutriente_id = nutriente_id
-    composicao.quantidade = quantidade
+    composicao.valor = valor
     composicao.save()
     return js({'Mensagem': 'Composição de alimento atualizada com sucesso!'}, status=200)
 
@@ -409,3 +425,8 @@ def listar_composicaoAlimento(request):
         'page_obj': page_obj,
         'query': query,
     }
+
+def listar_alimentos_nutrientes(request):
+    alimentos = list(Alimento.objects.filter(is_active=True).values('id', 'nome'))
+    nutrientes = list(Nutriente.objects.all().values('id', 'nome'))
+    return js({'alimentos': alimentos, 'nutrientes': nutrientes})

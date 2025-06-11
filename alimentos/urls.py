@@ -39,5 +39,6 @@ urlpatterns = [
    path("desativar_composicaoAlimento/", views.desativar_composicaoAlimento, name="desativar_composicaoAlimento"),
    path("atualizar_composicaoAlimento/", views.atualizar_composicaoAlimento, name="atualizar_composicaoAlimento"),
    path("listar_composicaoAlimento/", views.listar_composicaoAlimento, name="listar_composicaoAlimento"),
+   path('listar_alimentos_nutrientes/', views.listar_alimentos_nutrientes, name='listar_alimentos_nutrientes'),
 
 ]
