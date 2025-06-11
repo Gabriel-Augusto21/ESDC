@@ -11,6 +11,9 @@ class Classificacao(models.Model):
 class Alimento(models.Model):
     classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
     nome = models.CharField(max_length=255, null=False)
+    pb = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ms = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    ed = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
