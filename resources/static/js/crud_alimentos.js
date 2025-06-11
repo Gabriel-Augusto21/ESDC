@@ -9,12 +9,11 @@ document.body.addEventListener('click', function (evento){
     }else if(botao.classList.contains('ativar-btn')) {
         ativar(dados)
     }else if(botao.classList.contains('update-btn')) {
-        console.log(dados.dataset.idClassificacao)
         fetch('/classificacoes_json/')
             .then(response => response.json())
             .then(classificacoes => {
                 const optionsHtml = classificacoes.map(n => 
-                `<option value="${n.id}" ${n.id == dados.dataset.idClassificacao ? 'selected' : ''}>
+                `<option value="${n.id}" ${n.id === parseInt(dados.dataset.idClass) ? 'selected' : ''}>
                     ${n.nome}
                 </option>`).join("");
 
@@ -46,7 +45,6 @@ document.body.addEventListener('click', function (evento){
             .then(classificacoes => {
                 const optionsHtml = classificacoes.map(n =>
                     `<option value="${n.id}">${n.nome}</option>`).join("");
-
                 const modalHtml = `
                     <div class="container my-3" style="text-align: start;">
                         <div class="row">

@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         {% for alimento in alimentos %}
-        <tr class="container" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}" data-id-classificacao="{{ alimento.classificacao.id }}"
+        <tr class="container" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}" data-id-class="{{ alimento.classificacao.id }}"
         {% if alimento.is_active %}
             style="background-color: #ffffff"
         {% else %}

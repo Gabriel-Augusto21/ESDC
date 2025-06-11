@@ -239,34 +239,27 @@ def inserir_alimento(request):
 
 def atualizar_alimento(request):
     if request.method == 'POST':
-        id_alimento = request.POST.get('id')
-        nomeAnterior = request.POST.get('nomeAnterior')
-        nome = request.POST.get('nome')
-
-        id_classificacao = request.POST.get('id_classificacao')
-        alimento = Alimento.objects.get(id=id_alimento)
-        classificacaoAnterior = Classificacao.objects.get(id=alimento.classificacao.id)
-        classificacao = Classificacao.objects.get(id=id_classificacao)
-        print(classificacao.nome, nome, nomeAnterior, classificacaoAnterior.nome)
-        if alimento:
-
-            if nome == nomeAnterior and classificacaoAnterior.nome != classificacao.nome: 
-                alimento.classificacao = classificacao
-                alimento.save()
-                return js({'Mensagem': f'"{classificacaoAnterior.nome}" atualizado para {classificacao.nome}!'}, status=200)
-            elif nome != nomeAnterior and classificacaoAnterior.nome != classificacao.nome:
-                alimento.classificacao = classificacao
-                alimento.nome = nome
-                alimento.save()
-                
-                return js({'Mensagem': f'"{nomeAnterior} - {classificacaoAnterior.nome}" atualizado para "{nome} - {alimento.classificacao.nome}"!'}, status=200)
-            elif nome != nomeAnterior and classificacaoAnterior.nome == classificacao.nome:
-                alimento.nome = nome
-                alimento.save()
-                return js({'Mensagem': f'"{nomeAnterior}" atualizado para {nome}!'}, status=200)
-            else:
-                return js({'Mensagem': 'Náo há o que fazer, dados inalterados!'}, status=400)
-    return js({'Mensagem': 'Alguma coisa deu errado!'}, status=400)
+        idAlimento = int(request.POST.get('id'))
+        nomeAlimento = request.POST.get('nome')
+        idClass = int(request.POST.get('idClass'))
+        alimento = Alimento.objects.get(id=idAlimento)
+        if nomeAlimento == alimento.nome and idClass == alimento.classificacao.id:
+            return js({'Mensagem': "Ambos os dados foram inalterados"}, status=400)
+        if nomeAlimento != alimento.nome and alimento.classificacao.id == idClass:
+            nomeAntigo = alimento.nome
+            alimento.nome = nomeAlimento
+            alimento.save()
+            return js({'Mensagem': f"{nomeAntigo} atualizado para {alimento.nome}"}, status=200)
+        if nomeAlimento == alimento.nome and alimento.classificacao.id != idClass:
+            alimento.classificacao = Classificacao.objects.get(id=idClass)
+            alimento.save()
+            return js({'Mensagem': f"Classificacao do alimento {alimento.nome}, atualizada para {alimento.classificacao.nome}"}, status=200)
+        else:
+            alimento.nome = nomeAlimento
+            alimento.classificacao = Classificacao.objects.get(id=idClass)
+            alimento.save()
+            return js({'Mensagem': "Nome e classificacao do alimento atualizados"}, status=200)
+    return js({'Mensagem': 'erro'}, status=400)
 
 def ativar_alimento(request):
     if request.method == 'POST':
