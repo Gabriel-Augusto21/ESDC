@@ -62,7 +62,6 @@ export function atualizar(elemento, html){
         preConfirm: () => {
             const nome = document.getElementById('txtNomeAlimento').value.trim();
             const idClass = document.getElementById('idClassificacao').value.trim();
-
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
