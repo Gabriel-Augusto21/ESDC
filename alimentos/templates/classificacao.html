@@ -1,27 +1,32 @@
 {% extends 'master.html' %}
 {%load static%}
 {% block conteudo %}
-<div class='container mt-5'>
+<div class='container mt-3'>
+   <h1>Classificação</h1>
    <!-- Formulário de busca -->
    <form method="get" class="form-group row mb-4 d-flex justify-content-center">
-      <div class="col-3">
+   <div class="col-4">
+      <div class="input-group">
          <input class="form-control"
                   id="txtBuscaNomeClassificacao"
                   name="query"
                   value="{{ query }}"
                   type="text"
-                  placeholder="Informe uma classificação...">
+                  placeholder="Informe uma classificação..."
+                  style="border-radius: 20px 0 0 20px;">
+         <div class="input-group-append">
+         <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
+         </div>
       </div>
-      <div class="col-auto">
-         <button type="submit" class="botao">Buscar</button>
-      </div>
+   </div>
+
    </form>
    <!-- Botão de inserir -->
    <div class="form-group row mr-1 justify-content-end">
-      <button type="button" 
-      class="btn btn-sm btn-primary insert-btn"
-      data-url="/inserir_classificacao/"
-      >Inserir Classificação</button>
+      <button type="button" class="botao insert-btn" data-url="/inserir_classificacao/">
+         <img src="{% static 'img/add_circle.png' %}" width="20" style= "margin-right: 3px; filter: brightness(0) invert(1)">
+         Inserir
+      </button>
    </div>
    {% include 'classificacao_table.html' %}
 </div>
