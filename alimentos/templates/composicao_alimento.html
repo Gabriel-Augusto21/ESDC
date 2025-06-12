@@ -1,8 +1,9 @@
+
 {% extends 'master.html' %}
 {% load static %}
 {% block conteudo %}
 <div class="container mt-3">
-   <h1>Composição de Alimentos</h1>
+   <h1>Composição Alimentar</h1>
    <!-- Formulário de busca -->
    <form method="get" class="form-group row mb-4 d-flex justify-content-center">
    <div class="col-4">
@@ -37,16 +38,11 @@
          {% endif %}
       </legend>
     <!-- Tabela -->
-    {% include 'composicaoAlimento_table.html' %}
+    {% include 'composicao_alimento_table.html' %}
     <br>
 </div>
-
 <script>
     const csrf_token = '{{ csrf_token }}';
 </script>
-
-<script src="https://unpkg.com/htmx.org@1.9.5"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script type="module" src="{% static 'js/composicaoAlimento.js' %}"></script>
+<script type="module" src="{% static 'js/composicao_alimento.js' %}"></script>
 {% endblock %}
