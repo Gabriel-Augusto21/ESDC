@@ -21,7 +21,7 @@ class Alimento(models.Model):
 
 class Nutriente(models.Model):
     nome = models.CharField(max_length=255, null=False)
-    categoria = models.CharField(max_length=255, null=True, blank=True)
+    categoria = models.CharField(max_length=255, default="Não categorizado")
     unidade = models.CharField(max_length=100, null=False)
     is_active = models.BooleanField(default=True)
 
