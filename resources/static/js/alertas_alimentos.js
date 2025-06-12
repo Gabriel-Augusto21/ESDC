@@ -153,7 +153,7 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }).then(() => {
             window.location.reload();
         });
-        }else if(resp.Mensagem?.includes('atualizado')){
+        }else if(resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')){
             Swal.fire({
             title: 'Sucesso!',
             text: resp.Mensagem,
