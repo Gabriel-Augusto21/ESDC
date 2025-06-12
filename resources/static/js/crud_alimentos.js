@@ -45,7 +45,6 @@ document.body.addEventListener('click', function (evento){
             .then(classificacoes => {
                 const optionsHtml = classificacoes.map(n =>
                     `<option value="${n.id}">${n.nome}</option>`).join("");
-
                 const modalHtml = `
                     <div class="container my-3" style="text-align: start;">
                         <div class="row">
