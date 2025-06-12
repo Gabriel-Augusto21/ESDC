@@ -5,7 +5,7 @@
             <th>Nome</th>
             <th>Classificação</th>
             <th>PB</th>
-            <th>ES</th>
+            <th>MS</th>
             <th>ED</th>
             <th class="text-end">Ações</th>
         </tr>
@@ -20,9 +20,9 @@
         {% endif %}>
             <td id="txtNome">{{ alimento.nome }}</td>
             <td>{{alimento.classificacao.nome}}</td>
-            <td>{{alimento.classificacao.pb}}</td>
-            <td>{{alimento.classificacao.es}}</td>
-            <td>{{alimento.classificacao.ed}}</td>
+            <td>{{alimento.pb}}</td>
+            <td>{{alimento.ms}}</td>
+            <td>{{alimento.ed}}</td>
             
             <td class="text-end">{% if alimento.is_active %}
                 <button class="btn btn-sm update-btn">
