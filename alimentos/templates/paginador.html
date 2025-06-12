@@ -1,5 +1,5 @@
 <nav aria-label="Page navigation" class="fs-2">
-   <ul class="pagination">
+   <ul class="pagination justify-content-center">
       {% if page_obj.has_previous %}
          <li class="page-item"><a class="page-link" href="?page=1&query={{ query }}">&laquo; primeira</a></li>
          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&query={{ query }}">&lsaquo; anterior</a></li>
