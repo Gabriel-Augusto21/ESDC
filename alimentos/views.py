@@ -25,8 +25,6 @@ def get_nutriente(request):
             data = {
                 "id": nutriente.id,
                 "nome": nutriente.nome,
-                "descricao": nutriente.descricao,
-                # adicione outros campos que desejar
             }
             return js(data)
         except Nutriente.DoesNotExist:
@@ -64,9 +62,12 @@ def atualizar_nutriente(request):
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
     nutriente = get_object_or_404(Nutriente, pk=id)
-
-    if Nutriente.objects.filter(nome=nome).exists():
-        return js({'Mensagem': f'{nome} já existe!'}, status=400)
+    if (
+        nutriente.nome == nome and
+        nutriente.unidade == unidade and
+        (nutriente.categoria or '') == (categoria or '')
+    ):
+        return js({'Mensagem': 'Nenhuma alteração foi feita.'}, status=400)
 
     if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
         return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
@@ -75,6 +76,7 @@ def atualizar_nutriente(request):
     nutriente.unidade = unidade
     nutriente.categoria = categoria or None
     nutriente.save()
+
     return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
 
 
@@ -84,7 +86,6 @@ def ativar_nutriente(request):
     nutriente.is_active = True
     nutriente.save()
     return js({'Mensagem': f'{nutriente.nome} foi ativado'})
-
 
 def desativar_nutriente(request):
     id = request.GET.get('id')
@@ -303,8 +304,18 @@ def apagar_alimento(request):
 
 #COMPOSIÇÃO DE ALIMENTO
 def composicaoAlimento(request):
-    query = request.GET.get('query', '')
-    composicaoAlimento_lista = ComposicaoAlimento.objects.all().order_by('-alimento__is_active', 'alimento__nome')
+    query = request.GET.get('query', '').strip()
+    composicaoAlimento_lista = ComposicaoAlimento.objects.all()
+
+    if query:
+        composicaoAlimento_lista = composicaoAlimento_lista.filter(
+            alimento__nome__icontains=query
+        ) | ComposicaoAlimento.objects.filter(
+            nutriente__nome__icontains=query
+        )
+
+    composicaoAlimento_lista = composicaoAlimento_lista.order_by('-alimento__is_active', 'alimento__nome')
+
     paginator = Paginator(composicaoAlimento_lista, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
 
@@ -344,25 +355,18 @@ def inserir_composicaoAlimento(request):
     valor = request.GET.get('valor', '')
 
     if alimento_id and nutriente_id and valor:
-        #if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
-           # return js({'Mensagem': 'Composição de alimento já existe'}, status=400)
-        
+        if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
+            return js({'Mensagem': 'Composição de alimento já existe!'}, status=400)
+
         ComposicaoAlimento.objects.create(
             alimento_id=alimento_id,
             nutriente_id=nutriente_id,
             valor=valor
         )
 
-        if request.headers.get('HX-Request'):
-            composicoes = ComposicaoAlimento.objects.all().order_by('alimento__nome')[:10]
-            return render(request, 'composicaoAlimento_table.html', {
-                'composicao_alimento': composicoes
-            })
-        
         return js({'Mensagem': 'Composição de alimento inserida com sucesso!'}, status=200)
-    
-    return js({'Mensagem': 'Informe nome e unidade'}, status=400)
 
+    return js({'Mensagem': 'Informe alimento, nutriente e valor'}, status=400)
 
 def atualizar_composicaoAlimento(request):
     id = request.GET.get('id')
@@ -375,7 +379,16 @@ def atualizar_composicaoAlimento(request):
 
     composicao = get_object_or_404(ComposicaoAlimento, pk=id)
 
-    if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
+#Luan info boa descoberta, str é uma função do Python que converte um valor para o tipo string
+    if (str(composicao.alimento_id) == str(alimento_id) and
+        str(composicao.nutriente_id) == str(nutriente_id) and
+        str(composicao.valor) == str(valor)):
+        return js({'Mensagem': 'Nenhuma alteração detectada.'}, status=400)
+
+    if ComposicaoAlimento.objects.filter(
+        alimento_id=alimento_id,
+        nutriente_id=nutriente_id
+    ).exclude(id=id).exists():
         return js({'Mensagem': 'Composição de alimento já existe!'}, status=400)
 
     composicao.alimento_id = alimento_id
