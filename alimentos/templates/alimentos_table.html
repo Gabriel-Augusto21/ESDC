@@ -4,12 +4,15 @@
         <tr>
             <th>Nome</th>
             <th>Classificação</th>
+            <th>MS</th>
+            <th>ED</th>
+            <th>PB</th>
             <th class="text-end">Ações</th>
         </tr>
     </thead>
     <tbody>
         {% for alimento in alimentos %}
-        <tr class="container" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}" data-id-classificacao="{{ alimento.classificacao.id }}"
+        <tr class="container" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}" data-id-class="{{ alimento.classificacao.id }}"
         {% if alimento.is_active %}
             style="background-color: #ffffff"
         {% else %}
@@ -17,6 +20,9 @@
         {% endif %}>
             <td id="txtNome">{{ alimento.nome }}</td>
             <td>{{alimento.classificacao.nome}}</td>
+            <td>{{alimento.ms}}</td>
+            <td>{{alimento.ed}}</td>
+            <td>{{alimento.pb}}</td>
             
             <td class="text-end">{% if alimento.is_active %}
                 <button class="btn btn-sm update-btn">

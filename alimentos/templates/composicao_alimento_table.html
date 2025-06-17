@@ -2,8 +2,8 @@
 <table class="table table-borderless tabela table-hover">
     <thead>
         <tr>
-            <th>Id Alimento</th>
-            <th>Id Nutriente</th>
+            <th>Alimento</th>
+            <th>Nutriente</th>
             <th>Valor</th>
             <th class="text-end">Ações</th>
         </tr>
@@ -54,5 +54,5 @@
 <!-- CSRF Token (pode ser usado com HTMX ou Ajax) -->
 <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
 <!-- Importar SweetAlert2 e HTMX -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<script src="{% static 'js/sweetalert2@11.js'%}"></script>
+<script src="{% static 'js/htmx.js'%}"></script>

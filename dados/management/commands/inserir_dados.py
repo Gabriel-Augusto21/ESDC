@@ -3,7 +3,15 @@ from alimentos.models import Classificacao, Alimento, Nutriente
 import pandas as pd
 import os
 from django.conf import settings
+from decimal import Decimal, InvalidOperation
 
+def tratar_decimal(valor):
+    try:
+        if pd.isna(valor):
+            return Decimal('0')
+        return Decimal(str(valor))
+    except (InvalidOperation, ValueError):
+        return Decimal('0')
 
 class Command(BaseCommand):
    help = "Inserindo dados alimentares"
@@ -30,25 +38,28 @@ class Command(BaseCommand):
       self.stdout.write(self.style.SUCCESS(f"{i} nutrientes adicionados com sucesso"))
       
       # Obtendo a leitura das colunas E:D 
-      dados_excel2 = pd.read_excel(
+      dados_excel2 = pd.read_excel( # Lendo Nome de Alimento e Classificacao
          nome_arquivo,
          sheet_name=nome_tabela,
-         usecols="D:E",
+         usecols="D:E, G:I",
          engine='openpyxl',
-         nrows=145
+         nrows=146
       )
       # Percorrendo o dataframe 
       aux = 0 
-      for i, nome in enumerate(dados_excel2.iloc[:,0].dropna().unique()):
+      for i, nome in enumerate(dados_excel2.iloc[:,0].dropna()):
          classificacao = str(dados_excel2.iloc[i,1]).strip()
+         ms = tratar_decimal(dados_excel2.iloc[i,2])
+         ed = tratar_decimal(dados_excel2.iloc[i,3])
+         pb = tratar_decimal(dados_excel2.iloc[i,4])
          nome = str(nome).strip()
          
          if not Classificacao.objects.filter(nome=classificacao).exists():
-            Classificacao.objects.create(nome=classificacao)#criando uma classificação caso ela não exista
+            Classificacao.objects.create(nome=classificacao)# criando uma classificação caso ela não exista
             aux+=1
 
          classificacao_obj = Classificacao.objects.get(nome=classificacao)
 
-         Alimento.objects.create(nome=nome, classificacao=classificacao_obj)
+         Alimento.objects.create(nome=nome, classificacao=classificacao_obj, pb=pb, ms=ms, ed=ed)
       self.stdout.write(self.style.SUCCESS(f"{aux} categorias adicionadas com sucesso"))
       self.stdout.write(self.style.SUCCESS(f"{i} alimentos adicionados com sucesso"))

@@ -51,9 +51,7 @@ export function desativar(elemento){
     });
 }
 export function atualizar(elemento, html){
-    const nomeAnterior = elemento.dataset.nome;
     const idAlimento = elemento.dataset.id;
-    console.log(idAlimento)
     Swal.fire({
         title: 'Atualizar Alimento',
         html: html,
@@ -63,13 +61,13 @@ export function atualizar(elemento, html){
         focusConfirm: false,
         preConfirm: () => {
             const nome = document.getElementById('txtNomeAlimento').value.trim();
-            const classificacao = document.getElementById('idClassificacao').value.trim();
-
+            const idClass = document.getElementById('idClassificacao').value.trim();
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            return { nome, nomeAnterior, idAlimento, classificacao};
+            console.log(idAlimento, nome, idClass)
+            return { nome, idClass};
         }
     }).then(resp => {
         if (resp.isConfirmed) {
@@ -78,9 +76,8 @@ export function atualizar(elemento, html){
             htmx.ajax('POST', url, {
                 values: {
                     nome: resp.value.nome,
-                    nomeAnterior: nomeAnterior,
                     id: idAlimento,
-                    id_classificacao: resp.value.classificacao
+                    idClass: resp.value.idClass
                 },
                 swap: 'none'
             });
@@ -152,7 +149,7 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }).then(() => {
             window.location.reload();
         });
-        }else if(resp.Mensagem?.includes('atualizado')){
+        }else if(resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')){
             Swal.fire({
             title: 'Sucesso!',
             text: resp.Mensagem,
