@@ -42,21 +42,21 @@ def busca_nutriente_nome(request):
 def inserir_nutriente(request):
     nome = request.GET.get('nome', '')
     unidade = request.GET.get('unidade', '')
-    categoria = request.GET.get('categoria', '')
-
+    classificacao = request.GET.get('classificacao', '')
+    classificacao = Classificacao.objects.get(id=classificacao)
     if nome and unidade:
         if Nutriente.objects.filter(nome__iexact=nome).exists():
-            
             return js({'Mensagem': f'{nome} já existe'}, status=400)
-        Nutriente.objects.create(nome=nome, unidade=unidade, categoria=categoria)
-        return js({'Mensagem': f'{nome} inserido com sucesso!'}, status=400)
+        Nutriente.objects.create(nome=nome, unidade=unidade, classificacao=classificacao)
+        return js({'Mensagem': f'{nome} inserido com sucesso!'}, status=200)
     return js({'Mensagem': 'Informe nome e unidade'}, status=400)
 
 def atualizar_nutriente(request):
     id = request.GET.get('id')
     nome = request.GET.get('nome')
     unidade = request.GET.get('unidade')
-    categoria = request.GET.get('categoria')
+    classificacao = request.GET.get('classificacao')
+    classificacao = Classificacao.objects.get(id=classificacao)
 
     if not id or not nome or not unidade:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
@@ -65,7 +65,7 @@ def atualizar_nutriente(request):
     if (
         nutriente.nome == nome and
         nutriente.unidade == unidade and
-        (nutriente.categoria or '') == (categoria or '')
+        (nutriente.classificacao or '') == (classificacao or '')
     ):
         return js({'Mensagem': 'Nenhuma alteração foi feita.'}, status=400)
 
@@ -74,7 +74,7 @@ def atualizar_nutriente(request):
 
     nutriente.nome = nome
     nutriente.unidade = unidade
-    nutriente.categoria = categoria or None
+    nutriente.classificacao = classificacao or None
     nutriente.save()
 
     return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
@@ -118,7 +118,7 @@ def listar_nutrientes(request):
 # CLASSIFICAÇÃO
 def classificacao(request):
     query = request.GET.get('query', '')
-    classificacoes_lista = Classificacao.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    classificacoes_lista = Classificacao.objects.filter(nome__icontains=query).exclude(nome__iexact="Não Classificado").order_by('-is_active', 'nome')
     paginator = Paginator(classificacoes_lista, getattr(settings, 'NUMBER_GRID_PAGES', 10))
     page_obj = paginator.get_page(request.GET.get('page'))
 
@@ -144,26 +144,18 @@ def inserir_classificacao(req):
 def atualizar_classificacao(req):
     id = req.GET.get('id')
     nome = req.GET.get('nome')
+    if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': 'Erro: Outra classificação já existe com esse nome.'}, status=400)
+
     if id:   
         item = Classificacao.objects.get(id=id)
         item.nome = nome
         item.save()
-        return js({'Mensagem': f'{nome} Atualizado com sucesso!'})
+        return js({'Mensagem': 'Classificação atualizada com sucesso!'}, status=200)
 
     if not id or not nome:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
-    classificacao = get_object_or_404(Classificacao, pk=id)
-
-    if Classificacao.objects.filter(nome=nome).exists():
-        return js({'Mensagem': f'{nome} já existe!'}, status=400)
-
-    if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
-        return js({'Mensagem': 'Erro: Outra classificação já existe com esse nome.'}, status=400)
-
-    classificacao.nome = nome
-    classificacao.save()
-    return js({'Mensagem': 'Classificação atualizada com sucesso!'}, status=200)
 
 def ativar_classificacao(req):
    teste = req.GET.get('id')
@@ -216,7 +208,7 @@ def alimentos(request):
     return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
 
 def classificacoes_json(request):
-    classificacoes = list(Classificacao.objects.filter(is_active=True).values('id', 'nome'))
+    classificacoes = list(Classificacao.objects.all().values('id', 'nome'))
     return js(classificacoes, safe=False)
 
 def busca_alimento_nome(request):

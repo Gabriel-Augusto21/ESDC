@@ -6,7 +6,7 @@ class Classificacao(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-     return f"Nome = {self.nome})"
+     return self.nome
     
 class Alimento(models.Model):
     classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
@@ -21,7 +21,7 @@ class Alimento(models.Model):
 
 class Nutriente(models.Model):
     nome = models.CharField(max_length=255, null=False)
-    categoria = models.CharField(max_length=255, default="Não categorizado")
+    classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
     unidade = models.CharField(max_length=100, null=False)
     is_active = models.BooleanField(default=True)
 

@@ -17,7 +17,7 @@
             style="background-color:rgba(190, 190, 190, 0.31)"
         {% endif %}>
             <td>{{ nutriente.nome }}</td>
-            <td>{{ nutriente.categoria }}</td>
+            <td>{{ nutriente.classificacao }}</td>
             <td>{{ nutriente.unidade }}</td>
             <td class="text-end">
                 {% if nutriente.is_active %}
@@ -25,7 +25,7 @@
                         data-id="{{ nutriente.id }}"
                         data-nome="{{ nutriente.nome|escapejs }}"
                         data-unidade="{{ nutriente.unidade|escapejs }}"
-                        data-categoria="{{ nutriente.categoria|default_if_none:''|escapejs }}">
+                        data-classificacao="{{ nutriente.classificacao.id|default_if_none:''|escapejs }}">
                         <img src="{% static 'img/update.png' %}" width="20">
                     </button>
                     <button class="btn btn-sm desativar-btn"
