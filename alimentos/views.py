@@ -3,6 +3,15 @@ from alimentos.models import Classificacao, Alimento, Nutriente, ComposicaoAlime
 from django.http import  JsonResponse as js
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.forms.models import model_to_dict
+from decimal import Decimal, InvalidOperation
+
+def safe_decimal(valor, default=Decimal('0')):
+    try:
+        # Pode vir como string, então converter para Decimal
+        return Decimal(valor)
+    except (InvalidOperation, TypeError):
+        return default
 
 # NUTRIENTES
 def nutrientes(request):
@@ -78,7 +87,6 @@ def atualizar_nutriente(request):
     nutriente.save()
 
     return js({'Mensagem': 'Nutriente atualizado com sucesso!'}, status=200)
-
 
 def ativar_nutriente(request):
     id = request.GET.get('id')
@@ -156,7 +164,6 @@ def atualizar_classificacao(req):
     if not id or not nome:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
-
 def ativar_classificacao(req):
    teste = req.GET.get('id')
    if teste:
@@ -191,41 +198,54 @@ def listar_classificacoes(request):
         'page_obj': page_obj,
         'query': query,
     }
-    
-    
+   
 # ALIMENTOS
 def alimentos(request):
-    alimentos_lista = Alimento.objects.all().order_by('-is_active','nome')
-    # alimentos_lista = Alimento.objects.all().order_by('nome')
+    query = request.GET.get('query', '')
+    alimentos_lista = Alimento.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
     paginator = Paginator(alimentos_lista, 10)
-    numero_pagina = request.GET.get('page')
-    page_obj = paginator.get_page(numero_pagina)
-    if request.method == 'GET':
-        nome = request.GET.get('txtBuscaNome')
-        print('O cara disse:', nome)
-        # alimento = Alimento.objects.get(nome)
-        return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
-    return render(request, 'alimentos.html', {"alimentos": page_obj, "page_obj": page_obj})
+    page_obj = paginator.get_page(request.GET.get('page'))
+    
+    return render(request, 'alimentos.html', {
+        'alimentos': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
+
+def alimento_json(request):
+    id = request.GET.get('id')
+    try:
+        alimento = Alimento.objects.get(id=id)
+        alimento_dict = model_to_dict(alimento)
+        return js(alimento_dict)
+    except Alimento.DoesNotExist:
+        return js({'error': 'Alimento não encontrado'}, status=404)
+    except Exception as e:
+        return js({'error': str(e)}, status=500)
 
 def classificacoes_json(request):
     classificacoes = list(Classificacao.objects.all().values('id', 'nome'))
     return js(classificacoes, safe=False)
 
 def busca_alimento_nome(request):
-   if request.GET.get('nome'):
-      alimento = Alimento.objects.filter(nome=request.GET.get('nome'))
-      if not alimento.exists():
-         return js({'alimentos': 'Não existe'})
-      return js({'alimentos': list(alimento.values())})
-   return js({'alimento': 'Informe um nome'})
+    nome = request.GET.get('nome', '')
+    if nome:
+        nutrientes = Nutriente.objects.filter(nome__icontains=nome)
+        if nutrientes.exists():
+            return js({'nutrientes': list(nutrientes.values())})
+        return js({'mensagem': 'Nutriente não encontrado'})
+    return js({'mensagem': 'Informe um nome para busca'}, status=400)
 
 def inserir_alimento(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         classificacao = request.POST.get('id_classificacao')
+        ms = request.POST.get('ms')
+        ed = request.POST.get('ed')
+        pb = request.POST.get('pb')
         if not Alimento.objects.filter(nome=nome).exists():
             item = Classificacao.objects.get(id=classificacao)
-            Alimento.objects.create(nome=nome, classificacao=item)
+            Alimento.objects.create(nome=nome, classificacao=item, ms=ms, ed=ed, pb=pb)
             return js({'Mensagem': f'"{nome}" inserido com sucesso!'}, status=200)
         return js({'Mensagem': "Alimento já existente na base de dados!"}, status=400)
 
@@ -234,23 +254,59 @@ def atualizar_alimento(request):
         idAlimento = int(request.POST.get('id'))
         nomeAlimento = request.POST.get('nome')
         idClass = int(request.POST.get('idClass'))
+        ms = safe_decimal(request.POST.get('ms'))
+        ed = safe_decimal(request.POST.get('ed'))
+        pb = safe_decimal(request.POST.get('pb'))
+
         alimento = Alimento.objects.get(id=idAlimento)
-        if nomeAlimento == alimento.nome and idClass == alimento.classificacao.id:
-            return js({'Mensagem': "Ambos os dados foram inalterados"}, status=400)
-        if nomeAlimento != alimento.nome and alimento.classificacao.id == idClass:
+
+        # Verifica se todos os dados são iguais (nome, classificação, ms, ed, pb)
+        if (nomeAlimento == alimento.nome and
+            idClass == alimento.classificacao.id and
+            ms == alimento.ms and
+            ed == alimento.ed and
+            pb == alimento.pb):
+            return js({'Mensagem': "Nenhum dado foi alterado"}, status=200)
+
+        # Atualiza nome se mudou e classificação não mudou
+        if (nomeAlimento != alimento.nome and idClass == alimento.classificacao.id and
+            (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
+            alimento.ms = ms
+            alimento.ed = ed
+            alimento.pb = pb
             nomeAntigo = alimento.nome
             alimento.nome = nomeAlimento
             alimento.save()
             return js({'Mensagem': f"{nomeAntigo} atualizado para {alimento.nome}"}, status=200)
-        if nomeAlimento == alimento.nome and alimento.classificacao.id != idClass:
+
+        # Atualiza classificação se mudou e nome não mudou
+        if (nomeAlimento == alimento.nome and idClass != alimento.classificacao.id and
+            (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
+            alimento.ms = ms
+            alimento.ed = ed
+            alimento.pb = pb
             alimento.classificacao = Classificacao.objects.get(id=idClass)
             alimento.save()
-            return js({'Mensagem': f"Classificacao do alimento {alimento.nome}, atualizada para {alimento.classificacao.nome}"}, status=200)
-        else:
-            alimento.nome = nomeAlimento
-            alimento.classificacao = Classificacao.objects.get(id=idClass)
+            return js({'Mensagem': f"Classificação do alimento {alimento.nome} atualizada para {alimento.classificacao.nome}"}, status=200)
+
+        # Atualiza ms, ed e pb se algum deles mudou (mantendo nome e classificação iguais)
+        if (nomeAlimento == alimento.nome and idClass == alimento.classificacao.id and
+            (ms != alimento.ms or ed != alimento.ed or pb != alimento.pb)):
+            alimento.ms = ms
+            alimento.ed = ed
+            alimento.pb = pb
             alimento.save()
-            return js({'Mensagem': "Nome e classificacao do alimento atualizados"}, status=200)
+            return js({'Mensagem': f"Valores gerais atualizados"}, status=200)
+
+        # Caso nome e classificação tenham mudado, atualiza tudo junto (incluindo ms, ed e pb)
+        alimento.nome = nomeAlimento
+        alimento.classificacao = Classificacao.objects.get(id=idClass)
+        alimento.ms = ms
+        alimento.ed = ed
+        alimento.pb = pb
+        alimento.save()
+        return js({'Mensagem': "Nome, classificação e valores nutricionais atualizados"}, status=200)
+
     return js({'Mensagem': 'erro'}, status=400)
 
 def ativar_alimento(request):
@@ -292,7 +348,6 @@ def apagar_alimento(request):
         except Alimento.DoesNotExist:
             return js({'alimento': 'Alimento não encontrado'})
     return js({'alimento': 'Preciso de uma id'})
-
 
 #COMPOSIÇÃO DE ALIMENTO
 def composicaoAlimento(request):
