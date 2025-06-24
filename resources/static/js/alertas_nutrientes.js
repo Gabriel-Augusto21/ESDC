@@ -1,38 +1,38 @@
 // 🔔 Inserir Nutriente
 export function alerta_inserir(btn) {
-    Swal.fire({
-        title: 'Inserir Nutriente',
-        html: `
-            <input id="swal-nome" class="swal2-input" placeholder="Nome">
-            <input id="swal-unidade" class="swal2-input" placeholder="Unidade">
-            <input id="swal-categoria" class="swal2-input" placeholder="Categoria (opcional)">
-        `,
-        
-        confirmButtonText: 'Inserir',
-        cancelButtonText: 'Cancelar',
-        showCancelButton: true,
-        focusConfirm: false,
-        preConfirm: () => {
-            const nome = document.getElementById('swal-nome').value.trim();
-            const unidade = document.getElementById('swal-unidade').value.trim();
-            const categoria = document.getElementById('swal-categoria').value.trim();
-            if (!nome || !unidade) {
-                Swal.showValidationMessage('Nome e Unidade são obrigatórios');
-                return false;
+        Swal.fire({
+            title: 'Inserir Nutriente',
+            html: `
+                <input id="swal-nome" class="swal2-input" placeholder="Nome">
+                <input id="swal-unidade" class="swal2-input" placeholder="Unidade">
+                <input id="swal-categoria" class="swal2-input" placeholder="Categoria (opcional)">
+            `,
+            
+            confirmButtonText: 'Inserir',
+            cancelButtonText: 'Cancelar',
+            showCancelButton: true,
+            focusConfirm: false,
+            preConfirm: () => {
+                const nome = document.getElementById('swal-nome').value.trim();
+                const unidade = document.getElementById('swal-unidade').value.trim();
+                const categoria = document.getElementById('swal-categoria').value.trim();
+                if (!nome || !unidade) {
+                    Swal.showValidationMessage('Nome e Unidade são obrigatórios');
+                    return false;
+                }
+                return { nome, unidade, categoria };
             }
-            return { nome, unidade, categoria };
-        }
-    }).then(result => {
-        if (result.isConfirmed) {
-            const { nome, unidade, categoria } = result.value;
-           const url = `${btn.dataset.url}` +
-            `?nome=${encodeURIComponent(nome)}` +
-            `&unidade=${encodeURIComponent(unidade)}` +
-            `&categoria=${encodeURIComponent(categoria)}`;
+        }).then(result => {
+            if (result.isConfirmed) {
+                const { nome, unidade, categoria } = result.value;
+            const url = `${btn.dataset.url}` +
+                `?nome=${encodeURIComponent(nome)}` +
+                `&unidade=${encodeURIComponent(unidade)}` +
+                `&categoria=${encodeURIComponent(categoria)}`;
 
-            htmx.ajax('GET', url, { swap: 'none' });
-        }
-    });
+                htmx.ajax('GET', url, { swap: 'none' });
+            }
+        });
 }
 
 // Inserção bem sucedida
