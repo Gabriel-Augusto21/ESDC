@@ -42,7 +42,13 @@ export function alerta_inserir(btn) {
                 `,
                 
                 confirmButtonText: 'Inserir',
+                confirmButtonColor: '#2f453a',
                 cancelButtonText: 'Cancelar',
+                cancelButtonColor: '#FF0000',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                    cancelButton: 'botao-cancela-alerta',
+                },
                 showCancelButton: true,
                 focusConfirm: false,
                 preConfirm: () => {
@@ -168,6 +174,13 @@ export function alerta_update(btn) {
             </div>
         `,
         confirmButtonText: 'Atualizar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
@@ -222,14 +235,18 @@ export function alerta_update(btn) {
 export function alerta_ativar(btn) {
     const url = btn.dataset.url;
     Swal.fire({
-        title: 'Tem certeza que deseja ativar esse Nutriente?',
+        title: 'Tem certeza que deseja ativar esse nutriente?',
         text: 'Você poderá desfazer isso mais tarde!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#32CD32',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, ativar',
-        cancelButtonText: 'Cancelar'
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#ff0000',
+        confirmButtonText: 'Sim, ativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(result => {
         if (result.isConfirmed) {
                htmx.ajax('GET', url, { 
@@ -251,14 +268,18 @@ export function alerta_ativar(btn) {
 export function alerta_desativar(btn) {
     const url = btn.dataset.url;
     Swal.fire({
-        title: 'Tem certeza que deseja desativar esse Nutriente?',
+        title: 'Tem certeza que deseja desativar esse nutriente?',
         text: 'Você poderá desfazer isso mais tarde!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#FF0000',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, desativar',
-        cancelButtonText: 'Cancelar'
+        confirmButtonColor: '##2f453a',
+        cancelButtonColor: '#ff0000',
+        confirmButtonText: 'Sim, desativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(result => {
         if (result.isConfirmed) {
             htmx.ajax('GET', url, { swap: 'none' });

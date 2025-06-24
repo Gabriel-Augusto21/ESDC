@@ -18,6 +18,10 @@ export function alerta_inserir(btn) {
                 `,
                 confirmButtonText: 'Inserir',
                 cancelButtonText: 'Cancelar',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                    cancelButton: 'botao-cancela-alerta',
+                },
                 showCancelButton: true,
                 focusConfirm: false,
                 preConfirm: () => {
@@ -172,8 +176,16 @@ export function alerta_ativar(btn) {
         showCancelButton: true,
         confirmButtonColor: '#32CD32',
         cancelButtonColor: '#3085d6',
+        customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                    cancelButton: 'botao-cancela-alerta',
+                },
         confirmButtonText: 'Sim, ativar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(result => {
         if (result.isConfirmed) {
                htmx.ajax('GET', url, { 
@@ -184,6 +196,9 @@ export function alerta_ativar(btn) {
                 text: 'Esse nutriente agora está ativo!',
                 icon: 'success',
                 confirmButtonColor: '#3085d6',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => {
                window.location.reload();
             });
@@ -202,7 +217,11 @@ export function alerta_desativar(btn) {
         confirmButtonColor: '#FF0000',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Sim, desativar',
-        cancelButtonText: 'Cancelar'
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(result => {
         if (result.isConfirmed) {
             htmx.ajax('GET', url, { swap: 'none' });

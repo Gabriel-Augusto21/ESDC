@@ -21,17 +21,17 @@
             <td>{{ nutriente.unidade }}</td>
             <td class="text-end">
                 {% if nutriente.is_active %}
-                <button class="btn btn-sm update-btn"
-                        data-id="{{ nutriente.id }}"
-                        data-nome="{{ nutriente.nome|escapejs }}"
-                        data-unidade="{{ nutriente.unidade|escapejs }}"
-                        data-classificacao="{{ nutriente.classificacao.id|default_if_none:''|escapejs }}">
-                        <img src="{% static 'img/update.png' %}" width="20">
-                    </button>
                     <button class="btn btn-sm desativar-btn"
                         data-id="{{ nutriente.id }}"
                         data-url="{% url 'alimentos:desativar_nutriente' %}?id={{ nutriente.id }}">
                         <img src="{% static 'img/visibility.png' %}" width="20">
+                    </button>
+                    <button class="btn btn-sm update-btn"
+                        data-id="{{ nutriente.id }}"
+                        data-nome="{{ nutriente.nome|escapejs }}"
+                        data-unidade="{{ nutriente.unidade|escapejs }}"
+                        data-classificacao="{{ nutriente.classificacao.id|default_if_none:''|escapejs }}">
+                        <img src="{% static 'img/edit.png' %}" width="20">
                     </button>
                 {% else %}
                     <button class="btn btn-sm ativar-btn"

@@ -1,13 +1,17 @@
 export function ativar(elemento){
     Swal.fire({
-        title: 'Tem certeza que deseja ativar essa Alimento?',
+        title: 'Tem certeza que deseja desativar esse alimento?',
         text: "Você poderá desfazer isso mais tarde!",
         icon: 'warning',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Sim, ativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
         showCancelButton: true,
-        confirmButtonColor: '#32CD32',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, ativar',
-        cancelButtonText: 'Cancelar'
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/ativar_alimento/';
@@ -26,14 +30,18 @@ export function ativar(elemento){
 }
 export function desativar(elemento){
     Swal.fire({
-        title: 'Tem certeza que deseja desativar ess Alimento?',
+        title: 'Tem certeza que deseja desativar esse alimento?',
         text: "Você poderá desfazer isso mais tarde!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#FF0000',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, desativar',
-        cancelButtonText: 'Cancelar'
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Sim, desativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/desativar_alimento/';
@@ -56,7 +64,13 @@ export function atualizar(html, alimento){
         title: 'Atualizar Alimento',
         html: html,
         confirmButtonText: 'Atualizar',
+        confirmButtonColor: '#2f453a',
         cancelButtonText: 'Cancelar',
+        cancelButtonColor: '#FF0000',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
@@ -104,16 +118,16 @@ export function atualizar(html, alimento){
 export function inserir(modalHtml){
     swal.fire({
         width: '700px',
-        title: "Inserir Alimentos",
+        title: "Inserir Alimento",
         html: modalHtml,
         showCancelButton: true,
         cancelButtonText: "Cancelar",
-        confirmButtonColor: '#32CD32',
+        confirmButtonColor: '#2f453a',
         customClass: {
-            title: 'titulo-customizado',
             confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
         },
-        cancelButtonColor: '#3085d6',
+        cancelButtonColor: '#FF0000',
         confirmButtonText: 'Inserir',
         preConfirm: () => {
             const popup = Swal.getPopup();
