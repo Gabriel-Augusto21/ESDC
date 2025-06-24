@@ -27,52 +27,18 @@ export function alerta_inserir(btn) {
     });
 }
 
-// Inserção bem sucedida
-htmx.on("htmx:afterOnLoad", (event) => {
-   const resp = JSON.parse(event.detail.xhr.response);
-   if (resp.Mensagem?.includes("inserido com sucesso")) {
-      Swal.fire({
-         title: 'Sucesso!',
-         text: resp.Mensagem,
-         icon: 'success',
-         confirmButtonColor: '#3085d6',
-      }).then(() => {
-         window.location.reload();
-      });
-   }
-});
-// Erro de inserção
-htmx.on("htmx:responseError", (event) => {
-   const status = event.detail.xhr.status;
-   const resp = JSON.parse(event.detail.xhr.response);
-
-   if (status === 400 && resp.Mensagem?.includes("já existe")) {
-      Swal.fire({
-         title: 'Erro!',
-         text: resp.Mensagem,
-         icon: 'error',
-         confirmButtonColor: '#3085d6',
-      });
-   } else {
-      Swal.fire({
-         title: 'Erro inesperado',
-         text: 'Algo deu errado. Tente novamente mais tarde.',
-         icon: 'error',
-         confirmButtonColor: '#3085d6',
-      });
-   }
-});
 
 // 🔁 Atualizar Classificação
 export function alerta_update(btn) {
     const id = btn.dataset.id;
     const tr = btn.closest('tr');
-    const nomeAntigo = tr.querySelector('#txtNome')?.textContent.trim() || '';
+    // const nomeAntigo = tr.querySelector('#txtNome')?.textContent.trim() || '';
+    const nomeAntigo = btn.dataset.nome;
 
     Swal.fire({
         title: 'Atualizar Classificação',
         html: `
-            <input id="swal-nome" class="swal2-input" placeholder="Nome da Classificação" value="${nomeAntigo}">
+            <input id="swal-nome" class="swal2-input" value="${nomeAntigo}">
         `,
         confirmButtonText: 'Atualizar',
         cancelButtonText: 'Cancelar',
@@ -187,3 +153,48 @@ export function alerta_desativar(desativar_btn){
       }
    });
 }
+
+// Inserção bem sucedida
+htmx.on("htmx:afterOnLoad", (event) => {
+    const resp = JSON.parse(event.detail.xhr.response);
+    if (resp.Mensagem?.includes("inserido com sucesso")) {
+        Swal.fire({
+            title: 'Sucesso!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+        }).then(() => {
+            window.location.reload();
+        });
+    }else if(resp.Mensagem.includes('atualizada com sucesso!')) {
+        Swal.fire({
+            title: 'Tudo certo!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+        }).then(() =>{
+            window.location.reload()
+        });
+    }
+});
+// Erro de inserção
+htmx.on("htmx:responseError", (event) => {
+   const status = event.detail.xhr.status;
+   const resp = JSON.parse(event.detail.xhr.response);
+
+   if (status === 400 && resp.Mensagem?.includes("já existe")) {
+      Swal.fire({
+         title: 'Erro!',
+         text: resp.Mensagem,
+         icon: 'error',
+         confirmButtonColor: '#3085d6',
+      });
+   } else {
+      Swal.fire({
+         title: 'Erro inesperado',
+         text: 'Algo deu errado. Tente novamente mais tarde.',
+         icon: 'error',
+         confirmButtonColor: '#3085d6',
+      });
+   }
+});

@@ -50,9 +50,9 @@ export function desativar(elemento){
         }
     });
 }
-export function atualizar(elemento, html){
-    const idAlimento = elemento.dataset.id;
+export function atualizar(html, alimento){
     Swal.fire({
+        width: '700px',
         title: 'Atualizar Alimento',
         html: html,
         confirmButtonText: 'Atualizar',
@@ -60,33 +60,48 @@ export function atualizar(elemento, html){
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
-            const nome = document.getElementById('txtNomeAlimento').value.trim();
-            const idClass = document.getElementById('idClassificacao').value.trim();
+            const popup = Swal.getPopup();
+            const nome = popup.querySelector('#txtNome').value.trim();
+            const idClass = popup.querySelector('#idClassificacao').value.trim();
+            const normalizeNumber = (str) => str.replace(',', '.');
+            const ms = normalizeNumber(popup.querySelector('#txtMs').value.trim());
+            const ed = normalizeNumber(popup.querySelector('#txtEd').value.trim());
+            const pb = normalizeNumber(popup.querySelector('#txtPb').value.trim());
+            if (isNaN(ms) || isNaN(ed) || isNaN(pb)) {
+            Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+            return false;
+            }
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            console.log(idAlimento, nome, idClass)
-            return { nome, idClass};
+            return { nome, idClass, ms, ed, pb};
         }
     }).then(resp => {
         if (resp.isConfirmed) {
-            console.log("A atualizar: ", resp.value.nome);
             const url = '/atualizar_alimento/';
             htmx.ajax('POST', url, {
                 values: {
                     nome: resp.value.nome,
-                    id: idAlimento,
-                    idClass: resp.value.idClass
+                    id: alimento.id,
+                    idClass: resp.value.idClass,
+                    ms: resp.value.ms,
+                    ed: resp.value.ed,
+                    pb: resp.value.pb
                 },
-                swap: 'none'
+                swap: 'none',
+                // callback para erros:
+                error: function(xhr) {
+                    console.error('Erro ao atualizar alimento:', xhr.status, xhr.responseText);
+                    alert('Erro: ' + xhr.responseText);
+                }
             });
         }else{
             console.log("O usuário deseja cancelar")
         }
     });
 }
-export function inserir(classificacoes, modalHtml){
+export function inserir(modalHtml){
     swal.fire({
         width: '700px',
         title: "Inserir Alimentos",
@@ -101,25 +116,36 @@ export function inserir(classificacoes, modalHtml){
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Inserir',
         preConfirm: () => {
-            const nome = document.getElementById('txtNomeAlimento').value.trim();
-            const classificacao = document.getElementById('idClassificacao').value.trim();
+            const popup = Swal.getPopup();
+            const nome = popup.querySelector('#txtNome').value.trim();
+            const idClass = popup.querySelector('#idClassificacao').value.trim();
+            const normalizeNumber = (str) => str.replace(',', '.');
+            const ms = normalizeNumber(popup.querySelector('#txtMs').value.trim());
+            const ed = normalizeNumber(popup.querySelector('#txtEd').value.trim());
+            const pb = normalizeNumber(popup.querySelector('#txtPb').value.trim());
+            if (isNaN(ms) || isNaN(ed) || isNaN(pb)) {
+                Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+                return false;
+            }
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            return { nome, classificacao };
+            console.log(nome, idClass, ms, ed, pb)
+            return { nome, idClass, ms, ed, pb};
         }
     }).then((resp) => {
         if (resp.isConfirmed) {
             htmx.ajax('POST', '/inserir_alimento/', {
                 values: {
                     nome: resp.value.nome,
-                    id_classificacao: resp.value.classificacao
+                    id_classificacao: resp.value.idClass,
+                    ms: resp.value.ms,
+                    ed: resp.value.ed,
+                    pb: resp.value.pb
                 },
                 swap: 'none'
             });
-        } else {
-            console.log("O usuário cancelou a ação");
         }
     });
 }
@@ -160,6 +186,15 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }).then(() => {
             window.location.reload();
         });
+        }else if (resp.Mensagem?.includes("alterado")) {
+        Swal.fire({
+            title: 'Erro!',
+            text: resp.Mensagem,
+            icon: 'error',
+            confirmButtonColor: '#3085d6',
+        }).then(() => {
+            window.location.reload();
+        });
         }else if (resp.Mensagem?.includes('inserido')) {
             Swal.fire({
                 title: 'Sucesso!',
@@ -174,6 +209,7 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }
     }
 });
+
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation(); // Evita que o erro suba
     const status = event.detail.xhr.status;
@@ -186,7 +222,7 @@ htmx.on("htmx:responseError", (event) => {
             icon: 'error',
             confirmButtonColor: '#3085d6',
         });
-    }else if (status === 400 && resp.Mensagem?.includes("inalterados")) {
+    }else if (status === 400 && resp.Mensagem?.includes("alterado")) {
         Swal.fire({
             title: 'Erro!',
             text: resp.Mensagem,

@@ -3,43 +3,68 @@ document.body.addEventListener('click', function (evento){
     const botao = evento.target.closest('button');
     if (!botao) return;
     const dados = evento.target.closest('tr');
-    evento.preventDefault()
     if (botao.classList.contains('desativar-btn')) {
+        evento.preventDefault()
         desativar(dados);
     }else if(botao.classList.contains('ativar-btn')) {
+        evento.preventDefault()    
         ativar(dados)
     }else if(botao.classList.contains('update-btn')) {
-        fetch('/classificacoes_json/')
-            .then(response => response.json())
-            .then(classificacoes => {
-                const optionsHtml = classificacoes.map(n => 
+        evento.preventDefault()
+        const id_alimento = botao.id
+        fetch(`/alimento_json/?id=${id_alimento}`)
+        .then(response => response.json())
+        .then(alimento => {
+            return fetch('/classificacoes_json/') 
+                .then(response => response.json())
+                .then(classificacoes => ({ alimento, classificacoes }));
+        })
+        .then(({ alimento, classificacoes }) => {
+            const optionsHtml = classificacoes.map(n => 
                 `<option value="${n.id}" ${n.id === parseInt(dados.dataset.idClass) ? 'selected' : ''}>
                     ${n.nome}
-                </option>`).join("");
+                </option>`
+            ).join('');
+            const modalHtml = `
+                <div class="container my-3" style="text-align: start;">
+                    <div class="row mb-4">
+                        <div class="col" style="text-align: start;">
+                            <label for="txtNome" class="form-label">Nome do alimento</label>
+                            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" value="${alimento.nome}">
+                        </div>
+                        <div class="col">
+                            <label for="idClassificacao" class="form-label">Classificação</label>
+                            <select class="form-control" id="idClassificacao">
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                    </div>
 
-                const modalHtml = `
-                    <div class="container my-3" style="text-align: start;">
-                        <div class="row">
-                            <div class="container my-3" style="text-align: start;">
-                                <label for="txtNomeAlimento" class="form-label">Nome do alimento</label>
-                                <input id="txtNomeAlimento" class="form-control" type="text" placeholder="Nome do alimento" value="${dados.dataset.nome}">
+                    <div class="row ">
+                        <div class="col">
+                            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+                            <div class="d-flex align-items-center">
+                                <input id="txtMs" class="form-control me-2" type="text" placeholder="Valor" value="${alimento.ms}">
                             </div>
-                            <div class="col">
-                                <label for="idClassificacao" class="form-label">Classificação</label>
-                                <select class="form-control" id="idClassificacao">
-                                    ${optionsHtml}
-                                </select>
+                        </div>
+                        <div class="col">
+                            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+                            <div class="d-flex align-items-center">
+                                <input id="txtEd" class="form-control me-2" type="text" placeholder="Valor" value="${alimento.ed}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+                            <div class="d-flex align-items-center">
+                                <input id="txtPb" class="form-control me-2" type="text" placeholder="Valor" value="${alimento.pb}">
                             </div>
                         </div>
                     </div>
-                `;
-                atualizar(dados, modalHtml)
-            })
-            .catch(error => {
-                console.error('Erro ao carregar classificações:', error);
-                Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
-        });
+                </div>`;
+            atualizar(modalHtml, alimento);
+        })
     }else if(botao.classList.contains('insert-btn')){
+        evento.preventDefault()
         fetch('/classificacoes_json/')
             .then(response => response.json())
             .then(classificacoes => {
@@ -47,20 +72,40 @@ document.body.addEventListener('click', function (evento){
                     `<option value="${n.id}">${n.nome}</option>`).join("");
                 const modalHtml = `
                     <div class="container my-3" style="text-align: start;">
-                        <div class="row">
-                            <div class="col">
-                                <label for="txtNomeAlimento" class="form-label">Nome do alimento</label>
-                                <input id="txtNomeAlimento" class="form-control" type="text" placeholder="Nome do alimento">
+                    <div class="row mb-4">
+                        <div class="col" style="text-align: start;">
+                            <label for="txtNome" class="form-label">Nome do alimento</label>
+                            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento">
+                        </div>
+                        <div class="col">
+                            <label for="idClassificacao" class="form-label">Classificação</label>
+                            <select class="form-control" id="idClassificacao">
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row ">
+                        <div class="col">
+                            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+                            <div class="d-flex align-items-center">
+                                <input id="txtMs" class="form-control me-2" type="text" placeholder="Valor" value="0.00">
                             </div>
-                            <div class="col">
-                                <label for="idClassificacao" class="form-label">Classificação</label>
-                                <select class="form-control" id="idClassificacao">
-                                    ${optionsHtml}
-                                </select>
+                        </div>
+                        <div class="col">
+                            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+                            <div class="d-flex align-items-center">
+                                <input id="txtEd" class="form-control me-2" type="text" placeholder="Valor" value="0.00">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+                            <div class="d-flex align-items-center">
+                                <input id="txtPb" class="form-control me-2" type="text" placeholder="Valor" value="0.00">
                             </div>
                         </div>
                     </div>
-                `;
+                </div>`;
                 inserir(modalHtml);
             })
             .catch(error => {

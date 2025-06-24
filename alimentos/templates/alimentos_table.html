@@ -23,9 +23,8 @@
             <td>{{alimento.ms}}</td>
             <td>{{alimento.ed}}</td>
             <td>{{alimento.pb}}</td>
-            
             <td class="text-end">{% if alimento.is_active %}
-                <button class="btn btn-sm update-btn">
+                <button class="btn btn-sm update-btn" id="{{alimento.id}}">
                     <img src="{% static 'img/update.png' %}" alt="Alterar" width="20" height="20">
                 </button>
                 <button class="btn btn-sm desativar-btn" alt="Ativar">

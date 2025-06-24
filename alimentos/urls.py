@@ -16,15 +16,16 @@ urlpatterns = [
    path("listar_nutrientes/", views.listar_nutrientes, name="listar_nutrientes"),
 
    path("alimentos/", views.alimentos, name="alimentos"),
+   path("alimento_json/", views.alimento_json, name="alimento_json"),
    path("busca_alimento_nome/", views.busca_alimento_nome, name="busca_alimento_nome"),
    path("inserir_alimento/", views.inserir_alimento, name="inserir_alimento"),
    path("atualizar_alimento/", views.atualizar_alimento, name="atualizar_alimento"),
    path("apagar_alimento/", views.apagar_alimento, name="apagar_alimento"),
    path("desativar_alimento/", views.desativar_alimento, name="desativar_alimento"),
    path("ativar_alimento/", views.ativar_alimento, name="ativar_alimento"),
-   path('classificacoes_json/', views.classificacoes_json, name='classificacoes_json'),
-
+   
    path("classificacao/", views.classificacao, name="classificacao"),   
+   path('classificacoes_json/', views.classificacoes_json, name='classificacoes_json'),
    path("get_classificacao/", views.get_classificacao, name="get_classificacao"),
    path("inserir_classificacao/", views.inserir_classificacao, name="inserir_classificacao"),
    path("ativar_classificacao/", views.ativar_classificacao, name="ativar_classificacao"),

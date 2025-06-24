@@ -30,11 +30,13 @@ class Command(BaseCommand):
          nrows=34
       )
 
+      classificacao_padrao = Classificacao.objects.create(nome="Não Classificado", is_active=False)
+      contador_classificacao = 1 # contador de classificacoes
       # Percorrendo o dataframe dados_excel1
       for i, nutriente in enumerate(dados_excel1.iloc[:,0].dropna()):
          nome = str(nutriente).strip()# convertendo o nome para uma string sem espacos
          unidade = str(dados_excel1.iloc[i,1]).strip()# a mesma coisa do nome, porem pegando o dado da segunda coluna na posicao i do dataframe
-         Nutriente.objects.create(nome=nome, unidade=unidade)#adicionando o nutriente e sua respectiva unidade
+         Nutriente.objects.create(nome=nome, unidade=unidade, classificacao_id=classificacao_padrao.id)#adicionando o nutriente e sua respectiva unidade
       self.stdout.write(self.style.SUCCESS(f"{i} nutrientes adicionados com sucesso"))
       
       # Obtendo a leitura das colunas E:D 
@@ -45,8 +47,8 @@ class Command(BaseCommand):
          engine='openpyxl',
          nrows=146
       )
+    
       # Percorrendo o dataframe 
-      aux = 0 
       for i, nome in enumerate(dados_excel2.iloc[:,0].dropna()):
          classificacao = str(dados_excel2.iloc[i,1]).strip()
          ms = tratar_decimal(dados_excel2.iloc[i,2])
@@ -56,10 +58,10 @@ class Command(BaseCommand):
          
          if not Classificacao.objects.filter(nome=classificacao).exists():
             Classificacao.objects.create(nome=classificacao)# criando uma classificação caso ela não exista
-            aux+=1
+            contador_classificacao+=1
 
          classificacao_obj = Classificacao.objects.get(nome=classificacao)
 
          Alimento.objects.create(nome=nome, classificacao=classificacao_obj, pb=pb, ms=ms, ed=ed)
-      self.stdout.write(self.style.SUCCESS(f"{aux} categorias adicionadas com sucesso"))
+      self.stdout.write(self.style.SUCCESS(f"{contador_classificacao} categorias adicionadas com sucesso"))
       self.stdout.write(self.style.SUCCESS(f"{i} alimentos adicionados com sucesso"))

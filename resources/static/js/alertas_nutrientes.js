@@ -1,38 +1,78 @@
 // 🔔 Inserir Nutriente
 export function alerta_inserir(btn) {
-        Swal.fire({
-            title: 'Inserir Nutriente',
-            html: `
-                <input id="swal-nome" class="swal2-input" placeholder="Nome">
-                <input id="swal-unidade" class="swal2-input" placeholder="Unidade">
-                <input id="swal-categoria" class="swal2-input" placeholder="Categoria (opcional)">
-            `,
-            
-            confirmButtonText: 'Inserir',
-            cancelButtonText: 'Cancelar',
-            showCancelButton: true,
-            focusConfirm: false,
-            preConfirm: () => {
-                const nome = document.getElementById('swal-nome').value.trim();
-                const unidade = document.getElementById('swal-unidade').value.trim();
-                const categoria = document.getElementById('swal-categoria').value.trim();
-                if (!nome || !unidade) {
-                    Swal.showValidationMessage('Nome e Unidade são obrigatórios');
-                    return false;
-                }
-                return { nome, unidade, categoria };
-            }
-        }).then(result => {
-            if (result.isConfirmed) {
-                const { nome, unidade, categoria } = result.value;
-            const url = `${btn.dataset.url}` +
-                `?nome=${encodeURIComponent(nome)}` +
-                `&unidade=${encodeURIComponent(unidade)}` +
-                `&categoria=${encodeURIComponent(categoria)}`;
+    fetch('/classificacoes_json/')
+        .then(response => response.json())
+        .then(classificacoes => {
+            const optionsHtml = classificacoes.map(n => 
+            `<option value="${n.id}" ${n.id === parseInt(btn.dataset.idClass) ? 'selected' : ''}>
+                ${n.nome}
+            </option>`).join("");
 
-                htmx.ajax('GET', url, { swap: 'none' });
-            }
-        });
+            Swal.fire({
+                title: 'Inserir Nutriente',
+                html: `
+                    <div class="container">
+                        <div class="row mb-2">
+                            <div class="col-4">
+                                <label for="swal-nome" class="form-label">Nome:</label>
+                            </div>
+                            <div class="col-8">
+                                <input id="swal-nome" class="form-control" placeholder="Digite o nome">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4">
+                                <label for="swal-unidade" class="form-label">Unidade:</label>
+                            </div>
+                            <div class="col-8">
+                                <input id="swal-unidade" class="form-control" placeholder="Digite a unidade">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4">
+                                <label for="idClassificacao" class="form-label">Classificação:</label>
+                            </div>
+                            <div class="col-8">
+                                <select id="idClassificacao" class="form-control">
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                
+                confirmButtonText: 'Inserir',
+                cancelButtonText: 'Cancelar',
+                showCancelButton: true,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const nome = document.getElementById('swal-nome').value.trim();
+                    const unidade = document.getElementById('swal-unidade').value.trim();
+                    const classificacao = document.getElementById('idClassificacao').value.trim();
+
+                    if (!nome || !unidade) {
+                        Swal.showValidationMessage('Nome e Unidade são obrigatórios');
+                        return false;
+                    }
+                    return { nome, unidade, classificacao };
+                }
+            }).then(result => {
+                if (result.isConfirmed) {
+                    const { nome, unidade, classificacao } = result.value;
+                    const url = `${btn.dataset.url}` +
+                        `?nome=${encodeURIComponent(nome)}` +
+                        `&unidade=${encodeURIComponent(unidade)}` +
+                        `&classificacao=${encodeURIComponent(classificacao)}`;
+
+                    htmx.ajax('GET', url, { swap: 'none' });
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar classificações:', error);
+            Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
+    });
+
 }
 
 // Inserção bem sucedida
@@ -86,14 +126,46 @@ export function alerta_update(btn) {
     const id = btn.dataset.id;
     const nome_antigo = btn.dataset.nome;
     const unidade_antiga = btn.dataset.unidade;
-    const categoria_antiga = btn.dataset.categoria;
+    const classificacao_antiga = btn.dataset.classificacao;
+    fetch('/classificacoes_json/')
+        .then(response => response.json())
+        .then(classificacoes => {
+            const optionsHtml = classificacoes.map(n => 
+            `<option value="${n.id}" ${n.id === parseInt(classificacao_antiga) ? 'selected' : ''}>
+                ${n.nome}
+            </option>`).join("");
 
-    Swal.fire({
+            Swal.fire({
         title: 'Atualizar Nutriente',
         html: `
-            <input id="swal-nome" class="swal2-input" placeholder="Nome" value="${nome_antigo}">
-            <input id="swal-unidade" class="swal2-input" placeholder="Unidade" value="${unidade_antiga}">
-            <input id="swal-categoria" class="swal2-input" placeholder="Categoria" value="${categoria_antiga}">
+            <div class="container">
+                <div class="row mb-2">
+                    <div class="col-4">
+                        <label for="swal-nome" class="form-label">Nome:</label>
+                    </div>
+                    <div class="col-8">
+                        <input id="swal-nome" class="form-control" value="${nome_antigo}">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4">
+                        <label for="swal-unidade" class="form-label">Unidade:</label>
+                    </div>
+                    <div class="col-8">
+                        <input id="swal-unidade" class="form-control" placeholder="Digite a unidade" value="${unidade_antiga}">
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4">
+                        <label for="idClassificacao" class="form-label">Classificação:</label>
+                    </div>
+                    <div class="col-8">
+                        <select id="idClassificacao" class="form-control">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                </div>
+            </div>
         `,
         confirmButtonText: 'Atualizar',
         showCancelButton: true,
@@ -101,20 +173,20 @@ export function alerta_update(btn) {
         preConfirm: () => {
             const nome = document.getElementById('swal-nome').value.trim();
             const unidade = document.getElementById('swal-unidade').value.trim();
-            const categoria = document.getElementById('swal-categoria').value.trim();
+            const classificacao = document.getElementById('idClassificacao').value.trim();
             if (!nome || !unidade) {
                 Swal.showValidationMessage('Nome e Unidade são obrigatórios');
                 return false;
             }
-            return { nome, unidade, categoria };
+            return { nome, unidade, classificacao };
         }
     }).then(result => {
         if (result.isConfirmed) {
-            const { nome, unidade, categoria } = result.value;
+            const { nome, unidade, classificacao } = result.value;
            const url = `/atualizar_nutriente/?id=${id}` +
             `&nome=${encodeURIComponent(nome)}` +
             `&unidade=${encodeURIComponent(unidade)}` +
-            `&categoria=${encodeURIComponent(categoria)}`;
+            `&classificacao=${encodeURIComponent(classificacao)}`;
 
             htmx.ajax('GET', url, { swap: 'none' })
                 .then(response => {
@@ -138,6 +210,11 @@ export function alerta_update(btn) {
                     }
                 });
         }
+    });
+        })
+        .catch(error => {
+            console.error('Erro ao carregar classificações:', error);
+            Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
     });
 }
 
