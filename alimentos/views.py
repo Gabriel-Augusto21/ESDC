@@ -426,7 +426,6 @@ def atualizar_composicaoAlimento(request):
 
     composicao = get_object_or_404(ComposicaoAlimento, pk=id)
 
-#Luan info boa descoberta, str é uma função do Python que converte um valor para o tipo string
     if (str(composicao.alimento_id) == str(alimento_id) and
         str(composicao.nutriente_id) == str(nutriente_id) and
         str(composicao.valor) == str(valor)):
