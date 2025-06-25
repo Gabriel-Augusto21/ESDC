@@ -105,7 +105,10 @@ export function alerta_update(btn) {
                             title: 'Erro!',
                             text: resp.Mensagem || 'Ocorreu um erro na atualização.',
                             icon: 'error',
-                            confirmButtonColor: '#d33',
+                            confirmButtonColor: '#2f453a',
+                            customClass: {
+                                confirmButton: 'botao-confirma-alerta',
+                            },
                         });
                     }
                 });
@@ -200,6 +203,10 @@ htmx.on("htmx:afterOnLoad", (event) => {
             text: resp.Mensagem,
             icon: 'success',
             confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+            confirmButtonText: 'Ok',
         }).then(() =>{
             window.location.reload()
         });
@@ -216,6 +223,10 @@ htmx.on("htmx:responseError", (event) => {
          text: resp.Mensagem,
          icon: 'error',
          confirmButtonColor: '#2f453a',
+         confirmButtonText: 'Ok',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+         },
       });
    } else {
       Swal.fire({
@@ -223,6 +234,10 @@ htmx.on("htmx:responseError", (event) => {
          text: 'Algo deu errado. Tente novamente mais tarde.',
          icon: 'error',
          confirmButtonColor: '#2f453a',
+         confirmButtonText: 'Ok',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+         },
       });
    }
 });

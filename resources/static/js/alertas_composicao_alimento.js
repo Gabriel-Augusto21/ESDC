@@ -65,14 +65,20 @@ htmx.on("htmx:afterOnLoad", (event) => {
                     title: 'Tudo certo!',
                     text: resp.Mensagem,
                     icon: 'success',
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#2f453a',
+                    customClass: {
+                        confirmButton: 'botao-confirma-alerta',
+                    },
                 }).then(() => window.location.reload());
             } else if (path.includes('/inserir_composicaoAlimento') && resp.Mensagem.includes('inserida com sucesso')) {
                 Swal.fire({
                     title: 'Tudo certo!',
                     text: resp.Mensagem,
                     icon: 'success',
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#2f453a',
+                    customClass: {
+                        confirmButton: 'botao-confirma-alerta',
+                    },
                 }).then(() => window.location.reload());
             }
         }

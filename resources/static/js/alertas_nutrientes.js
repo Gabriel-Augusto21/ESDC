@@ -92,14 +92,20 @@ htmx.on("htmx:afterOnLoad", (event) => {
                 title: 'Tudo certo!',
                 text: resp.Mensagem,
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => window.location.reload());
         } else if (path.includes('/inserir_nutriente') && resp.Mensagem.includes('inserido com sucesso')) {
             Swal.fire({
                 title: 'Tudo certo!',
                 text: resp.Mensagem,
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => window.location.reload());
         } 
     }
@@ -115,14 +121,21 @@ htmx.on("htmx:responseError", (event) => {
          title: 'Erro!',
          text: resp.Mensagem,
          icon: 'error',
-         confirmButtonColor: '#3085d6',
+         confirmButtonColor: '#2f453a',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
       });
    } else {
       Swal.fire({
          title: 'Erro inesperado',
          text: 'Algo deu errado. Tente novamente mais tarde.',
          icon: 'error',
-         confirmButtonColor: '#3085d6',
+         confirmButtonColor: '#2f453a',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
+        confirmButtonText: 'Ok',
       });
    }
 });
@@ -209,7 +222,11 @@ export function alerta_update(btn) {
                             title: 'Tudo certo!',
                             text: resp.Mensagem,
                             icon: 'success',
-                            confirmButtonColor: '#3085d6',
+                            confirmButtonColor: '#2f453a',
+                                customClass: {
+                            confirmButton: 'botao-confirma-alerta',
+                            },
+                            confirmButtonText: 'Ok',
                         }).then(() => {
                             window.location.reload();
                         });
@@ -218,7 +235,11 @@ export function alerta_update(btn) {
                             title: 'Erro!',
                             text: resp.Mensagem || 'Ocorreu um erro na atualização.',
                             icon: 'error',
-                            confirmButtonColor: '#d33',
+                            confirmButtonColor: '#2f453a',
+                            customClass: {
+                                confirmButton: 'botao-confirma-alerta',
+                            },
+                            confirmButtonText: 'Ok',
                         });
                     }
                 });
@@ -256,7 +277,12 @@ export function alerta_ativar(btn) {
                 title: 'Tudo certo!',
                 text: 'Esse nutriente agora está ativo!',
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                confirmButtonText: 'Ok',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                
             }).then(() => {
                window.location.reload();
             });
@@ -287,7 +313,11 @@ export function alerta_desativar(btn) {
                 title: 'Tudo certo!',
                 text: 'Esse nutriente agora está inativo!',
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                confirmButtonText: 'Ok',
             }).then(() => window.location.reload());
         }
     });

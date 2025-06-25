@@ -173,8 +173,12 @@ htmx.on("htmx:afterOnLoad", (event) => {
                 text: resp.Mensagem,
                 icon: 'success',
                 timer: 3000,
-                timerProgressBar: true,   
-                confirmButtonColor: '#3085d6'
+                timerProgressBar: true,
+                confirmButtonText: 'Ok',   
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => {
                 window.location.reload();
             });
@@ -183,7 +187,11 @@ htmx.on("htmx:afterOnLoad", (event) => {
             title: 'Sucesso!',
             text: resp.Mensagem,
             icon: 'success',
-            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
             timer: 3000,
             timerProgressBar: true
         }).then(() => {
@@ -194,7 +202,11 @@ htmx.on("htmx:afterOnLoad", (event) => {
             title: 'Sucesso!',
             text: resp.Mensagem,
             icon: 'success',
-            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
             timer: 10000,
             timerProgressBar: true
         }).then(() => {
@@ -205,7 +217,11 @@ htmx.on("htmx:afterOnLoad", (event) => {
             title: 'Erro!',
             text: resp.Mensagem,
             icon: 'error',
-            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
         }).then(() => {
             window.location.reload();
         });
@@ -214,9 +230,13 @@ htmx.on("htmx:afterOnLoad", (event) => {
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
+                confirmButtonText: 'Ok',
                 timer: 3000,
                 timerProgressBar: true,   
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => {
                 window.location.reload();
             });
@@ -234,21 +254,33 @@ htmx.on("htmx:responseError", (event) => {
             title: 'Erro!',
             text: resp.Mensagem,
             icon: 'error',
-            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
         });
     }else if (status === 400 && resp.Mensagem?.includes("alterado")) {
         Swal.fire({
             title: 'Erro!',
             text: resp.Mensagem,
             icon: 'error',
-            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
         });
     } else {
         Swal.fire({
             title: 'Erro inesperado',
             text: 'Algo deu errado. Tente novamente mais tarde.',
             icon: 'error',
-            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
         });
     }
 });
