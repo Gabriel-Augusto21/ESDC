@@ -17,15 +17,15 @@
         <td>{{ classificacao.nome }}</td>
         <td class="text-end">
             {% if classificacao.is_active %}
-            <button class="btn btn-sm update-btn"
-                    data-id="{{ classificacao.id }}"
-                    data-nome="{{ classificacao.nome|escapejs }}">
-                <img src="{% static 'img/update.png' %}" width="20">
-            </button>
             <button class="btn btn-sm desativar-btn"
                     data-id="{{ classificacao.id }}"
                     data-url="{% url 'alimentos:desativar_classificacao' %}?id={{ classificacao.id }}">
                 <img src="{% static 'img/visibility.png' %}" width="20">
+            </button>
+            <button class="btn btn-sm update-btn"
+                    data-id="{{ classificacao.id }}"
+                    data-nome="{{ classificacao.nome|escapejs }}">
+                <img src="{% static 'img/edit.png' %}" width="20">
             </button>
             {% else %}
             <button class="btn btn-sm ativar-btn"

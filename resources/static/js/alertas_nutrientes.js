@@ -42,7 +42,13 @@ export function alerta_inserir(btn) {
                 `,
                 
                 confirmButtonText: 'Inserir',
+                confirmButtonColor: '#2f453a',
                 cancelButtonText: 'Cancelar',
+                cancelButtonColor: '#FF0000',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                    cancelButton: 'botao-cancela-alerta',
+                },
                 showCancelButton: true,
                 focusConfirm: false,
                 preConfirm: () => {
@@ -86,14 +92,20 @@ htmx.on("htmx:afterOnLoad", (event) => {
                 title: 'Tudo certo!',
                 text: resp.Mensagem,
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => window.location.reload());
         } else if (path.includes('/inserir_nutriente') && resp.Mensagem.includes('inserido com sucesso')) {
             Swal.fire({
                 title: 'Tudo certo!',
                 text: resp.Mensagem,
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
             }).then(() => window.location.reload());
         } 
     }
@@ -109,14 +121,21 @@ htmx.on("htmx:responseError", (event) => {
          title: 'Erro!',
          text: resp.Mensagem,
          icon: 'error',
-         confirmButtonColor: '#3085d6',
+         confirmButtonColor: '#2f453a',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
       });
    } else {
       Swal.fire({
          title: 'Erro inesperado',
          text: 'Algo deu errado. Tente novamente mais tarde.',
          icon: 'error',
-         confirmButtonColor: '#3085d6',
+         confirmButtonColor: '#2f453a',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
+        confirmButtonText: 'Ok',
       });
    }
 });
@@ -168,6 +187,13 @@ export function alerta_update(btn) {
             </div>
         `,
         confirmButtonText: 'Atualizar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
         showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
@@ -196,7 +222,11 @@ export function alerta_update(btn) {
                             title: 'Tudo certo!',
                             text: resp.Mensagem,
                             icon: 'success',
-                            confirmButtonColor: '#3085d6',
+                            confirmButtonColor: '#2f453a',
+                                customClass: {
+                            confirmButton: 'botao-confirma-alerta',
+                            },
+                            confirmButtonText: 'Ok',
                         }).then(() => {
                             window.location.reload();
                         });
@@ -205,7 +235,11 @@ export function alerta_update(btn) {
                             title: 'Erro!',
                             text: resp.Mensagem || 'Ocorreu um erro na atualização.',
                             icon: 'error',
-                            confirmButtonColor: '#d33',
+                            confirmButtonColor: '#2f453a',
+                            customClass: {
+                                confirmButton: 'botao-confirma-alerta',
+                            },
+                            confirmButtonText: 'Ok',
                         });
                     }
                 });
@@ -222,14 +256,18 @@ export function alerta_update(btn) {
 export function alerta_ativar(btn) {
     const url = btn.dataset.url;
     Swal.fire({
-        title: 'Tem certeza que deseja ativar esse Nutriente?',
+        title: 'Tem certeza que deseja ativar esse nutriente?',
         text: 'Você poderá desfazer isso mais tarde!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#32CD32',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, ativar',
-        cancelButtonText: 'Cancelar'
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#ff0000',
+        confirmButtonText: 'Sim, ativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(result => {
         if (result.isConfirmed) {
                htmx.ajax('GET', url, { 
@@ -239,7 +277,12 @@ export function alerta_ativar(btn) {
                 title: 'Tudo certo!',
                 text: 'Esse nutriente agora está ativo!',
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                confirmButtonText: 'Ok',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                
             }).then(() => {
                window.location.reload();
             });
@@ -251,14 +294,18 @@ export function alerta_ativar(btn) {
 export function alerta_desativar(btn) {
     const url = btn.dataset.url;
     Swal.fire({
-        title: 'Tem certeza que deseja desativar esse Nutriente?',
+        title: 'Tem certeza que deseja desativar esse nutriente?',
         text: 'Você poderá desfazer isso mais tarde!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#FF0000',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sim, desativar',
-        cancelButtonText: 'Cancelar'
+        confirmButtonColor: '##2f453a',
+        cancelButtonColor: '#ff0000',
+        confirmButtonText: 'Sim, desativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
     }).then(result => {
         if (result.isConfirmed) {
             htmx.ajax('GET', url, { swap: 'none' });
@@ -266,7 +313,11 @@ export function alerta_desativar(btn) {
                 title: 'Tudo certo!',
                 text: 'Esse nutriente agora está inativo!',
                 icon: 'success',
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                confirmButtonText: 'Ok',
             }).then(() => window.location.reload());
         }
     });
