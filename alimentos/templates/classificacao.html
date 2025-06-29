@@ -12,7 +12,7 @@
                   name="query"
                   value="{{ query }}"
                   type="text"
-                  placeholder="Informe uma classificação..."
+                  placeholder="Informe o nome de uma classificação..."
                   style="border-radius: 20px 0 0 20px;">
          <div class="input-group-append">
          <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
@@ -28,6 +28,16 @@
          Inserir
       </button>
    </div>
+   <!-- Contador de registros -->
+    <legend class="text-center small">
+        {% if page_obj.paginator.count == 0 %}
+        Nenhum registro cadastrado
+        {% elif page_obj.paginator.count == 1 %}
+        1 registro encontrado
+        {% else %}
+        {{ page_obj.paginator.count }} registros encontrados
+        {% endif %}
+    </legend>
    {% include 'classificacao_table.html' %}
 </div>
 <script>const csrf_token = '{{ csrf_token }}';</script>
