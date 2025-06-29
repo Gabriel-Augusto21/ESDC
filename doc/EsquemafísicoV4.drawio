@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
   <diagram name="Página-1" id="KPvdHJg00RffXIqC1usl">
-    <mxGraphModel dx="697" dy="589" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1627" dy="1373" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,7 +8,9 @@
           <mxGeometry x="290" y="70" width="888" height="30" as="geometry" />
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-2" value="Classificação" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="80" y="250" width="220" height="120" as="geometry" />
+          <mxGeometry x="80" y="250" width="220" height="120" as="geometry">
+            <mxRectangle x="80" y="250" width="100" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-2" vertex="1">
           <mxGeometry y="30" width="220" height="30" as="geometry" />
@@ -53,7 +55,9 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-13" value="Categoria Animal" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="1300" y="220" width="230" height="210" as="geometry" />
+          <mxGeometry x="1300" y="220" width="230" height="210" as="geometry">
+            <mxRectangle x="1300" y="220" width="120" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-14" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-13" vertex="1">
           <mxGeometry y="30" width="230" height="30" as="geometry" />
@@ -134,7 +138,9 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-35" value="ComposiçãoExigencia" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="990" y="420" width="231" height="180" as="geometry" />
+          <mxGeometry x="990" y="420" width="231" height="180" as="geometry">
+            <mxRectangle x="990" y="420" width="150" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-36" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-35" vertex="1">
           <mxGeometry y="30" width="231" height="30" as="geometry" />
@@ -202,7 +208,9 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-51" value="Exigencia" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="991" y="160" width="230" height="210" as="geometry" />
+          <mxGeometry x="991" y="160" width="230" height="210" as="geometry">
+            <mxRectangle x="991" y="160" width="80" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-52" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-51" vertex="1">
           <mxGeometry y="30" width="230" height="30" as="geometry" />
@@ -283,7 +291,9 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-67" value="Alimento" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="360" y="160" width="265" height="240" as="geometry" />
+          <mxGeometry x="360" y="160" width="265" height="240" as="geometry">
+            <mxRectangle x="360" y="160" width="80" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-68" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-67" vertex="1">
           <mxGeometry y="30" width="265" height="30" as="geometry" />
@@ -377,7 +387,9 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-89" value="ComposiçãoAlimento" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="404" y="420" width="221" height="180" as="geometry" />
+          <mxGeometry x="404" y="420" width="221" height="180" as="geometry">
+            <mxRectangle x="404" y="420" width="140" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-90" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-89" vertex="1">
           <mxGeometry y="30" width="221" height="30" as="geometry" />
@@ -462,7 +474,9 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-109" value="Nutriente" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;strokeColor=default;strokeWidth=0.3937;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;fillColor=default;" parent="1" vertex="1">
-          <mxGeometry x="700" y="480" width="220" height="180" as="geometry" />
+          <mxGeometry x="700" y="480" width="220" height="180" as="geometry">
+            <mxRectangle x="700" y="480" width="80" height="30" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="Vqt-NLhZ320p8eclBIPL-110" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;strokeColor=default;strokeWidth=0.3937;align=center;verticalAlign=middle;spacing=0.3937;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="Vqt-NLhZ320p8eclBIPL-109" vertex="1">
           <mxGeometry y="30" width="220" height="30" as="geometry" />
