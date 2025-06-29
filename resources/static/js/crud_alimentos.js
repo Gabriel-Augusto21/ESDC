@@ -1,4 +1,4 @@
-import {ativar, desativar, atualizar, inserir} from './alertas_alimentos.js'
+import {ativar, desativar, atualizar, inserir, crud_composicao} from './alertas_alimentos.js'
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
     if (!botao) return;
@@ -112,5 +112,65 @@ document.body.addEventListener('click', function (evento){
                 console.error('Erro ao carregar classificações:', error);
                 Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
         });
+    }else if(botao.classList.contains('composicao-btn')){
+        evento.preventDefault()
+        fetch(`/composicao_json/?id=${botao.id}`)
+        .then(response => response.json())
+        .then(({ alimento, composicao }) => {
+            if (composicao && composicao.length > 0) {
+                let dados_composicao = '';
+                for (let i = 0; i < composicao.length; i += 2) {
+                    const bloco = `
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">${composicao[i].nutriente_nome}</label>
+                                <div class="d-flex align-items-center">
+                                    <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i].valor}">
+                                </div>
+                            </div>
+
+                            ${composicao[i + 1] ? `
+                            <div class="col">
+                                <label class="form-label">${composicao[i + 1].nutriente_nome}</label>
+                                <div class="d-flex align-items-center">
+                                    <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 1].valor}">
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    dados_composicao += bloco;
+                }
+
+                const html = `
+                    <div class="container my-3" style="text-align: start;">
+                        <h3 class="mb-4 text-center fs-3 fw-bold border-bottom pb-2">${alimento.nome}</h3>
+                        ${dados_composicao}
+                    </div>
+                `;
+                crud_composicao(composicao, html);
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Esse alimento ainda não possui nutrientes vinculados',
+                    confirmButtonColor: '#2f453a',
+                    cancelButtonColor: '#FF0000',
+                    confirmButtonText: 'Inserir',
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        confirmButton: 'botao-confirma-alerta',
+                        cancelButton: 'botao-cancela-alerta',
+                    },
+                    showCancelButton: true,
+                }).then(resp => {
+                    if (resp.isConfirmed) {
+                        console.log("Usuário clicou no botao de confirmação");
+                    } else {
+                        console.log("O usuário deseja cancelar");
+                    }
+                });
+            }
+        });
+
     }
 });

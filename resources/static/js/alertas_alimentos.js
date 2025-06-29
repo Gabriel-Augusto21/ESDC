@@ -163,6 +163,27 @@ export function inserir(modalHtml){
         }
     });
 }
+export function crud_composicao(composicao, html){
+    Swal.fire({
+        title: 'Composicao Alimentar',
+        html: html,
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Inserir',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
+        showCancelButton: true,
+    }).then(resp => {
+        if (resp.isConfirmed) {
+            console.log("Usuário clicou no botao de confirmação")
+        }else{
+            console.log("O usuário deseja cancelar")
+        }
+    });
+}
 // Tratamento das responses
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);

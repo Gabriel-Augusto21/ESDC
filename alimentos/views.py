@@ -372,6 +372,27 @@ def composicaoAlimento(request):
         'query': query
     })
 
+def composicao_json(request):
+    id = request.GET.get('id')
+    alimento_obj = Alimento.objects.get(id=id)
+    alimento_nome = alimento_obj.nome
+    composicao = ComposicaoAlimento.objects.filter(alimento_id=id).select_related('nutriente')
+    composicao_dict = [
+        {
+            'id': comp.id,
+            'alimento_id': comp.alimento_id,
+            'nutriente_id': comp.nutriente.id,
+            'nutriente_nome': comp.nutriente.nome,
+            'valor': str(comp.valor)
+        }
+        for comp in composicao
+    ]
+    data = {
+        'alimento': {'id': id,'nome': alimento_nome},
+        'composicao': composicao_dict,
+    }
+    return js(data)
+
 def get_composicaoAlimento(request):
     if request.method == "GET":
         id = request.GET.get("id")
