@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from alimentos.models import Classificacao, Alimento, Nutriente, ComposicaoAlimento
+from django.db.models import Q
 from django.http import  JsonResponse as js
 from django.core.paginator import Paginator
 from django.conf import settings
@@ -224,7 +225,9 @@ def alimento_json(request):
         return js({'error': str(e)}, status=500)
 
 def classificacoes_json(request):
-    classificacoes = list(Classificacao.objects.all().values('id', 'nome'))
+    classificacoes = list(Classificacao.objects.filter(
+        Q(is_active=True) | Q(nome='Não Classificado')
+    ).values('id', 'nome'))
     return js(classificacoes, safe=False)
 
 def busca_alimento_nome(request):
