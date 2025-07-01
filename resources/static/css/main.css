@@ -1,6 +1,8 @@
 /* ajustes gerais do sistema */
 html {
     font-size: 0.8em; 
+    overflow-x: hidden;
+    overflow-y: auto; /* importante para permitir rolagem vertical */
 }
 
 .cabecalho {
@@ -9,7 +11,7 @@ html {
     gap: 10px; /* Espaço entre os h1 (opcional) */
     flex-direction: column; /* Coloca um em cima do outro */
     justify-content: flex-start; /* Topo */
-    height: 100vh;
+    min-height: 100vh;
     padding-top: 2%;
 }
 
@@ -33,13 +35,13 @@ html {
 }
 
 h3 {
-    text-align: center;
+    text-align: left;
     color: rgb(71, 71, 71);
     font-size: medium;
 }
 
 h2 {
-    text-align: center;
+    text-align: justify;
     color:rgb(71, 71, 71);
     font-size: small;
 }
