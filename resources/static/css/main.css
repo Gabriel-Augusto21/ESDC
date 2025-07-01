@@ -3,6 +3,47 @@ html {
     font-size: 0.8em; 
 }
 
+.cabecalho {
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+    gap: 10px; /* Espaço entre os h1 (opcional) */
+    flex-direction: column; /* Coloca um em cima do outro */
+    justify-content: flex-start; /* Topo */
+    height: 100vh;
+    padding-top: 2%;
+}
+
+.conteudo-home{
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+    justify-content: center; /* Centraliza horizontalmente na tela */
+    gap: 40px; /* Espaço entre texto e imagem */
+    padding: 10px 0;
+    flex-wrap: wrap; /* Faz quebrar em telas menores */
+}
+
+.conteudo-home texto{
+    max-width: 500px;
+    text-align: center;
+}
+
+.conteudo-home imagem{
+    width: 250px;
+    height: auto;
+}
+
+h3 {
+    text-align: center;
+    color: rgb(71, 71, 71);
+    font-size: medium;
+}
+
+h2 {
+    text-align: center;
+    color:rgb(71, 71, 71);
+    font-size: small;
+}
+
 .background-image {
     position: fixed;
     top: 0;
