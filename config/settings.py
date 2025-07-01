@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'dados',
     'core',
     'resources',
+    'exigencias',
 ]
 
 MIDDLEWARE = [
