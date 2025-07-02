@@ -118,4 +118,56 @@ export function atualizar(html, exigencia){
     });
 }
 
+htmx.on("htmx:responseError", (event) => {
+    event.stopPropagation();
+    const status = event.detail.xhr.status;
+    let mensagem = 'Erro inesperado.';
 
+    try {
+        const resp = JSON.parse(event.detail.xhr.responseText);
+        if (resp.Mensagem) mensagem = resp.Mensagem;
+    } catch (e) {
+        console.error("Erro ao interpretar JSON:", e);
+    }
+
+    Swal.fire({
+        title: 'Erro!',
+        text: mensagem,
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#2f453a',
+    });
+});
+
+htmx.on("htmx:afterOnLoad", (event) => {
+    const resp = JSON.parse(event.detail.xhr.response);
+    if (event.detail.xhr.status === 200) {
+        if (resp.Mensagem?.includes('inserido') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('ativado') || resp.Mensagem?.includes('desativado')) {
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+                timer: 3000,
+                timerProgressBar: true,
+            }).then(() => window.location.reload());
+        } else if (resp.Mensagem?.includes('já existe') || resp.Mensagem?.includes('já existente')) {
+            Swal.fire({
+                title: 'Erro!',
+                text: resp.Mensagem,
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+            });
+        } else {
+            Swal.fire({
+                title: 'Erro inesperado',
+                text: 'Resposta inesperada do servidor.',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+            });
+        }
+    }
+});
