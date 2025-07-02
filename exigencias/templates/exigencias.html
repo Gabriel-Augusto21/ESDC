@@ -8,7 +8,7 @@
             <div class="col-4">
                 <div class="input-group">
                     <input class="form-control"
-                        id="txtBuscaNomeAlimento"
+                        id="txtBuscaNomeExigencia"
                         name="query"
                         value="{{ query }}"
                         type="text"
@@ -30,7 +30,6 @@
         <!-- Contador de registros -->
         <legend class="text-center small">
             {% if page_obj.paginator.count == 0 %}
-            Nenhum registro cadastrado
             {% elif page_obj.paginator.count == 1 %}
             1 registro encontrado
             {% else %}
@@ -42,11 +41,15 @@
         <br>
     </div>
 
-    <script type="module" src="{% static 'js/crud_exigencias.js' %}"></script>
+    <script type="module" src="{% static 'js/exigencias.js' %}"></script>
     <script>
         const csrf_token = '{{ csrf_token }}';
             document.body.addEventListener('htmx:configRequest', (event) => {
                 event.detail.headers['X-CSRFToken'] = csrf_token;
             });
     </script>
+    <script id="categorias_json" type="application/json">
+    {{ categorias_json|safe }}
+    </script>
+
     {% endblock %}
