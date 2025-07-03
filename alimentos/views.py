@@ -68,6 +68,12 @@ def atualizar_nutriente(request):
     classificacao = request.GET.get('classificacao')
     classificacao = Classificacao.objects.get(id=classificacao)
 
+    if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
+        return js({'Mensagem': "Outro nutriente já existe com esse nome!"}, status=401)
+    
+    if Nutriente.objects.filter(nome__iexact=nome).exists():
+        return js({'Mensagem': "Nome da nutriente não foi alterado!"}, status=401)
+    
     if not id or not nome or not unidade:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
@@ -79,8 +85,6 @@ def atualizar_nutriente(request):
     ):
         return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)
 
-    if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
-        return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
 
     nutriente.nome = nome
     nutriente.unidade = unidade
@@ -153,6 +157,7 @@ def inserir_classificacao(req):
 def atualizar_classificacao(req):
     id = req.GET.get('id')
     nome = req.GET.get('nome')
+   
     if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
         return js({'Mensagem': "Outra classificação já existe com esse nome!"}, status=401)
     if Classificacao.objects.filter(nome__iexact=nome).exists():
@@ -256,17 +261,21 @@ def inserir_alimento(request):
 
 def atualizar_alimento(request):
     if request.method == 'POST':
-        idAlimento = int(request.POST.get('id'))
-        nomeAlimento = request.POST.get('nome')
+        id_alimento = int(request.POST.get('id'))
+        nome_alimento = request.POST.get('nome')
         idClass = int(request.POST.get('idClass'))
         ms = safe_decimal(request.POST.get('ms'))
         ed = safe_decimal(request.POST.get('ed'))
         pb = safe_decimal(request.POST.get('pb'))
-
-        alimento = Alimento.objects.get(id=idAlimento)
-
+       
+        if Alimento.objects.exclude(id=id_alimento).filter(nome__iexact=nome_alimento).exists():
+            return js({'Mensagem': "Outra classificação já existe com esse nome!"}, status=401)
+        if Alimento.objects.filter(nome__iexact=nome_alimento).exists():
+            return js({'Mensagem': "Nome da classificação não foi alterado!"}, status=401)
+        
+        alimento = Alimento.objects.get(id=id_alimento)
         # Verifica se todos os dados são iguais (nome, classificação, ms, ed, pb)
-        if (nomeAlimento == alimento.nome and
+        if (nome_alimento == alimento.nome and
             idClass == alimento.classificacao.id and
             ms == alimento.ms and
             ed == alimento.ed and
@@ -274,18 +283,18 @@ def atualizar_alimento(request):
             return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)#status=401 definido pra informação
 
         # Atualiza nome se mudou e classificação não mudou
-        if (nomeAlimento != alimento.nome and idClass == alimento.classificacao.id and
+        if (nome_alimento != alimento.nome and idClass == alimento.classificacao.id and
             (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
             alimento.ms = ms
             alimento.ed = ed
             alimento.pb = pb
             nomeAntigo = alimento.nome
-            alimento.nome = nomeAlimento
+            alimento.nome = nome_alimento
             alimento.save()
             return js({'Mensagem': f"{nomeAntigo} atualizado para {alimento.nome}"}, status=200)
 
         # Atualiza classificação se mudou e nome não mudou
-        if (nomeAlimento == alimento.nome and idClass != alimento.classificacao.id and
+        if (nome_alimento == alimento.nome and idClass != alimento.classificacao.id and
             (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
             alimento.ms = ms
             alimento.ed = ed
@@ -295,7 +304,7 @@ def atualizar_alimento(request):
             return js({'Mensagem': f"Classificação do alimento {alimento.nome} atualizada para {alimento.classificacao.nome}"}, status=200)
 
         # Atualiza ms, ed e pb se algum deles mudou (mantendo nome e classificação iguais)
-        if (nomeAlimento == alimento.nome and idClass == alimento.classificacao.id and
+        if (nome_alimento == alimento.nome and idClass == alimento.classificacao.id and
             (ms != alimento.ms or ed != alimento.ed or pb != alimento.pb)):
             alimento.ms = ms
             alimento.ed = ed
@@ -304,7 +313,7 @@ def atualizar_alimento(request):
             return js({'Mensagem': f"Valores gerais atualizados"}, status=200)
 
         # Caso nome e classificação tenham mudado, atualiza tudo junto (incluindo ms, ed e pb)
-        alimento.nome = nomeAlimento
+        alimento.nome = nome_alimento
         alimento.classificacao = Classificacao.objects.get(id=idClass)
         alimento.ms = ms
         alimento.ed = ed

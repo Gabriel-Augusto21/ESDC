@@ -294,7 +294,18 @@ htmx.on("htmx:responseError", (event) => {
     }).then(() => {
         window.location.reload();
     });
-    } else {
+    } else if (status === 401 && resp.Mensagem?.includes("já existe")) {
+        Swal.fire({
+            title: 'Informação!',
+            text: resp.Mensagem,
+            icon: 'info',
+            confirmButtonColor: '#2f453a',
+            confirmButtonText: 'Ok',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+        });
+    }  else {
         Swal.fire({
             title: 'Erro inesperado',
             text: 'Algo deu errado. Tente novamente mais tarde.',
