@@ -31,7 +31,7 @@ export function ativar(elemento){
 export function desativar(elemento){
     Swal.fire({
         title: 'Tem certeza que deseja desativar esse alimento?',
-        text: "Você poderá desfazer isso mais tarde!",
+        html: `<p>Você poderá desfazer isso mais tarde!</p>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#2f453a',
@@ -228,21 +228,8 @@ htmx.on("htmx:afterOnLoad", (event) => {
             customClass: {
                 confirmButton: 'botao-confirma-alerta',
             },
-            timer: 10000,
+            timer: 3000,
             timerProgressBar: true
-        }).then(() => {
-            window.location.reload();
-        });
-        }else if (resp.Mensagem?.includes("alterado")) {
-        Swal.fire({
-            title: 'Erro!',
-            text: resp.Mensagem,
-            icon: 'error',
-            confirmButtonText: 'Ok',
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
         }).then(() => {
             window.location.reload();
         });
@@ -292,6 +279,21 @@ htmx.on("htmx:responseError", (event) => {
                 confirmButton: 'botao-confirma-alerta',
             },
         });
+    }
+    //Status 401 para icones de informação
+    else if (status === 401 && resp.Mensagem?.includes("alterado")) {
+    Swal.fire({
+        title: 'Informação',
+        text: resp.Mensagem,
+        icon: 'info',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#2f453a',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
+    }).then(() => {
+        window.location.reload();
+    });
     } else {
         Swal.fire({
             title: 'Erro inesperado',

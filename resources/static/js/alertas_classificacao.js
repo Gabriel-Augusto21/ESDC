@@ -69,49 +69,15 @@ export function alerta_update(btn) {
     }).then(result => {
         if (result.isConfirmed) {
             const { nome } = result.value;
-
-            if (nome === nomeAntigo) {
-                Swal.fire({
-                    title: 'Erro!',
-                    text: `O novo nome é igual ao atual. Tente um nome diferente!`,
-                    icon: 'error',
-                    confirmButtonColor: '#2f453a',
-                    customClass: {
-                        confirmButton: 'botao-confirma-alerta',
-                    },
-                });
-                return;
-            }
-
             const url = `/atualizar_classificacao/?id=${id}&nome=${encodeURIComponent(nome)}`;
-
-            htmx.ajax('GET', url, { swap: 'none' })
-                .then(response => {
-                    const resp = JSON.parse(response.xhr.response);
-                    if (resp.Mensagem && resp.Mensagem.includes('atualizado com sucesso')) {
-                        Swal.fire({
-                            title: 'Tudo certo!',
-                            text: resp.Mensagem,
-                            icon: 'success',
-                            confirmButtonColor: '#2f453a',
-                            customClass: {
-                                confirmButton: 'botao-confirma-alerta',
-                            },
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Erro!',
-                            text: resp.Mensagem || 'Ocorreu um erro na atualização.',
-                            icon: 'error',
-                            confirmButtonColor: '#2f453a',
-                            customClass: {
-                                confirmButton: 'botao-confirma-alerta',
-                            },
-                        });
-                    }
-                });
+            htmx.ajax('GET', url, { 
+                swap: 'none',
+                error: function(xhr) {
+                    console.error('Erro ao atualizar classificação:', xhr.status, xhr.responseText);
+                    alert('Erro: ' + xhr.responseText);
+                }
+            })
+                
         }
     });
 }
@@ -138,15 +104,6 @@ export function alerta_ativar(ativar_btn){
          htmx.ajax('GET', url, {
             swap: 'none'
          });
-         Swal.fire({
-            title: 'Tudo certo!',
-            text: `Essa classificacao agora está ativa!`,
-            icon: 'success',
-            confirmButtonColor: '#2f453a',
-         }).then(() => {
-            // Redireciona após o usuário fechar o alerta
-            window.location.reload();
-         });
       }
    });
 }
@@ -172,15 +129,6 @@ export function alerta_desativar(desativar_btn){
          htmx.ajax('GET', url, {
             swap: 'none'
          });
-         Swal.fire({
-            title: 'Tudo certo!',
-            text: `Essa classificacao agora está inativa!`,
-            icon: 'success',
-            confirmButtonColor: '#2f453a',
-         }).then(() => {
-            // Redireciona após o usuário fechar o alerta
-            window.location.href = '/classificacao/';
-         });
       }
    });
 }
@@ -188,28 +136,53 @@ export function alerta_desativar(desativar_btn){
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
-    if (resp.Mensagem?.includes("inserido com sucesso")) {
-        Swal.fire({
-            title: 'Sucesso!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonColor: '#2f453a',
-        }).then(() => {
-            window.location.reload();
-        });
-    }else if(resp.Mensagem.includes('atualizada com sucesso!')) {
-        Swal.fire({
-            title: 'Tudo certo!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
-            confirmButtonText: 'Ok',
-        }).then(() =>{
-            window.location.reload()
-        });
+    if (event.detail.xhr.status === 200) {
+        if (resp.Mensagem?.includes('ativado')) {            
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                timer: 3000,
+                timerProgressBar: true,
+                confirmButtonText: 'Ok',   
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+            }).then(() => {
+                window.location.reload();
+            });
+        }else if (resp.Mensagem?.includes('inserido')) {
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                timer: 3000,
+                timerProgressBar: true,   
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+            }).then(() => {
+                window.location.reload();
+            });
+        }else if(resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')){
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
+        }
     }
 });
 // Erro de inserção
@@ -217,18 +190,44 @@ htmx.on("htmx:responseError", (event) => {
    const status = event.detail.xhr.status;
    const resp = JSON.parse(event.detail.xhr.response);
 
-   if (status === 400 && resp.Mensagem?.includes("já existe")) {
-      Swal.fire({
-         title: 'Erro!',
-         text: resp.Mensagem,
-         icon: 'error',
-         confirmButtonColor: '#2f453a',
-         confirmButtonText: 'Ok',
-         customClass: {
+    if (status === 400 && resp.Mensagem?.includes("já existe")) {
+        Swal.fire({
+            title: 'Erro!',
+            text: resp.Mensagem,
+            icon: 'error',
+            confirmButtonColor: '#2f453a',
+            confirmButtonText: 'Ok',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+        });
+    }
+    //Status 401 para icones de informação
+    else if (status === 401 && resp.Mensagem?.includes("alterado")) {
+    Swal.fire({
+        title: 'Informação',
+        text: resp.Mensagem,
+        icon: 'info',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#2f453a',
+        customClass: {
             confirmButton: 'botao-confirma-alerta',
-         },
-      });
-   } else {
+        },
+    }).then(() => {
+        window.location.reload();
+    });
+    } else if (status === 401 && resp.Mensagem?.includes("já existe")) {
+        Swal.fire({
+            title: 'Informação!',
+            text: resp.Mensagem,
+            icon: 'info',
+            confirmButtonColor: '#2f453a',
+            confirmButtonText: 'Ok',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+        });
+    } else {
       Swal.fire({
          title: 'Erro inesperado',
          text: 'Algo deu errado. Tente novamente mais tarde.',

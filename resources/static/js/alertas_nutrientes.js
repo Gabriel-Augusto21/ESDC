@@ -81,65 +81,6 @@ export function alerta_inserir(btn) {
 
 }
 
-// Inserção bem sucedida
-htmx.on("htmx:afterOnLoad", (event) => {
-    const resp = JSON.parse(event.detail.xhr.response);
-    const path = event.detail.requestConfig.path;
-    
-    if (resp.Mensagem) {
-        if (path.includes('/atualizar_nutriente') && resp.Mensagem.includes('atualizado com sucesso')) {
-            Swal.fire({
-                title: 'Tudo certo!',
-                text: resp.Mensagem,
-                icon: 'success',
-                confirmButtonColor: '#2f453a',
-                customClass: {
-                    confirmButton: 'botao-confirma-alerta',
-                },
-            }).then(() => window.location.reload());
-        } else if (path.includes('/inserir_nutriente') && resp.Mensagem.includes('inserido com sucesso')) {
-            Swal.fire({
-                title: 'Tudo certo!',
-                text: resp.Mensagem,
-                icon: 'success',
-                confirmButtonColor: '#2f453a',
-                customClass: {
-                    confirmButton: 'botao-confirma-alerta',
-                },
-            }).then(() => window.location.reload());
-        } 
-    }
-});
-
-// Erro de inserção
-htmx.on("htmx:responseError", (event) => {
-   const status = event.detail.xhr.status;
-   const resp = JSON.parse(event.detail.xhr.response);
-
-   if (status === 400 && resp.Mensagem?.includes("já existe")) {
-      Swal.fire({
-         title: 'Erro!',
-         text: resp.Mensagem,
-         icon: 'error',
-         confirmButtonColor: '#2f453a',
-         customClass: {
-            confirmButton: 'botao-confirma-alerta',
-        },
-      });
-   } else {
-      Swal.fire({
-         title: 'Erro inesperado',
-         text: 'Algo deu errado. Tente novamente mais tarde.',
-         icon: 'error',
-         confirmButtonColor: '#2f453a',
-         customClass: {
-            confirmButton: 'botao-confirma-alerta',
-        },
-        confirmButtonText: 'Ok',
-      });
-   }
-});
-
 // 🔔 Atualizar Nutriente
 export function alerta_update(btn) {
     const id = btn.dataset.id;
@@ -270,22 +211,7 @@ export function alerta_ativar(btn) {
         },
     }).then(result => {
         if (result.isConfirmed) {
-               htmx.ajax('GET', url, { 
-                  swap: 'none' 
-            });
-            Swal.fire({
-                title: 'Tudo certo!',
-                text: 'Esse nutriente agora está ativo!',
-                icon: 'success',
-                confirmButtonColor: '#2f453a',
-                confirmButtonText: 'Ok',
-                customClass: {
-                    confirmButton: 'botao-confirma-alerta',
-                },
-                
-            }).then(() => {
-               window.location.reload();
-            });
+               htmx.ajax('GET', url, {swap: 'none'});
         }
     });
 }
@@ -309,16 +235,118 @@ export function alerta_desativar(btn) {
     }).then(result => {
         if (result.isConfirmed) {
             htmx.ajax('GET', url, { swap: 'none' });
+        }
+    });
+}
+
+// Inserção bem sucedida
+htmx.on("htmx:afterOnLoad", (event) => {
+    const resp = JSON.parse(event.detail.xhr.response);
+    if (event.detail.xhr.status === 200) {
+        if (resp.Mensagem?.includes('ativado')) {            
             Swal.fire({
-                title: 'Tudo certo!',
-                text: 'Esse nutriente agora está inativo!',
+                title: 'Sucesso!',
+                text: resp.Mensagem,
                 icon: 'success',
+                timer: 3000,
+                timerProgressBar: true,
+                confirmButtonText: 'Ok',   
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',
                 },
+            }).then(() => {
+                window.location.reload();
+            });
+        }else if(resp.Mensagem?.includes('desativado')){
+            Swal.fire({
+            title: 'Sucesso!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+            timer: 3000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+        }else if(resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')){
+            Swal.fire({
+            title: 'Sucesso!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+            timer: 3000,
+            timerProgressBar: true
+        }).then(() => {
+            window.location.reload();
+        });
+        }else if (resp.Mensagem?.includes('inserido')) {
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
                 confirmButtonText: 'Ok',
-            }).then(() => window.location.reload());
+                timer: 3000,
+                timerProgressBar: true,   
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+            }).then(() => {
+                window.location.reload();
+            });
         }
+    }
+});
+
+// Erro de inserção
+htmx.on("htmx:responseError", (event) => {
+   const status = event.detail.xhr.status;
+   const resp = JSON.parse(event.detail.xhr.response);
+
+   if (status === 400 && resp.Mensagem?.includes("já existe")) {
+      Swal.fire({
+         title: 'Erro!',
+         text: resp.Mensagem,
+         icon: 'error',
+         confirmButtonColor: '#2f453a',
+         customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
+      });
+    }
+    //Status 401 para icones de informação
+    else if (status === 401 && resp.Mensagem?.includes("alterado")) {
+    Swal.fire({
+        title: 'Informação',
+        text: resp.Mensagem,
+        icon: 'info',
+        confirmButtonText: 'Ok',
+        confirmButtonColor: '#2f453a',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+        },
+    }).then(() => {
+        window.location.reload();
     });
-}
+    } else {
+        Swal.fire({
+            title: 'Erro inesperado',
+            text: 'Algo deu errado. Tente novamente mais tarde.',
+            icon: 'error',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+            confirmButtonText: 'Ok',
+        });
+    }
+});

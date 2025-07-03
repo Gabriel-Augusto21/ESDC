@@ -77,7 +77,7 @@ def atualizar_nutriente(request):
         nutriente.unidade == unidade and
         (nutriente.classificacao or '') == (classificacao or '')
     ):
-        return js({'Mensagem': 'Nenhuma alteração foi feita.'}, status=400)
+        return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)
 
     if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
         return js({'Mensagem': 'Erro: Outro nutriente já existe com esse nome.'}, status=400)
@@ -94,7 +94,7 @@ def ativar_nutriente(request):
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.is_active = True
     nutriente.save()
-    return js({'Mensagem': f'{nutriente.nome} foi ativado'})
+    return js({'Mensagem': f'{nutriente.nome} foi ativado'}, status=200)
 
 def desativar_nutriente(request):
     id = request.GET.get('id')
@@ -102,7 +102,7 @@ def desativar_nutriente(request):
       nutriente = get_object_or_404(Nutriente, pk=id)
       nutriente.is_active = False
       nutriente.save()
-      return js({'Mensagem': f'{nutriente.nome} foi desativado'})
+      return js({'Mensagem': f'{nutriente.nome} foi desativado'}, status=200)
     return js({'Mensagem': f'Não foi possível desativar {nutriente.nome}'}, status=400)
 
 def listar_nutrientes(request):
@@ -147,14 +147,16 @@ def inserir_classificacao(req):
          Classificacao.objects.create(nome=nome)
          return js({'Mensagem': f'{nome} inserido com sucesso!'})
       else:
-         return js({'Mensagem': f'{nome} já existe na base de dados'}, status=400)
+         return js({'Mensagem': f'O nutriente "{nome}" já existe na base de dados!'}, status=401)
    return js({'Mensagem': f'{nome} não pode ser inserido'}, status=400)
 
 def atualizar_classificacao(req):
     id = req.GET.get('id')
     nome = req.GET.get('nome')
     if Classificacao.objects.exclude(id=id).filter(nome__iexact=nome).exists():
-        return js({'Mensagem': 'Erro: Outra classificação já existe com esse nome.'}, status=400)
+        return js({'Mensagem': "Outra classificação já existe com esse nome!"}, status=401)
+    if Classificacao.objects.filter(nome__iexact=nome).exists():
+        return js({'Mensagem': "Nome da classificação não foi alterado!"}, status=401)
 
     if id:   
         item = Classificacao.objects.get(id=id)
@@ -269,7 +271,7 @@ def atualizar_alimento(request):
             ms == alimento.ms and
             ed == alimento.ed and
             pb == alimento.pb):
-            return js({'Mensagem': "Nenhum dado foi alterado"}, status=200)
+            return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)#status=401 definido pra informação
 
         # Atualiza nome se mudou e classificação não mudou
         if (nomeAlimento != alimento.nome and idClass == alimento.classificacao.id and
