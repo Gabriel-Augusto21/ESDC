@@ -253,11 +253,12 @@ def inserir_alimento(request):
         ms = request.POST.get('ms')
         ed = request.POST.get('ed')
         pb = request.POST.get('pb')
+        if Alimento.objects.filter(nome__iexact=nome).exists():
+                return js({'Mensagem': f'{nome} já existe'}, status=401)
         if not Alimento.objects.filter(nome=nome).exists():
             item = Classificacao.objects.get(id=classificacao)
-            Alimento.objects.create(nome=nome, classificacao=item, ms=ms, ed=ed, pb=pb)
+            Alimento.objects.create(nome=nome, classificacao=item, ms=ms, ed=ed, pb=pb) 
             return js({'Mensagem': f'"{nome}" inserido com sucesso!'}, status=200)
-        return js({'Mensagem': "Alimento já existente na base de dados!"}, status=400)
 
 def atualizar_alimento(request):
     if request.method == 'POST':
