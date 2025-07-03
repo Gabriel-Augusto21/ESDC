@@ -178,7 +178,7 @@ def ativar_classificacao(req):
       item = Classificacao.objects.get(id=teste)
       item.is_active = True
       item.save()
-   return js({'Mensagem': f'{item.nome} foi desativado'})
+   return js({'Mensagem': f'{item.nome} foi ativado'})
 
 def desativar_classificacao(req):
    teste = req.GET.get('id')
