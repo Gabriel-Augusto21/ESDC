@@ -32,12 +32,12 @@ class Command(BaseCommand):
             nrows=nrows
         )
         # print(dados_exigencia)
-        for i, primeira_col in enumerate(dados_exigencia.iloc[:,0].dropna()):
+        for i, primeira_col in enumerate(dados_exigencia.iloc[:,0]):
             if i == 0: continue
             cols_composicao = dados_composicao_exigencia.iloc[i]
             peso_vivo = tratar_decimal(cols_composicao.iloc[0])
             fase = int(cols_composicao.iloc[1]) if pd.notna(cols_composicao.iloc[1]) else 25
-            esforco = cols_composicao.iloc[2]
+            esforco = cols_composicao.iloc[2] if pd.notna(cols_composicao.iloc[2]) else "Sem Esforço"
             gmd = tratar_decimal(cols_composicao.iloc[3])
             obj_atual = CategoriaAnimal.objects.create(peso_vivo=peso_vivo, fase=fase, esforco=esforco, gmd=gmd)
         

@@ -18,7 +18,9 @@ def gerar_select_categorias():
 
 def exigencias(request):
     query = request.GET.get('query', '')
-    exigencia_lista = Exigencia.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    exigencia_lista = Exigencia.objects.select_related('categoria').filter(
+        nome__icontains=query
+    ).order_by('-is_active', 'nome', '-categoria__esforco')
     paginator = Paginator(exigencia_lista, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
 
@@ -28,7 +30,6 @@ def exigencias(request):
         for cat in categorias
     ])
 
-    select_categorias = gerar_select_categorias()
     return render(request, 'exigencias.html', {
         'exigencias': page_obj,
         'page_obj': page_obj,

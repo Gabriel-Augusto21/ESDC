@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class CategoriaAnimal(models.Model):
     fase = models.IntegerField(default = 0)
-    esforco = models.CharField(max_length=255, null=True, default="Sem esforço")
+    esforco = models.CharField(max_length=255, default="Sem esforço")
     peso_vivo = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     gmd = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     is_active = models.BooleanField(default=True)
