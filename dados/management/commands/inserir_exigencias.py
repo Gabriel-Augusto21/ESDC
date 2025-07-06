@@ -7,7 +7,7 @@ from decimal import Decimal, InvalidOperation
 from dados.management.commands.inserir_dados import tratar_decimal
 
 class Command(BaseCommand):
-    help = "Inserindo dados alimentares"
+    help = "Inserindo dados de Exigência"
 
     def handle(self, *args, **options):
         caminho_arquivo = os.path.join(settings.BASE_DIR, 'alimentos', 'formulacao.xlsm')
@@ -31,7 +31,7 @@ class Command(BaseCommand):
             engine="openpyxl",
             nrows=nrows
         )
-        # print(dados_exigencia)
+
         for i, primeira_col in enumerate(dados_exigencia.iloc[:,0]):
             if i == 0: continue
             cols_composicao = dados_composicao_exigencia.iloc[i]
@@ -48,7 +48,5 @@ class Command(BaseCommand):
 
             Exigencia.objects.create(nome=nome, ed=ed, pb=pb, categoria=obj_atual)
 
-        self.stdout.write(self.style.SUCCESS(f"{i} exigências adicionados com sucesso"))
+        self.stdout.write(self.style.SUCCESS(f"{i} exigências/categoria_exigencia adicionados com sucesso"))
         
-        #Criando composições e exigencias
-        # for i in enumerate(dados_exigencia.iloc[:,0])
