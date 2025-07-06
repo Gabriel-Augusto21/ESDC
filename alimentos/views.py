@@ -398,6 +398,7 @@ def composicao_json(request):
             'alimento_id': comp.alimento_id,
             'nutriente_id': comp.nutriente.id,
             'nutriente_nome': comp.nutriente.nome,
+            'nutriente_unidade': comp.nutriente.unidade,
             'valor': str(comp.valor)
         }
         for comp in composicao

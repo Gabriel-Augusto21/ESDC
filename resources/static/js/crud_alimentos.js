@@ -119,11 +119,11 @@ document.body.addEventListener('click', function (evento){
         .then(({ alimento, composicao }) => {
             if (composicao && composicao.length > 0) {
                 let dados_composicao = '';
-                for (let i = 0; i < composicao.length; i += 2) {
+                for (let i = 0; i < composicao.length; i += 3) {
                     const bloco = `
                         <div class="row mb-3">
                             <div class="col">
-                                <label class="form-label">${composicao[i].nutriente_nome}</label>
+                                <label class="form-label">${composicao[i].nutriente_nome} (${composicao[i].nutriente_unidade})</label>
                                 <div class="d-flex align-items-center">
                                     <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i].valor}">
                                 </div>
@@ -131,9 +131,17 @@ document.body.addEventListener('click', function (evento){
 
                             ${composicao[i + 1] ? `
                             <div class="col">
-                                <label class="form-label">${composicao[i + 1].nutriente_nome}</label>
+                                <label class="form-label">${composicao[i + 1].nutriente_nome} (${composicao[i].nutriente_unidade})</label>
                                 <div class="d-flex align-items-center">
                                     <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 1].valor}">
+                                </div>
+                            </div>
+                            ` : ''}
+                            ${composicao[i + 2] ? `
+                            <div class="col">
+                                <label class="form-label">${composicao[i + 2].nutriente_nome} (${composicao[i].nutriente_unidade})</label>
+                                <div class="d-flex align-items-center">
+                                    <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 2].valor}">
                                 </div>
                             </div>
                             ` : ''}

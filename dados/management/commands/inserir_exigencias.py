@@ -3,7 +3,6 @@ from exigencias.models import Exigencia, ComposicaoExigencia, CategoriaAnimal
 import pandas as pd
 import os
 from django.conf import settings
-from decimal import Decimal, InvalidOperation
 from dados.management.commands.inserir_dados import tratar_decimal
 
 class Command(BaseCommand):

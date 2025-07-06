@@ -32,7 +32,7 @@ class Nutriente(models.Model):
 class ComposicaoAlimento(models.Model):
     alimento = models.ForeignKey(Alimento, on_delete=models.CASCADE)
     nutriente = models.ForeignKey(Nutriente, on_delete=models.CASCADE)
-    valor = models.DecimalField(max_digits=5, decimal_places=2)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

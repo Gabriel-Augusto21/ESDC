@@ -165,6 +165,7 @@ export function inserir(modalHtml){
 }
 export function crud_composicao(composicao, html){
     Swal.fire({
+        width: '700px',
         title: 'Composicao Alimentar',
         html: html,
         confirmButtonColor: '#2f453a',

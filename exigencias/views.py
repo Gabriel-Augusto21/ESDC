@@ -20,7 +20,7 @@ def exigencias(request):
     query = request.GET.get('query', '')
     exigencia_lista = Exigencia.objects.select_related('categoria').filter(
         nome__icontains=query
-    ).order_by('-is_active', 'nome', '-categoria__esforco')
+    ).order_by('-is_active', 'nome', 'categoria__peso_vivo')
     paginator = Paginator(exigencia_lista, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
 
