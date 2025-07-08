@@ -5,10 +5,6 @@ from django.http import HttpResponse,JsonResponse as js
 from django.core.paginator import Paginator
 import json
 from decimal import Decimal, InvalidOperation
-from django.views.decorators.http import require_GET
-
-
-
 
 #EXIGÊNCIAS
 def gerar_select_categorias():
@@ -33,23 +29,21 @@ def exigencias(request):
     })
 
 def get_exigencia(request):
-    if request.method == "GET":
-        id = request.GET.get("id")
-        try:
-            exigencia = Exigencia.objects.select_related('categoria').get(id=id)
-            data = {
-                "id": exigencia.id,
-                "nome": exigencia.nome,
-                "pb": float(exigencia.pb),
-                "ed": float(exigencia.ed),
-                "categoria_id": exigencia.categoria.id,
-                "categoria_descricao": exigencia.categoria.descricao_fase_esforco
-            }
-            return js(data)
-        except Exigencia.DoesNotExist:
-            return js({"error": "Exigência não encontrada"}, status=404)
-        
-@require_GET
+    id = request.GET.get("id")
+    try:
+        exigencia = Exigencia.objects.select_related('categoria').get(id=id)
+        data = {
+            "id": exigencia.id,
+            "nome": exigencia.nome,
+            "pb": float(exigencia.pb),
+            "ed": float(exigencia.ed),
+            "categoria_id": exigencia.categoria.id,
+            "categoria_descricao": exigencia.categoria.descricao_fase_esforco
+        }
+        return js(data)
+    except Exigencia.DoesNotExist:
+        return js({"error": "Exigência não encontrada"}, status=404)
+    
 def get_categorias(request):
     try:
         categorias = CategoriaAnimal.objects.filter(is_active=True)
@@ -138,10 +132,10 @@ def desativar_exigencia(request):
             exigencia = Exigencia.objects.get(id=id)
             exigencia.is_active = False
             exigencia.save()
-            return HttpResponse(status=204)
+            return js({'Mensagem': f'Exigência "{exigencia.nome}" desativada com sucesso!'}, status=200)
         except Exigencia.DoesNotExist:
-            return js({'erro': 'Exigência não encontrada'}, status=404)
-    return js({'erro': 'Método não permitido'}, status=405)
+            return js({'Mensagem': 'Exigência não encontrada'}, status=404)
+    return js({'Mensagem': 'Método não permitido'}, status=405)
 
 def ativar_exigencia(request):
     if request.method == 'POST':
@@ -150,10 +144,10 @@ def ativar_exigencia(request):
             exigencia = Exigencia.objects.get(id=id)
             exigencia.is_active = True
             exigencia.save()
-            return HttpResponse(status=204)
+            return js({'Mensagem': f'Exigência "{exigencia.nome}" ativada com sucesso!'}, status=200)
         except Exigencia.DoesNotExist:
-            return js({'erro': 'Exigência não encontrada'}, status=404)
-    return js({'erro': 'Método não permitido'}, status=405)
+            return js({'Mensagem': 'Exigência não encontrada'}, status=404)
+    return js({'Mensagem': 'Método não permitido'}, status=405)
 
 def listar_composicoes_exigencia(request):
     exigencia_id = request.GET.get('exigencia_id')
