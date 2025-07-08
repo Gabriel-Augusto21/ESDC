@@ -13,40 +13,48 @@
     </thead>
     <tbody>
         {% for exigencia in exigencias %}
-        <tr class="container" data-id="{{ exigencia.id }}" data-nome="{{ exigencia.nome }}" data-id-class="{{ exigencia.categoria.id }}"
-        data-pb="{{ exigencia.pb }}" data-ed="{{ exigencia.ed }}" data-categoria="{{ exigencia.categoria.id }}" data-categorias-json='{{ categorias_json|safe }}'
-        {% if exigencia.is_active %}
-            style="background-color: #ffffff"
-        {% else %}
-            style="background-color:rgba(190, 190, 190, 0.31)"
-        {% endif %}>
+        <tr class="container"
+            data-id="{{ exigencia.id }}"
+            data-nome="{{ exigencia.nome }}"
+            data-id-class="{{ exigencia.categoria.id }}"
+            data-pb="{{ exigencia.pb }}"
+            data-ed="{{ exigencia.ed }}"
+            data-categoria="{{ exigencia.categoria.id }}"
+            {% if exigencia.is_active %}
+                style="background-color: #ffffff"
+            {% else %}
+                style="background-color:rgba(190, 190, 190, 0.31)"
+            {% endif %}>
             <td id="txtNome">{{ exigencia.nome }}</td>
             <td>{{ exigencia.categoria.peso_vivo }}</td>
-            <td>{{exigencia.categoria.fase}}</td>
-            <td>{{exigencia.categoria.esforco}}</td>
-            <td>{{exigencia.ed}}</td>
-            <td>{{exigencia.pb}}</td>
-            <td class="text-end">{% if exigencia.is_active %}
-                <button class="btn btn-sm desativar-btn" alt="Ativar">
-                    <img src="{% static 'img/visibility.png' %}" width="20">
-                </button>
-                <button class="btn btn-sm update-btn" id="{{exigencia.id}}">
-                    <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
-                </button>
+            <td>{{ exigencia.categoria.fase }}</td>
+            <td>{{ exigencia.categoria.esforco }}</td>
+            <td>{{ exigencia.ed }}</td>
+            <td>{{ exigencia.pb }}</td>
+            <td class="text-end">
+                {% if exigencia.is_active %}
+                    <button class="btn btn-sm desativar-btn" alt="Desativar">
+                        <img src="{% static 'img/visibility.png' %}" width="20">
+                    </button>
+                    <button class="btn btn-sm update-btn" id="{{ exigencia.id }}">
+                        <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
+                    </button>
                 {% else %}
-                <button class="btn btn-sm ativar-btn" alt="Desativar">
-                    <img src="{% static 'img/not_visibility.png' %}" width="20">
-                </button>
+                    <button class="btn btn-sm ativar-btn" alt="Ativar">
+                        <img src="{% static 'img/not_visibility.png' %}" width="20">
+                    </button>
                 {% endif %}
             </td>
         </tr>
-         {% empty %}
-        <tr><td colspan="4" class="text-center">Nenhuma exigência encontrada.</td></tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center">Nenhuma exigência encontrada.</td></tr>
         {% endfor %}
     </tbody>
 </table>
+
 <!-- Paginador -->
 {% include "paginador.html" %}
-<!-- SweetAlert2 e HTMX - Copiei todo o js e joguei dentro de dois arquivos na pasta de estaticos -->
-<script src="{% static 'js/sweetalert2@11.js'%}"></script>
-<script src="{% static 'js/htmx.js'%}"></script>
+
+<!-- JS -->
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static 'js/htmx.js' %}"></script>

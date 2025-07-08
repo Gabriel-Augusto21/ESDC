@@ -8,6 +8,7 @@ urlpatterns = [
    
    path("exigencias/", views.exigencias, name="exigencias"),
    path("get_exigencia/", views.get_exigencia, name="get_exigencia"),
+   path("get_categorias/", views.get_categorias, name="get_categorias"),
    path("buscar_exigencia/", views.busca_exigencia_nome, name="buscar_exigencia"),
    path("inserir_exigencia/", views.inserir_exigencia, name="inserir_exigencia"),
    path("atualizar_exigencia/", views.atualizar_exigencia, name="atualizar_exigencia"),

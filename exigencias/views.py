@@ -5,6 +5,8 @@ from django.http import HttpResponse,JsonResponse as js
 from django.core.paginator import Paginator
 import json
 from decimal import Decimal, InvalidOperation
+from django.views.decorators.http import require_GET
+
 
 
 
@@ -23,18 +25,11 @@ def exigencias(request):
     ).order_by('-is_active', 'nome', 'categoria__peso_vivo')
     paginator = Paginator(exigencia_lista, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
-
-    categorias = CategoriaAnimal.objects.filter(is_active=True)
-    categorias_json = json.dumps([
-        {"id": cat.id, "descricao": cat.descricao_fase_esforco}
-        for cat in categorias
-    ])
-
+    
     return render(request, 'exigencias.html', {
         'exigencias': page_obj,
         'page_obj': page_obj,
         'query': query,
-        'categorias_json': categorias_json,
     })
 
 def get_exigencia(request):
@@ -53,6 +48,18 @@ def get_exigencia(request):
             return js(data)
         except Exigencia.DoesNotExist:
             return js({"error": "Exigência não encontrada"}, status=404)
+        
+@require_GET
+def get_categorias(request):
+    try:
+        categorias = CategoriaAnimal.objects.filter(is_active=True)
+        data = [
+            {"id": cat.id, "descricao": cat.descricao_fase_esforco}
+            for cat in categorias
+        ]
+        return js(data, safe=False)
+    except Exception as e:
+        return js({'erro': str(e)}, status=500)
 
 def busca_exigencia_nome(request):
     nome = request.GET.get('nome', '')
