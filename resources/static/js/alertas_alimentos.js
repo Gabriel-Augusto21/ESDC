@@ -109,7 +109,7 @@ export function atualizar(html, alimento){
 }
 export function inserir(modalHtml){
     swal.fire({
-        width: '700px',
+        width: '800px',
         title: "Inserir Alimento",
         html: modalHtml,
         showCancelButton: true,

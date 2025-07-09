@@ -9,30 +9,25 @@ export function alerta_inserir(btn) {
             </option>`).join("");
 
             Swal.fire({
-                title: 'Inserir Nutriente',
+                title: 'Inserir Nutriente sss',
                 html: `
-                    <div class="container">
-                        <div class="row mb-2">
-                            <div class="col-4">
-                                <label for="swal-nome" class="form-label">Nome:</label>
-                            </div>
-                            <div class="col-8">
-                                <input id="swal-nome" class="form-control" placeholder="Digite o nome">
+                    <div class="container my-3" style="text-align: start;">
+                        <div class="row mb-4">
+                            <!-- Nome do Alimento -->
+                            <div class="col">
+                                <label for="swal-nome" class="form-label">Nome do Nutriente</label>
+                                <input id="swal-nome" class="form-control" type="text" placeholder="Digite o nome do nutriente">
                             </div>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-4">
+                        <div class="row mb-4">
+                            <div class="col">
                                 <label for="swal-unidade" class="form-label">Unidade:</label>
-                            </div>
-                            <div class="col-8">
                                 <input id="swal-unidade" class="form-control" placeholder="Digite a unidade">
                             </div>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-4">
+                        <div class="row mb-4">
+                            <div class="col">
                                 <label for="idClassificacao" class="form-label">Classificação:</label>
-                            </div>
-                            <div class="col-8">
                                 <select id="idClassificacao" class="form-control">
                                     ${optionsHtml}
                                 </select>

@@ -28,35 +28,30 @@ document.body.addEventListener('click', function (evento){
             const modalHtml = `
                 <div class="container my-3" style="text-align: start;">
                     <div class="row mb-4">
-                        <div class="col" style="text-align: start;">
+                        <!-- Nome do Alimento -->
+                        <div class="col col-md-6 mb-3 mb-md-0" style="text-align: start;">
                             <label for="txtNome" class="form-label">Nome do alimento</label>
                             <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" value="${alimento.nome}">
-                        </div>
-                        <div class="col">
-                            <label for="idClassificacao" class="form-label">Classificação</label>
-                            <select class="form-control" id="idClassificacao">
-                                ${optionsHtml}
-                            </select>
                         </div>
                     </div>
 
                     <div class="row ">
-                        <div class="col">
+                        <div class="col-12 col-md-4 mb-3 mb-md-0">
                             <label for="txtMs" class="form-label">Matéria Seca (%)</label>
                             <div class="d-flex align-items-center">
-                                <input id="txtMs" class="form-control me-2" type="text" placeholder="Valor" value="${alimento.ms}">
+                                <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="${alimento.ms}">
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-md-4 mb-3 mb-md-0">
                             <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
                             <div class="d-flex align-items-center">
-                                <input id="txtEd" class="form-control me-2" type="text" placeholder="Valor" value="${alimento.ed}">
+                                <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="${alimento.ed}">
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-12 col-md-4">
                             <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
                             <div class="d-flex align-items-center">
-                                <input id="txtPb" class="form-control me-2" type="text" placeholder="Valor" value="${alimento.pb}">
+                                <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="${alimento.pb}">
                             </div>
                         </div>
                     </div>
@@ -72,40 +67,43 @@ document.body.addEventListener('click', function (evento){
                     `<option value="${n.id}">${n.nome}</option>`).join("");
                 const modalHtml = `
                     <div class="container my-3" style="text-align: start;">
-                    <div class="row mb-4">
-                        <div class="col" style="text-align: start;">
-                            <label for="txtNome" class="form-label">Nome do alimento</label>
-                            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento">
-                        </div>
-                        <div class="col">
-                            <label for="idClassificacao" class="form-label">Classificação</label>
-                            <select class="form-control" id="idClassificacao">
-                                ${optionsHtml}
-                            </select>
-                        </div>
-                    </div>
+                        <div class="row mb-4">
+                            <!-- Nome do Alimento -->
+                            <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+                                <label for="txtNome" class="form-label">Nome do alimento</label>
+                                <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento">
+                            </div>
 
-                    <div class="row ">
-                        <div class="col">
-                            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-                            <div class="d-flex align-items-center">
-                                <input id="txtMs" class="form-control me-2" type="text" placeholder="Valor" value="0.00">
+                            <!-- Classificação -->
+                            <div class="col-12 col-md-6">
+                                <label for="idClassificacao" class="form-label">Classificação</label>
+                                <select class="form-control" id="idClassificacao">
+                                    ${optionsHtml}
+                                </select>
                             </div>
                         </div>
-                        <div class="col">
-                            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-                            <div class="d-flex align-items-center">
-                                <input id="txtEd" class="form-control me-2" type="text" placeholder="Valor" value="0.00">
+
+                        <div class="row">
+                            <!-- Matéria Seca -->
+                            <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+                                <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="0.00">
                             </div>
-                        </div>
-                        <div class="col">
-                            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-                            <div class="d-flex align-items-center">
-                                <input id="txtPb" class="form-control me-2" type="text" placeholder="Valor" value="0.00">
+
+                            <!-- Energia Digestiva -->
+                            <div class="col-12 col-md-4 mb-3 mb-md-0">
+                                <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+                                <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="0.00">
+                            </div>
+
+                            <!-- Proteína Bruta -->
+                            <div class="col-12 col-md-4">
+                                <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+                                <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="0.00">
                             </div>
                         </div>
                     </div>
-                </div>`;
+`;
                 inserir(modalHtml);
             })
             .catch(error => {
