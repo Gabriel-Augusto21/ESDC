@@ -16,6 +16,7 @@ document.body.addEventListener('click', function (e) {
    if (desativar_btn) {
       e.preventDefault();
       alerta_desativar(desativar_btn);
+      console.log(desativar_btn)
    }
    if (ativar_btn) {
       e.preventDefault();

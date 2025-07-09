@@ -10,7 +10,7 @@ class Command(BaseCommand):
    def handle(self, *args, **options):
       cursor = connection.cursor()
 
-      app_label = ["alimentos"]
+      app_label = ["alimentos", "exigencias"]
       tables = [
          table
          for table in connection.introspection.table_names()

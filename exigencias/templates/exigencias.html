@@ -2,17 +2,17 @@
     {% load static %}
     {% block conteudo %}
     <div class="container mt-3">
-        <h1>Alimentos</h1>
+        <h1>Exigências</h1>
         <!-- Formulário de busca -->
         <form method="get" class="form-group my-4 d-flex justify-content-center mx-auto">
             <div class="col-8 col-lg-4">
                 <div class="input-group">
                     <input class="form-control"
-                        id="txtBuscaNomeAlimento"
+                        id="txtBuscaNomeExigencia"
                         name="query"
                         value="{{ query }}"
                         type="text"
-                        placeholder="Informe o nome de um alimento..."
+                        placeholder="Informe o nome de uma exigência..."
                         style="border-radius: 20px 0 0 20px;">
                     <div class="input-group-append">
                         <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
@@ -30,7 +30,6 @@
         <!-- Contador de registros -->
         <legend class="text-center small">
             {% if page_obj.paginator.count == 0 %}
-            Nenhum registro cadastrado
             {% elif page_obj.paginator.count == 1 %}
             1 registro encontrado
             {% else %}
@@ -38,15 +37,19 @@
             {% endif %}
         </legend>
         <!-- Registros -->
-        {% include 'alimentos_table.html' %}
+        {% include 'exigencias_table.html' %}
         <br>
     </div>
 
-    <script type="module" src="{% static 'js/crud_alimentos.js' %}"></script>
+    <script type="module" src="{% static 'js/exigencias.js' %}"></script>
     <script>
         const csrf_token = '{{ csrf_token }}';
             document.body.addEventListener('htmx:configRequest', (event) => {
                 event.detail.headers['X-CSRFToken'] = csrf_token;
             });
     </script>
+    <script id="categorias_json" type="application/json">
+    {{ categorias_json|safe }}
+    </script>
+
     {% endblock %}

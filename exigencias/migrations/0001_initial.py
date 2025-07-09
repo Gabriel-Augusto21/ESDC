@@ -8,11 +8,38 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = []
+    dependencies = [
+        ("alimentos", "0001_initial"),
+    ]
 
     operations = [
         migrations.CreateModel(
-            name="Alimento",
+            name="CategoriaAnimal",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("fase", models.IntegerField(default=0)),
+                ("esforco", models.CharField(default="Sem esforço", max_length=255)),
+                (
+                    "peso_vivo",
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=5),
+                ),
+                (
+                    "gmd",
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=5),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Exigencia",
             fields=[
                 (
                     "id",
@@ -26,61 +53,24 @@ class Migration(migrations.Migration):
                 ("nome", models.CharField(max_length=255)),
                 (
                     "pb",
-                    models.DecimalField(decimal_places=2, default=0.0, max_digits=5),
-                ),
-                (
-                    "ms",
-                    models.DecimalField(decimal_places=2, default=0.0, max_digits=5),
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=7),
                 ),
                 (
                     "ed",
-                    models.DecimalField(decimal_places=2, default=0.0, max_digits=5),
+                    models.DecimalField(decimal_places=2, default=0.0, max_digits=7),
                 ),
                 ("is_active", models.BooleanField(default=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name="Classificacao",
-            fields=[
                 (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("nome", models.CharField(max_length=100, unique=True)),
-                ("is_active", models.BooleanField(default=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name="Nutriente",
-            fields=[
-                (
-                    "id",
-                    models.BigAutoField(
-                        auto_created=True,
-                        primary_key=True,
-                        serialize=False,
-                        verbose_name="ID",
-                    ),
-                ),
-                ("nome", models.CharField(max_length=255)),
-                ("unidade", models.CharField(max_length=100)),
-                ("is_active", models.BooleanField(default=True)),
-                (
-                    "classificacao",
+                    "categoria",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="alimentos.classificacao",
+                        to="exigencias.categoriaanimal",
                     ),
                 ),
             ],
         ),
         migrations.CreateModel(
-            name="ComposicaoAlimento",
+            name="ComposicaoExigencia",
             fields=[
                 (
                     "id",
@@ -91,13 +81,13 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("valor", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("valor", models.DecimalField(decimal_places=2, max_digits=5)),
                 ("is_active", models.BooleanField(default=True)),
                 (
-                    "alimento",
+                    "exigencia",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="alimentos.alimento",
+                        to="exigencias.exigencia",
                     ),
                 ),
                 (
@@ -108,13 +98,5 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-        ),
-        migrations.AddField(
-            model_name="alimento",
-            name="classificacao",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                to="alimentos.classificacao",
-            ),
         ),
     ]

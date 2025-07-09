@@ -6,11 +6,14 @@ class Classificacao(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-     return f"Nome = {self.nome})"
+     return self.nome
     
 class Alimento(models.Model):
     classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
     nome = models.CharField(max_length=255, null=False)
+    pb = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    ms = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    ed = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -18,7 +21,7 @@ class Alimento(models.Model):
 
 class Nutriente(models.Model):
     nome = models.CharField(max_length=255, null=False)
-    categoria = models.CharField(max_length=255, null=True, blank=True)
+    classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
     unidade = models.CharField(max_length=100, null=False)
     is_active = models.BooleanField(default=True)
 
@@ -29,7 +32,8 @@ class Nutriente(models.Model):
 class ComposicaoAlimento(models.Model):
     alimento = models.ForeignKey(Alimento, on_delete=models.CASCADE)
     nutriente = models.ForeignKey(Nutriente, on_delete=models.CASCADE)
-    valor = models.DecimalField(max_digits=5, decimal_places=2)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.alimento} - {self.nutriente}: {self.valor}"
