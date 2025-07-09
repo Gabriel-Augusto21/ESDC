@@ -1,6 +1,6 @@
 export function ativar(elemento){
     Swal.fire({
-        title: 'Tem certeza que deseja desativar esse alimento?',
+        title: 'Tem certeza que deseja ativar esse alimento?',
         text: "Você poderá desfazer isso mais tarde!",
         icon: 'warning',
         confirmButtonColor: '#2f453a',

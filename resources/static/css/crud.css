@@ -28,7 +28,6 @@ form button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
 }
-
 .tabela {
     border-collapse: separate; /* necessário para o espaçamento funcionar */
     border-spacing: 0 13px;    /* espaçamento entre as linhas */
@@ -37,6 +36,9 @@ form button:disabled {
 
 .tabela tr{
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+.tabela td, th{
+    padding: 10px;
 }
 
 .botao {

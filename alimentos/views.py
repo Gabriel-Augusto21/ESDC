@@ -269,9 +269,7 @@ def atualizar_alimento(request):
         pb = safe_decimal(request.POST.get('pb'))
        
         if Alimento.objects.exclude(id=id_alimento).filter(nome__iexact=nome_alimento).exists():
-            return js({'Mensagem': "Outra classificação já existe com esse nome!"}, status=401)
-        if Alimento.objects.filter(nome__iexact=nome_alimento).exists():
-            return js({'Mensagem': "Nome da classificação não foi alterado!"}, status=401)
+            return js({'Mensagem': "Outro alimento já existe com esse nome!"}, status=401)
         
         alimento = Alimento.objects.get(id=id_alimento)
         # Verifica se todos os dados são iguais (nome, classificação, ms, ed, pb)

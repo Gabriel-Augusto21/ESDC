@@ -1,12 +1,12 @@
 {% load static %}
-<table class="table table-borderless tabela table-hover">
+<table class="tabela table-responsive-sm">
     <thead>
         <tr>
-            <th>Nome</th>
-            <th>Classificação</th>
-            <th>MS</th>
-            <th>ED</th>
-            <th>PB</th>
+            <th>Alimento</th>
+            <th  class="d-none d-sm-table-cell">Classificação</th>
+            <th>Matéria Seca</th>
+            <th>Proteína Brunta</th>
+            <th  class="d-none d-sm-table-cell">Energia Digestiva</th>
             <th class="text-end">Ações</th>
         </tr>
     </thead>
@@ -19,10 +19,10 @@
             style="background-color:rgba(190, 190, 190, 0.31)"
         {% endif %}>
             <td id="txtNome">{{ alimento.nome }}</td>
-            <td>{{alimento.classificacao.nome}}</td>
-            <td>{{alimento.ms}}</td>
-            <td>{{alimento.ed}}</td>
-            <td>{{alimento.pb}}</td>
+            <td  class="d-none d-sm-table-cell">{{alimento.classificacao.nome}}</td>
+            <td>{{alimento.ms}} %</td>
+            <td>{{alimento.pb}} Mcal</td>
+            <td  class="d-none d-sm-table-cell">{{alimento.ed}} %MS</td>
             <td class="text-end">{% if alimento.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Ativar">
                     <img src="{% static 'img/visibility.png' %}" width="20">
