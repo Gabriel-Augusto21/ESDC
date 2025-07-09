@@ -26,42 +26,42 @@ document.body.addEventListener('click', function (evento){
                 </option>`
             ).join('');
             const modalHtml = `
-                <div class="container my-3" style="text-align: start;">
-                    <div class="row mb-4">
-                        <!-- Nome do Alimento -->
-                        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
-                            <label for="txtNome" class="form-label">Nome do alimento</label>
-                            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" value="${alimento.nome}">
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label for="idClassificacao" class="form-label">Classificação</label>
-                            <select class="form-control" id="idClassificacao">
-                                ${optionsHtml}
-                            </select>
-                        </div>
+            <div class="container my-3" style="text-align: start;">
+                <div class="row mb-4">
+                    <!-- Nome do Alimento -->
+                    <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+                        <label for="txtNome" class="form-label">Nome do alimento</label>
+                        <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" value="${alimento.nome}">
                     </div>
+                    <div class="col-12 col-md-6">
+                        <label for="idClassificacao" class="form-label">Classificação</label>
+                        <select class="form-control" id="idClassificacao">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                </div>
 
-                    <div class="row ">
-                        <div class="col-12 col-md-4 mb-3 mb-md-0">
-                            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-                            <div class="d-flex align-items-center">
-                                <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="${alimento.ms}">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4 mb-3 mb-md-0">
-                            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-                            <div class="d-flex align-items-center">
-                                <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="${alimento.ed}">
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-                            <div class="d-flex align-items-center">
-                                <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="${alimento.pb}">
-                            </div>
+                <div class="row ">
+                    <div class="col-12 col-md-4 mb-3 mb-md-0">
+                        <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+                        <div class="d-flex align-items-center">
+                            <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="${alimento.ms}">
                         </div>
                     </div>
-                </div>`;
+                    <div class="col-12 col-md-4 mb-3 mb-md-0">
+                        <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+                        <div class="d-flex align-items-center">
+                            <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="${alimento.ed}">
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+                        <div class="d-flex align-items-center">
+                            <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="${alimento.pb}">
+                        </div>
+                    </div>
+                </div>
+            </div>`;
             atualizar(modalHtml, alimento);
         })
     }else if(botao.classList.contains('insert-btn')){
