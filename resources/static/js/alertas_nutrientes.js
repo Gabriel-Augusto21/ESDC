@@ -9,23 +9,23 @@ export function alerta_inserir(btn) {
             </option>`).join("");
 
             Swal.fire({
-                title: 'Inserir Nutriente sss',
+                title: 'Inserir Nutriente',
                 html: `
                     <div class="container my-3" style="text-align: start;">
+                        <!-- Nome do Nutriente -->
                         <div class="row mb-4">
-                            <!-- Nome do Alimento -->
                             <div class="col">
                                 <label for="swal-nome" class="form-label">Nome do Nutriente</label>
                                 <input id="swal-nome" class="form-control" type="text" placeholder="Digite o nome do nutriente">
                             </div>
                         </div>
                         <div class="row mb-4">
+                            <!-- Unidade -->
                             <div class="col">
                                 <label for="swal-unidade" class="form-label">Unidade:</label>
                                 <input id="swal-unidade" class="form-control" placeholder="Digite a unidade">
                             </div>
-                        </div>
-                        <div class="row mb-4">
+                            <!-- Classificação -->
                             <div class="col">
                                 <label for="idClassificacao" class="form-label">Classificação:</label>
                                 <select id="idClassificacao" class="form-control">

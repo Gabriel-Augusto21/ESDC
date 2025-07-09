@@ -29,9 +29,15 @@ document.body.addEventListener('click', function (evento){
                 <div class="container my-3" style="text-align: start;">
                     <div class="row mb-4">
                         <!-- Nome do Alimento -->
-                        <div class="col col-md-6 mb-3 mb-md-0" style="text-align: start;">
+                        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
                             <label for="txtNome" class="form-label">Nome do alimento</label>
                             <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" value="${alimento.nome}">
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="idClassificacao" class="form-label">Classificação</label>
+                            <select class="form-control" id="idClassificacao">
+                                ${optionsHtml}
+                            </select>
                         </div>
                     </div>
 

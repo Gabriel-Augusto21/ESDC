@@ -70,9 +70,6 @@ def atualizar_nutriente(request):
     if Nutriente.objects.exclude(id=id).filter(nome__iexact=nome).exists():
         return js({'Mensagem': "Outro nutriente já existe com esse nome!"}, status=401)
     
-    if Nutriente.objects.filter(nome__iexact=nome).exists():
-        return js({'Mensagem': "Nome da nutriente não foi alterado!"}, status=401)
-    
     if not id or not nome or not unidade:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
