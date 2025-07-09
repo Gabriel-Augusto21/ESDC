@@ -1,5 +1,11 @@
 /* ajustes gerais do sistema */
 html {
+    /* config para que não dê pro usuário selecionar e consequentemente copiar a base de dados */
+    user-select: none;
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE/Edge */
+
     font-size: 0.8em; 
 }
 
