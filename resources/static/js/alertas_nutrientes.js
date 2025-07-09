@@ -80,7 +80,6 @@ export function alerta_inserir(btn) {
     });
 
 }
-
 // 🔔 Atualizar Nutriente
 export function alerta_update(btn) {
     const id = btn.dataset.id;
@@ -192,7 +191,6 @@ export function alerta_update(btn) {
             Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
     });
 }
-
 // 🔒 Ativar Nutriente
 export function alerta_ativar(btn) {
     const url = btn.dataset.url;
@@ -215,7 +213,6 @@ export function alerta_ativar(btn) {
         }
     });
 }
-
 // 🔓 Desativar Nutriente
 export function alerta_desativar(btn) {
     const url = btn.dataset.url;
@@ -238,7 +235,6 @@ export function alerta_desativar(btn) {
         }
     });
 }
-
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
@@ -306,12 +302,10 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }
     }
 });
-
 // Erro de inserção
 htmx.on("htmx:responseError", (event) => {
    const status = event.detail.xhr.status;
    const resp = JSON.parse(event.detail.xhr.response);
-
    if (status === 400 && resp.Mensagem?.includes("já existe")) {
       Swal.fire({
          title: 'Erro!',

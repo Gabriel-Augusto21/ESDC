@@ -20,7 +20,6 @@ export function ativar(elemento){
         }
     });
 }
-
 export function desativar(elemento){
     Swal.fire({
         title: 'Deseja desativar essa exigência?',
@@ -43,7 +42,6 @@ export function desativar(elemento){
         }
     });
 }
-
 export function inserir(html){
     Swal.fire({
         width: '700px',
@@ -77,7 +75,6 @@ export function inserir(html){
         }
     });
 }
-
 export function atualizar(html, exigencia){
     Swal.fire({
         width: '700px',
@@ -117,19 +114,15 @@ export function atualizar(html, exigencia){
         }
     });
 }
-
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation();
-    const status = event.detail.xhr.status;
     let mensagem = 'Erro inesperado.';
-
     try {
         const resp = JSON.parse(event.detail.xhr.responseText);
         if (resp.Mensagem) mensagem = resp.Mensagem;
     } catch (e) {
         console.error("Erro ao interpretar JSON:", e);
     }
-
     Swal.fire({
         title: 'Erro!',
         text: mensagem,
@@ -138,7 +131,6 @@ htmx.on("htmx:responseError", (event) => {
         confirmButtonColor: '#2f453a',
     });
 });
-
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
     if (event.detail.xhr.status === 200) {

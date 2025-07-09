@@ -32,16 +32,11 @@ export function alerta_inserir(btn) {
         }
     });
 }
-
-
 // 🔁 Atualizar Classificação
 export function alerta_update(btn) {
     const id = btn.dataset.id;
-    const tr = btn.closest('tr');
     // const nomeAntigo = tr.querySelector('#txtNome')?.textContent.trim() || '';
     const nomeAntigo = btn.dataset.nome;
-    console.log(nomeAntigo)
-
 
     Swal.fire({
         title: 'Atualizar Classificação',
@@ -81,8 +76,6 @@ export function alerta_update(btn) {
         }
     });
 }
-
-
 export function alerta_ativar(ativar_btn){
    const url = ativar_btn.dataset.url;
    Swal.fire({
@@ -109,7 +102,6 @@ export function alerta_ativar(ativar_btn){
 }
 export function alerta_desativar(desativar_btn){
    const url = desativar_btn.dataset.url;
-   
    Swal.fire({
       title: 'Tem certeza que deseja desativar essa classificação?',
       text: "Você poderá desfazer isso mais tarde!",
@@ -132,7 +124,6 @@ export function alerta_desativar(desativar_btn){
       }
    });
 }
-
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);

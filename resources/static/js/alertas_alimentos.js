@@ -15,7 +15,6 @@ export function ativar(elemento){
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/ativar_alimento/';
-            console.log("A ativar: ", elemento.dataset.nome);
             htmx.ajax('POST', url, {
                 values: {
                     id: elemento.dataset.id,
@@ -23,8 +22,6 @@ export function ativar(elemento){
                 },
                 swap: 'none'
             });
-        }else{
-            console.log("O usuário deseja cancelar")
         }
     });
 }
@@ -45,7 +42,6 @@ export function desativar(elemento){
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/desativar_alimento/';
-            console.log("A desativar: ", elemento.dataset.nome);
             htmx.ajax('POST', url, {
                 values: {
                     id: elemento.dataset.id,
@@ -53,8 +49,6 @@ export function desativar(elemento){
                 },
                 swap: 'none'
             });
-        }else{
-            console.log("O usuário deseja cancelar");
         }
     });
 }
@@ -110,8 +104,6 @@ export function atualizar(html, alimento){
                     alert('Erro: ' + xhr.responseText);
                 }
             });
-        }else{
-            console.log("O usuário deseja cancelar")
         }
     });
 }
@@ -145,7 +137,6 @@ export function inserir(modalHtml){
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            console.log(nome, idClass, ms, ed, pb)
             return { nome, idClass, ms, ed, pb};
         }
     }).then((resp) => {
@@ -252,7 +243,6 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }
     }
 });
-
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation(); // Evita que o erro suba
     const status = event.detail.xhr.status;

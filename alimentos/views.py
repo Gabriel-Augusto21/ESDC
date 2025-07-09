@@ -9,7 +9,6 @@ from decimal import Decimal, InvalidOperation
 
 def safe_decimal(valor, default=Decimal('0')):
     try:
-        # Pode vir como string, então converter para Decimal
         return Decimal(valor)
     except (InvalidOperation, TypeError):
         return default
@@ -367,18 +366,18 @@ def apagar_alimento(request):
 #COMPOSIÇÃO DE ALIMENTO
 def composicaoAlimento(request):
     query = request.GET.get('query', '').strip()
-    composicaoAlimento_lista = ComposicaoAlimento.objects.all()
+    lista_composicao_alimento = ComposicaoAlimento.objects.all()
 
     if query:
-        composicaoAlimento_lista = composicaoAlimento_lista.filter(
+        lista_composicao_alimento = lista_composicao_alimento.filter(
             alimento__nome__icontains=query
         ) | ComposicaoAlimento.objects.filter(
             nutriente__nome__icontains=query
         )
 
-    composicaoAlimento_lista = composicaoAlimento_lista.order_by('-alimento__is_active', 'alimento__nome')
+    lista_composicao_alimento = lista_composicao_alimento.order_by('-alimento__is_active', 'alimento__nome')
 
-    paginator = Paginator(composicaoAlimento_lista, 10)
+    paginator = Paginator(lista_composicao_alimento, 10)
     page_obj = paginator.get_page(request.GET.get('page'))
 
     return render(request, 'composicao_alimento.html', {
