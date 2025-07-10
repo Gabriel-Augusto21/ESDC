@@ -2,163 +2,161 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>:: Escola de Saúde Digestiva do Cavalo ::</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>:: Escola de Saúde Digestiva do Cavalo ::</title>
 
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><!-- Fonte -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><!-- Fonte -->
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet"><!-- Fonte -->
 
-   <link rel="stylesheet" href="{% static 'css/crud.css' %}">
-   <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-   <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
-   <link rel="stylesheet" href="{% static 'css/main.css' %}">
-   {% comment %} <link rel="icon" href="{% static 'img/icone_cavalo.png' %}" type="image/x-icon"> {% endcomment %}
+    <link rel="stylesheet" href="{% static 'css/crud.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"><!-- Framework front-end-->
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
-   <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
-   <script src="{% static 'js/popper.min.js' %}"></script>
-   <script src="{% static 'js/bootstrap.min.js' %}"></script>
-   <script src="{% static 'js/toastr.min.js' %}"></script> 
+    <!-- SweetAlert2 e HTMX - todo o js joguei dentro de dois arquivos na pasta de estaticos -->
+    <script src="{% static 'js/sweetalert2@11.js'%}"></script><!-- bib de modais -->
+    <script src="{% static 'js/htmx.js'%}"></script><!-- responsável pelo tratamento de erros -->
+
+    <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/toastr.min.js' %}"></script> 
 </head>
 <div class="background-image"></div>
 <body class="instrument-sans">
-   <div class="flex-wrapper">
-      <nav class="navbar navbar-expand-lg navbar-light bg-white align-items-center" style="padding: 1px">
-         <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white align-items-center" style="padding: 1px">
+        <div class="container">
             <a class="navbar-brand" href="{% url 'core:main'%}"><img src="{% static 'img/logo.png' %}" style="width: 80px" ></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-               <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse align-items-center" id="navbarNav">
-               <ul class="navbar-nav ml-auto">
-               <li class="nav-item dropdown">
-                  <a class="item nav-link dropdown-toggle mx-4" href="#" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size:16px;">
-                  Cadastros
-                  </a>
-                  <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="font-size:14px">
-                        <a class="dropdown-item" href="{% url 'alimentos:alimentos'%}">Alimentos</a>
-                        <a class="dropdown-item" href="{% url 'alimentos:classificacao'%}">Classificação</a>
-                        <a class="dropdown-item" href="{% url 'exigencias:exigencias'%}">Exigências</a>
-                        <a class="dropdown-item" href="{% url 'alimentos:nutrientes'%}">Nutrientes</a>
-                  </div>
-               </li>
-               <li class="nav-item" style="font-size:16px">
-                  <a class="item nav-link disabled mx-4" href="#">Dieta</a>
-               </li>
-               <li class="item nav-item" style="font-size:16px">
-                  <a class="nav-link disabled mx-4" href="#">Animais</a>
-               </li>
-               <li class="item dropdown-item" style="font-size:16px;">
-                  <button type="button" class="botao" style="font-weight:200">Login</button>
-               </li>
-               </ul>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="item nav-link dropdown-toggle mx-4" href="#" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size:16px;">Cadastros</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="font-size:14px">
+                            <a class="dropdown-item" href="{% url 'alimentos:alimentos'%}">Alimentos</a>
+                            <a class="dropdown-item" href="{% url 'alimentos:classificacao'%}">Classificação</a>
+                            <a class="dropdown-item" href="{% url 'exigencias:exigencias'%}">Exigências</a>
+                            <a class="dropdown-item" href="{% url 'alimentos:nutrientes'%}">Nutrientes</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" style="font-size:16px">
+                        <a class="item nav-link disabled mx-4" href="#">Dieta</a>
+                    </li>
+                    <li class="item nav-item" style="font-size:16px">
+                        <a class="nav-link disabled mx-4" href="#">Animais</a>
+                    </li>
+                    <li class="item dropdown-item" style="font-size:16px;">
+                        <button type="button" class="botao" style="font-weight:200">Login</button>
+                    </li>
+                </ul>
             </div>
-         </div>
-      </nav>
-      <div class="content">
-         {% block conteudo %}
-         {% endblock %}
-      </div>
-   </div>
-
-   <footer class="text-light pt-5 pb-4 footer">
-   <div class="container">
-   <div class="row">
-      
-      <!-- Logo e nome -->
-      <div class="col-md-3 mb-4">
-        <img src="{% static 'img/logo.png' %}" alt="Logo" style="width: 100px; filter: brightness(0) invert(1)">
-      </div>
-
-      <!-- Contato -->
-      <div class="col-md-5 mb-4">
-        <h6 class="mb-3">Nosso Contato</h6>
-        <ul class="list-unstyled">
-          <li>&#45; gomides.augustog@gmail.com</li>
-          <li>&#45; joaodirceuconstantinocarvalho@gmail.com</li>
-          <li>&#45; luancarlos1201@gmail.com</li>
-          <li>&#45; nicolecarolinesantos07@gmail.com</li>
-        </ul>
-      </div>
-
-      <!-- Membros da equipe -->
-      <div class="col-md-3 mb-4">
-        <h6 class="mb-3">Membros da Equipe</h6>
-        <ul class="list-unstyled">
-          <li>&#45; Prof. Orientador: Eduardo Cardoso Melo</li>
-          <li>&#45; Gabriel</li>
-          <li>&#45; João</li>
-          <li>&#45; Luan</li>
-          <li>&#45; Nicole</li>
-        </ul>
-      </div>
+        </div>
+    </nav>
+    <div class="content">
+        {% block conteudo %}
+        {% endblock %}
     </div>
 
-    <hr class="bg-light">
-    <div class="text-center small">
-      &copy; 2025 Escola de Saúde Digestiva do Cavalo. Todos os direitos reservados.
-    </div>
-  </div>
-</footer>
+    <footer class="text-light pt-5 pb-4 footer">
+        <div class="container">
+            <div class="row">
+                
+                <!-- Logo e nome -->
+                <div class="col-md-3 mb-4">
+                    <img src="{% static 'img/logo.png' %}" alt="Logo" style="width: 100px; filter: brightness(0) invert(1)">
+                </div>
 
+                <!-- Contato -->
+                <div class="col-md-5 mb-4">
+                    <h6 class="mb-3">Nosso Contato</h6>
+                    <ul class="list-unstyled">
+                    <li>&#45; gomides.augustog@gmail.com</li>
+                    <li>&#45; joaodirceuconstantinocarvalho@gmail.com</li>
+                    <li>&#45; luancarlos1201@gmail.com</li>
+                    <li>&#45; nicolecarolinesantos07@gmail.com</li>
+                    </ul>
+                </div>
+
+                <!-- Membros da equipe -->
+                <div class="col-md-3 mb-4">
+                    <h6 class="mb-3">Membros da Equipe</h6>
+                    <ul class="list-unstyled">
+                    <li>&#45; Prof. Orientador: Eduardo Cardoso Melo</li>
+                    <li>&#45; Gabriel</li>
+                    <li>&#45; João</li>
+                    <li>&#45; Luan</li>
+                    <li>&#45; Nicole</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center small">
+                &copy; 2025 Escola de Saúde Digestiva do Cavalo. Todos os direitos reservados.
+            </div>
+        </div>
+    </footer>
+</body>
 <script>
-   //exibir modal sobre
-   $('#btnSobre').click(function() {
-      $('#jnlSobre').modal('show');
-   });
-   //eventos que serao usados no caso do cadastro ser carregado em forma modal
-   window.addEventListener('load', function() {
-      if (window.opener) {
-            var header = document.getElementById('rodape');
-            var footer = document.getElementById('menu_navegacao');
-            
-            if (header) header.style.display = 'none';
-            if (footer) footer.style.display = 'none';
-      }
-   });
+    //exibir modal sobre
+    $('#btnSobre').click(function() {
+        $('#jnlSobre').modal('show');
+    });
+    //eventos que serao usados no caso do cadastro ser carregado em forma modal
+    window.addEventListener('load', function() {
+        if (window.opener) {
+                var header = document.getElementById('rodape');
+                var footer = document.getElementById('menu_navegacao');
+                
+                if (header) header.style.display = 'none';
+                if (footer) footer.style.display = 'none';
+        }
+    });
 
-   window.onbeforeunload = function() {
-      if (window.opener && !window.opener.closed) {
-            window.opener.location.reload();
-            window.opener.window.opener.desabilitaInteracoes();                
-      }
-   };
-   //---------------------------------
-   
-   $(document).ready(function () {
-      toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-      };
+    window.onbeforeunload = function() {
+        if (window.opener && !window.opener.closed) {
+                window.opener.location.reload();
+                window.opener.window.opener.desabilitaInteracoes();                
+        }
+    };
+    //---------------------------------
+    
+    $(document).ready(function () {
+        toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+        };
 
-      {% if messages %}
-            {% for message in messages %}
-               {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
-                  toastr.error("{{ message }}", "Erro");
-               {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                  toastr.success("{{ message }}", "Sucesso");
-               {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
-                  toastr.warning("{{ message }}", "Aviso");
-               {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
-                  toastr.info("{{ message }}", "Atenção");
-               {% endif %}
-            {% endfor %}
-      {% endif %}
-   });
+        {% if messages %}
+                {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                    toastr.error("{{ message }}", "Erro");
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    toastr.success("{{ message }}", "Sucesso");
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+                    toastr.warning("{{ message }}", "Aviso");
+                {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+                    toastr.info("{{ message }}", "Atenção");
+                {% endif %}
+                {% endfor %}
+        {% endif %}
+    });
 </script>
 </body>
 </html>

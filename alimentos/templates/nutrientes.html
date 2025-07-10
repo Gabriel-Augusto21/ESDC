@@ -36,8 +36,10 @@
             {{ page_obj.paginator.count }} registros encontrados
          {% endif %}
       </legend>
-    <!-- Tabela -->
+    <!-- Registros -->
     {% include 'nutrientes_table.html' %}
+    <!-- Paginador -->
+    {% include "paginador.html" %}
     <br>
 </div>
 <script>

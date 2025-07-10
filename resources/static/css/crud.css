@@ -50,7 +50,6 @@ form button:disabled {
     padding: 5px 15px 5px 15px;
     font-weight: 650;
     display: flex;
-    align-items: center;
 }
 
 /* Fonte de tudo */
