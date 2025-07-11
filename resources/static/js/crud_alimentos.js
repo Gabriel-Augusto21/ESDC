@@ -1,4 +1,4 @@
-import {ativar, desativar, atualizar, inserir, crud_composicao} from './alertas_alimentos.js'
+import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao} from './alertas_alimentos.js'
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
     if (!botao) return;
@@ -108,8 +108,7 @@ document.body.addEventListener('click', function (evento){
                                 <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="0.00">
                             </div>
                         </div>
-                    </div>
-`;
+                    </div>`;
                 inserir(modalHtml);
             })
             .catch(error => {
@@ -122,66 +121,12 @@ document.body.addEventListener('click', function (evento){
         .then(response => response.json())
         .then(({ alimento, composicao }) => {
             if (composicao && composicao.length > 0) {
-                let dados_composicao = '';
-                for (let i = 0; i < composicao.length; i += 3) {
-                    const bloco = `
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label">${composicao[i].nutriente_nome} (${composicao[i].nutriente_unidade})</label>
-                                <div class="d-flex align-items-center">
-                                    <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i].valor}">
-                                </div>
-                            </div>
-
-                            ${composicao[i + 1] ? `
-                            <div class="col">
-                                <label class="form-label">${composicao[i + 1].nutriente_nome} (${composicao[i].nutriente_unidade})</label>
-                                <div class="d-flex align-items-center">
-                                    <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 1].valor}">
-                                </div>
-                            </div>
-                            ` : ''}
-                            ${composicao[i + 2] ? `
-                            <div class="col">
-                                <label class="form-label">${composicao[i + 2].nutriente_nome} (${composicao[i].nutriente_unidade})</label>
-                                <div class="d-flex align-items-center">
-                                    <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 2].valor}">
-                                </div>
-                            </div>
-                            ` : ''}
-                        </div>
-                    `;
-                    dados_composicao += bloco;
-                }
-
-                const html = `
-                    <div class="container my-3" style="text-align: start;">
-                        <h3 class="mb-4 text-center fs-3 fw-bold border-bottom pb-2">${alimento.nome}</h3>
-                        ${dados_composicao}
-                    </div>
-                `;
-                crud_composicao(composicao, html);
+                carregar_composicao(alimento.id, alimento.nome)
             } else {
-                Swal.fire({
-                    icon: 'warning',
-                    text: 'Esse alimento ainda não possui nutrientes vinculados',
-                    confirmButtonColor: '#2f453a',
-                    cancelButtonColor: '#FF0000',
-                    confirmButtonText: 'Inserir',
-                    cancelButtonText: 'Cancelar',
-                    customClass: {
-                        confirmButton: 'botao-confirma-alerta',
-                        cancelButton: 'botao-cancela-alerta',
-                    },
-                    showCancelButton: true,
-                }).then(resp => {
-                    if (resp.isConfirmed) {
-                        console.log("Usuário clicou no botao de confirmação");
-                    } else {
-                        console.log("O usuário deseja cancelar");
-                    }
-                });
+                const html = "Esse alimento não possui nutrientes vinculados!";
+                exibir_composicao(alimento, html, '400px');
             }
+
         });
 
     }

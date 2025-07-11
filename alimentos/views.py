@@ -403,6 +403,16 @@ def composicao_json(request):
     }
     return js(data)
 
+def nutrientes_disponiveis_json(request):
+    id = request.GET.get('id_composicao')
+    nutrientes_relacionados = ComposicaoAlimento.objects.filter(
+        alimento_id=id
+    ).values_list('nutriente_id', flat=True)
+    # Filtra os nutrientes que NÃO estão nessa lista
+    nutrientes_disponiveis = Nutriente.objects.exclude(id__in=nutrientes_relacionados)
+    return js({'response': list(nutrientes_disponiveis.values('id', 'nome'))})
+
+
 def get_composicaoAlimento(request):
     if request.method == "GET":
         id = request.GET.get("id")
@@ -427,11 +437,11 @@ def busca_composicaoAlimento_nome(request):
         return js({'mensagem': 'Composição de alimento não encontrada'})
     return js({'mensagem': 'Informe um nome para busca'}, status=400)
 
-def inserir_composicaoAlimento(request):
-    alimento_id = request.GET.get('alimento_id', '')
-    nutriente_id = request.GET.get('nutriente_id', '')
-    valor = request.GET.get('valor', '')
-
+def inserir_composicao_alimento(request):
+    alimento_id = request.POST.get('id_alimento', '')
+    nutriente_id = request.POST.get('id_nutriente', '')
+    valor = request.POST.get('quantidade', '')
+    print(alimento_id, nutriente_id, valor)
     if alimento_id and nutriente_id and valor:
         if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
             return js({'Mensagem': 'Composição de alimento já existe!'}, status=400)
@@ -441,8 +451,8 @@ def inserir_composicaoAlimento(request):
             nutriente_id=nutriente_id,
             valor=valor
         )
-
-        return js({'Mensagem': 'Composição de alimento inserida com sucesso!'}, status=200)
+        alimento = Alimento.objects.get(id=alimento_id)
+        return js({'Mensagem': 'Nutriente inserido na composição com sucesso!', 'alimento_nome': alimento.nome, 'alimento_id': alimento.id}, status=201)
 
     return js({'Mensagem': 'Informe alimento, nutriente e valor'}, status=400)
 
