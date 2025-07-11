@@ -1,11 +1,17 @@
 /* ajustes gerais do sistema */
-html {
+html{
     /* config para que não dê pro usuário selecionar e consequentemente copiar a base de dados */
     user-select: none;
     -webkit-user-select: none; /* Chrome/Safari */
     -moz-user-select: none;    /* Firefox */
     -ms-user-select: none;     /* IE/Edge */
     font-size: 0.8em; 
+}
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .cabecalho {
@@ -85,9 +91,15 @@ h2 {
     padding: 5px 0;
 }*/
 
+main {
+    flex: 1 0 auto; /* Ocupa o espaço restante */
+}
+
 .footer {
     font-family: 'Instrument Sans', sans-serif;
     background-color: #2f453a !important; 
+    color: white;
+    padding: 20px;
 }
 
 footer ul li {

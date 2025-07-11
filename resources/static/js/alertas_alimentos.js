@@ -193,7 +193,12 @@ export function carregar_composicao(alimento_id, alimento_nome) {
                 }
                 const html = `
                     <div class="container my-3" style="text-align: start;">
-                        <h3 class="mb-4 text-center fs-3 fw-bold border-bottom pb-2">${alimento_nome}</h3>
+                        <h3 class="text-center fs-3 fw-bold border-bottom pb-2">${alimento_nome}</h3>
+                        <div class="row justify-content-end py-3">
+                            <div class="col-auto">
+                                <button id="btn-terceiro" class="botao-confirma-alerta">Atualizar</button>
+                            </div>
+                        </div>
                         ${dados_composicao}
                     </div>
                 `;

@@ -50,6 +50,7 @@ form button:disabled {
     padding: 5px 15px 5px 15px;
     font-weight: 650;
     display: flex;
+    align-items: center;
 }
 
 /* Fonte de tudo */
@@ -134,7 +135,6 @@ Precisamos declarar que uma classe pro elemento la no swal.fire()
     font-weight: 500;
     display: flex;
     align-items: center;
-    
 }
 
 /* Altera a borda do botao de alerta, tirando a borda preta */
