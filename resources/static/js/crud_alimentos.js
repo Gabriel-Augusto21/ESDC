@@ -1,4 +1,5 @@
 import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao} from './alertas_alimentos.js'
+const htmlInsercao = document.getElementById('txtInserir');
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
     if (!botao) return;
@@ -25,98 +26,49 @@ document.body.addEventListener('click', function (evento){
                     ${n.nome}
                 </option>`
             ).join('');
-            const modalHtml = `
-            <div class="container my-3" style="text-align: start;">
-                <div class="row mb-4">
-                    <!-- Nome do Alimento -->
-                    <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
-                        <label for="txtNome" class="form-label">Nome do alimento</label>
-                        <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" value="${alimento.nome}">
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label for="idClassificacao" class="form-label">Classificação</label>
-                        <select class="form-control" id="idClassificacao">
-                            ${optionsHtml}
-                        </select>
-                    </div>
-                </div>
+            
+            // pegando o html que esta escondido na alimentos.html
+            const clone = htmlInsercao;
+            clone.removeAttribute('hidden');
 
-                <div class="row ">
-                    <div class="col-12 col-md-4 mb-3 mb-md-0">
-                        <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-                        <div class="d-flex align-items-center">
-                            <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="${alimento.ms}">
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-3 mb-md-0">
-                        <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-                        <div class="d-flex align-items-center">
-                            <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="${alimento.ed}">
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-                        <div class="d-flex align-items-center">
-                            <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="${alimento.pb}">
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-            atualizar(modalHtml, alimento);
+            // pegando os elementos clonados
+            const select = clone.querySelector('#idClassificacao');
+            const nome = clone.querySelector('#txtNome');
+            const ms = clone.querySelector('#txtMs');
+            const ed = clone.querySelector('#txtEd');
+            const pb = clone.querySelector('#txtPb');
+            
+            // atibuindo valores a esse elementos
+            nome.value = alimento.nome;
+            ms.value = alimento.ms;
+            pb.value = alimento.pb;
+            ed.value = alimento.ed;
+            select.innerHTML = optionsHtml;
+
+            atualizar(clone, alimento);
         })
     }else if(botao.classList.contains('insert-btn')){
         evento.preventDefault()
-        fetch('/classificacoes_json/')
-            .then(response => response.json())
-            .then(classificacoes => {
-                const optionsHtml = classificacoes.map(n =>
-                    `<option value="${n.id}">${n.nome}</option>`).join("");
-                const modalHtml = `
-                    <div class="container my-3" style="text-align: start;">
-                        <div class="row mb-4">
-                            <!-- Nome do Alimento -->
-                            <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
-                                <label for="txtNome" class="form-label">Nome do alimento</label>
-                                <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento">
-                            </div>
+            fetch('/classificacoes_json/')
+                .then(response => response.json())
+                .then(classificacoes => {
+                    const optionsHtml = classificacoes.map(n =>
+                        `<option value="${n.id}">${n.nome}</option>`).join("");
 
-                            <!-- Classificação -->
-                            <div class="col-12 col-md-6">
-                                <label for="idClassificacao" class="form-label">Classificação</label>
-                                <select class="form-control" id="idClassificacao">
-                                    ${optionsHtml}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <!-- Matéria Seca -->
-                            <div class="col-12 col-md-4 mb-3 mb-md-0">
-                                <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-                                <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="0.00">
-                            </div>
-
-                            <!-- Energia Digestiva -->
-                            <div class="col-12 col-md-4 mb-3 mb-md-0">
-                                <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-                                <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="0.00">
-                            </div>
-
-                            <!-- Proteína Bruta -->
-                            <div class="col-12 col-md-4">
-                                <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-                                <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="0.00">
-                            </div>
-                        </div>
-                    </div>`;
-                inserir(modalHtml);
-            })
-            .catch(error => {
-                console.error('Erro ao carregar classificações:', error);
-                Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
-        });
+                    const clone = htmlInsercao; // utilizo o clone pra nao ter perigo de o elemento ser excluido da dom
+                    clone.removeAttribute('hidden'); // tirando o atributo hidden pra exibir no alert
+                    
+                    const select =  clone.querySelector('#idClassificacao') // pegando o select do elemento clone
+                    select.innerHTML = optionsHtml; // // populando o select
+                    
+                    inserir(clone);// chamando o alerta de inserção e inserindo 
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar classificações:', error);
+                    Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
+            });
     }else if(botao.classList.contains('composicao-btn')){
-        evento.preventDefault()
+        evento.preventDefault();
         fetch(`/composicao_json/?id=${botao.id}`)
         .then(response => response.json())
         .then(({ alimento, composicao }) => {

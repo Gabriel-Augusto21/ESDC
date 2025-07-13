@@ -43,11 +43,70 @@
     {% include "paginador.html" %}
     <br>
 </div>
+<!-- Conteudo do modal galeraaa 
+ modal de inserção -->
+<div hidden class="container my-3" style="text-align: start;" id="txtInserir">
+    <div class="row mb-4">
+        <!-- Nome do Alimento -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+            <label for="txtNome" class="form-label">Nome do alimento</label>
+            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento">
+        </div>
+
+        <!-- Classificação -->
+        <div class="col-12 col-md-6">
+            <label for="idClassificacao" class="form-label">Classificação</label>
+            <select class="form-control" id="idClassificacao"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Matéria Seca -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+            <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="0.00">
+        </div>
+
+        <!-- Energia Digestiva -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+            <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="0.00">
+        </div>
+
+        <!-- Proteína Bruta -->
+        <div class="col-12 col-md-4">
+            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+            <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="0.00">
+        </div>
+    </div>
+</div>
+<!-- modal inserir composicao -->
+<div hidden class="container my-3" style="text-align: start;" id="txtInserirComposicao">
+    <div class="row mb-4">
+        <!-- Nutriente -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+            <label for="idNutriente" class="form-label">Nome do nutriente</label>
+            <select class="form-control" id="idNutriente"></select>
+        </div>
+        <!-- Quantidade -->
+        <div class="col-12 col-md-6">
+            <label for="txtQuantidade" class="form-label">Quantidade</label>
+            <input id="txtQuantidade" class="form-control" type="text" placeholder="00.00">
+        </div>
+    </div>
+</div>
+<!--
+Agora eu consigo pegar o bloco de elementos html de voces
+aqui no front e pelo back populo o select e exibo ele no sweetalert
+Ou seja, acabou a aquela ladainha de criar elementos no back end pro alerta, 
+Em alguns momentos não há muito o que fazer pois aumenta muito a complexidade 
+Agora voces podem se sentir a vontade para mexer nas inputs pelo front
+-->
 <script type="module" src="{% static 'js/crud_alimentos.js' %}"></script>
 <script>
-const csrf_token = '{{ csrf_token }}';
-    document.body.addEventListener('htmx:configRequest', (event) => {
-        event.detail.headers['X-CSRFToken'] = csrf_token;
+    const csrf_token = '{{ csrf_token }}';
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = csrf_token;
     });
 </script>
 {% endblock %}
