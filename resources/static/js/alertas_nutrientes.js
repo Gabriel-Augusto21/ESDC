@@ -11,28 +11,23 @@ export function alerta_inserir(btn) {
             Swal.fire({
                 title: 'Inserir Nutriente',
                 html: `
-                    <div class="container">
-                        <div class="row mb-2">
-                            <div class="col-4">
-                                <label for="swal-nome" class="form-label">Nome:</label>
-                            </div>
-                            <div class="col-8">
-                                <input id="swal-nome" class="form-control" placeholder="Digite o nome">
+                    <div class="container my-3" style="text-align: start;">
+                        <!-- Nome do Nutriente -->
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="swal-nome" class="form-label">Nome do Nutriente</label>
+                                <input id="swal-nome" class="form-control" type="text" placeholder="Digite o nome do nutriente">
                             </div>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col-4">
+                        <div class="row mb-4">
+                            <!-- Unidade -->
+                            <div class="col">
                                 <label for="swal-unidade" class="form-label">Unidade:</label>
-                            </div>
-                            <div class="col-8">
                                 <input id="swal-unidade" class="form-control" placeholder="Digite a unidade">
                             </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-4">
+                            <!-- Classificação -->
+                            <div class="col">
                                 <label for="idClassificacao" class="form-label">Classificação:</label>
-                            </div>
-                            <div class="col-8">
                                 <select id="idClassificacao" class="form-control">
                                     ${optionsHtml}
                                 </select>
@@ -80,7 +75,6 @@ export function alerta_inserir(btn) {
     });
 
 }
-
 // 🔔 Atualizar Nutriente
 export function alerta_update(btn) {
     const id = btn.dataset.id;
@@ -192,7 +186,6 @@ export function alerta_update(btn) {
             Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
     });
 }
-
 // 🔒 Ativar Nutriente
 export function alerta_ativar(btn) {
     const url = btn.dataset.url;
@@ -215,7 +208,6 @@ export function alerta_ativar(btn) {
         }
     });
 }
-
 // 🔓 Desativar Nutriente
 export function alerta_desativar(btn) {
     const url = btn.dataset.url;
@@ -238,7 +230,6 @@ export function alerta_desativar(btn) {
         }
     });
 }
-
 // Inserção bem sucedida
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
@@ -306,12 +297,10 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }
     }
 });
-
 // Erro de inserção
 htmx.on("htmx:responseError", (event) => {
    const status = event.detail.xhr.status;
    const resp = JSON.parse(event.detail.xhr.response);
-
    if (status === 400 && resp.Mensagem?.includes("já existe")) {
       Swal.fire({
          title: 'Erro!',

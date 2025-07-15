@@ -2,10 +2,10 @@
 {% load static %}
 {% block conteudo %}
 <div class="container mt-3">
-   <h1>Nutrientes</h1>
-   <!-- Formulário de busca -->
-    <form method="get" class="form-group row mb-4 d-flex justify-content-center">
-        <div class="col-4">
+    <h1>Nutrientes</h1>
+    <!-- Formulário de busca -->
+    <form method="get" class="form-group my-4 d-flex justify-content-center mx-auto">
+        <div class="col-8 col-lg-4">
             <div class="input-group">
                 <input class="form-control"
                     id="txtBuscaNome"
@@ -36,8 +36,10 @@
             {{ page_obj.paginator.count }} registros encontrados
          {% endif %}
       </legend>
-    <!-- Tabela -->
+    <!-- Registros -->
     {% include 'nutrientes_table.html' %}
+    <!-- Paginador -->
+    {% include "paginador.html" %}
     <br>
 </div>
 <script>

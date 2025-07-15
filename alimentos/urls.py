@@ -35,8 +35,9 @@ urlpatterns = [
 
    path("composicaoAlimento/", views.composicaoAlimento, name="composicaoAlimento"),
    path("composicao_json/", views.composicao_json, name="composicao_json"),
+   path("nutrientes_disponiveis_json/", views.nutrientes_disponiveis_json, name="nutrientes_disponiveis_json"),
    path("get_composicaoAlimento/", views.get_composicaoAlimento, name="get_composicaoAlimento"),
-   path("inserir_composicaoAlimento/", views.inserir_composicaoAlimento, name="inserir_composicaoAlimento"),
+   path("inserir_composicao_alimento/", views.inserir_composicao_alimento, name="inserir_composicao_alimento"),
    path("ativar_composicaoAlimento/", views.ativar_composicaoAlimento, name="ativar_composicaoAlimento"),
    path("desativar_composicaoAlimento/", views.desativar_composicaoAlimento, name="desativar_composicaoAlimento"),
    path("atualizar_composicaoAlimento/", views.atualizar_composicaoAlimento, name="atualizar_composicaoAlimento"),

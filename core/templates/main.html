@@ -1,53 +1,131 @@
 {% extends 'master.html' %}
-
 {% load static %}
+{% block conteudo %} 
+<!-- 
+    @Nicole dá uma olhada nessa proposta, SEU CÓDIGO TÁ FORA DA TAG ENDBLOCK, SE NÃO GOSTAR DA IDEIA SÓ PEGAR DE VOLTA E REMOVER ESSE DO BLOCO
+    Tô usando o framework de front para ficar responsivo em telas pequenas e grandes
+-->
 
-{% block conteudo %}
+<div class="container mt-3 py-4" > <!-- o container "embala" os elementos dando um espaçamento horizontal padrão; o py-4 dá um padding no eixo y de 4 unidades do bootstrap -->
 
-    <div class="cabecalho">
-        <h1 style="text-align:center">Software de Nutrição Equina com balanceamento <br> de dietas e gerenciamento de dados</h1>
-        <div style="width:54%; height:auto;">
-            <h2>Escola de Saúde Digestiva do Cavalo é um software educacional desenvolvido com foco em profissionais das áreas de Medicina Veterinária e Zootecnia.
+    <!-- Apresentação-->
+    <div class="row align-items-center" >
+        <h1 class="mx-auto text-center mb-5"><!-- text-center centraliza o texto; mx-auto alinha a horizontal automaticamente; mb-4 dá uma margem abaixo do elemento de 4 unidades do bootstrap-->
+            Software de Nutrição Equina com Balanceamento de Dietas e <br>Gerenciamento de dados
+        </h1>
+        <div class="mx-auto" style="max-width: 900px;">
+            <h2 class="h5 text-center mx-5">Escola de Saúde Digestiva do Cavalo é um software educacional desenvolvido com foco em profissionais das áreas de Medicina Veterinária e Zootecnia.
                 A iniciativa é fruto de uma colaboração entre a Fábrica de Soluções Tecnológicas (FAST), vinculada ao curso de Bacharelado em Engenharia da Computação,
-                e o Núcleo de Veterinária, ambos pertencentes ao Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais – Campus Bambuí.</h2>
+                e o Núcleo de Veterinária, ambos pertencentes ao Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais – Campus Bambuí.
+            </h2>
+        </div>  
+    </div>
+    
+    <!-- Gerenciamento de Alimentos -->
+    <div class="row align-items-center mt-5">
+        <!-- texto -->
+        <div class="col">
+            <h1 class="m-4">Gerenciamento de Alimentos</h1>
+            <div class="mx-4">
+                <h3>Exibição com filtros estratégicos</h3>
+                <h2 class="ml-3 h5">
+                    Você poderá ter uma visão melhorada do sistema implantado
+                    na planilha com filtros dinâmicos e pesquisas de alimentos.
+                </h2>
+                <h3>Adição, remoção e atualização de dados alimentares</h3>
+                <h2 class="ml-3 h5">
+                    Todo bom sistema de gerenciamento exige um CRUD simples,
+                    por isso estamos desenvolvendo uma forma de você alterar
+                    dados de determinado alimento a qualquer hora e tela.
+                </h2>
+                <h3>Comparação de alimentos</h3>
+                <h2 class="ml-3 h5">
+                    Você poderá comparar diferentes alimentos para descobrir
+                    quais são mais adequados para sua dieta ou fazer uma 
+                    análise rápida dos itens disponíveis no seu arsenal alimentar.
+                </h2>
+            </div>
         </div>
-        <div class="conteudo-home">
-            <div class="texto">
-                <h1>Gerenciamento de Alimentos</h1>
-                <h3>- Exibição com filtros estratégicos</h3>
-                <h2> Você poderá ter uma visão melhorada do sistema implantado <br>
-                    na planilha com filtros dinâmicos e pesquisas de alimentos </h2>
-                <h3>- Adição, remoção e atualização de dados alimentares</h3>
-                <h2>Todo bom sistema de gerenciamento exige um CRUD simples, <br>
-                    por isso estamos desenvolvendo uma forma de você alterar <br>
-                    dados de determinado alimento a qualquer hora e tela</h2>
-                <h3>- Comparação de alimentos</h3>
-                <h2>Você poderá comparar diferentes alimentos para descobrir <br>
-                    quais são mais adequados para sua dieta ou fazer uma <br> 
-                    análise rápida dos itens disponíveis no seu arsenal alimentar.</h2>
-            </div>
-            <div class="imagem">
-                <img src='/static/img/graos.png' style="width:300px; height:auto;">
-            </div>
+        <!-- imagem -->
+        <div class="col-md-5 text-center">
+            <img src="/static/img/graos.png" class="img-fluid" alt="Grãos">
         </div>
-        <div class="conteudo-home">
-            <div class="imagem">
-                <img src='/static/img/dieta.png' style="width:300px; height:auto;">
-            </div>
-            <div class="texto">
-                <h1>Gerenciamento de Exigências</h1>
-                <h3>- Comparação de exigências</h3>
-                <h2> Você poderá comparar diferentes alimentos para descobrir quais <br>
-                    são mais adequados para sua dieta ou fazer uma análise rápida dos <br> 
-                    itens disponíveis no seu arsenal alimentar. </h2>
-                <h3>- Atualização de dados  de exigências</h3>
-                <h2>Todo bom sistema de gerenciamento exige um CRUD simples, <br>
-                    por isso estamos desenvolvendo uma forma de você alterar <br>
-                    dados de determinado alimento a qualquer hora e tela</h2>
-                <h3>- Exibição com filtros estratégicos</h3>
-                <h2>Você poderá ter uma visão melhorada do sistema implantado <br>
-                    na planilha com filtros dinâmicos e pesquisas de alimentos</h2>
+    </div>
+    
+    <!-- Gerenciamento de Exigências -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-5 text-center">
+            <img src="/static/img/dieta.png" class="img-fluid" alt="Dieta">
+        </div>
+        <div class="col">
+            <h1 class="m-4">Gerenciamento de Exigências</h1>
+            <div class="mx-5">
+                <h3>Comparação de exigências</h3>
+                <h2 class="ml-3 h5">
+                    Você poderá comparar diferentes alimentos para descobrir quais
+                    são mais adequados para sua dieta ou fazer uma análise rápida dos 
+                    itens disponíveis no seu arsenal alimentar.
+                </h2>
+                <h3>Atualização de dados de exigências</h3>
+                <h2 class="ml-3 h5">
+                    Todo bom sistema de gerenciamento exige um CRUD simples,
+                    por isso estamos desenvolvendo uma forma de você alterar
+                    dados de determinado alimento a qualquer hora e tela
+                </h2>
+                <h3>Exibição com filtros estratégicos</h3>
+                <h2 class="ml-3 h5">
+                    Você poderá ter uma visão melhorada do sistema implantado
+                    na planilha com filtros dinâmicos e pesquisas de alimentos
+                </h2>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
+<!-- 🫶 Seu código ta aqui Nicole  -->
+<div class="cabecalho">
+    <h1 style="text-align:center">Software de Nutrição Equina com balanceamento <br> de dietas e gerenciamento de dados</h1>
+    <div style="width:54%; height:auto;">
+        <h2 >Escola de Saúde Digestiva do Cavalo é um software educacional desenvolvido com foco em profissionais das áreas de Medicina Veterinária e Zootecnia.
+            A iniciativa é fruto de uma colaboração entre a Fábrica de Soluções Tecnológicas (FAST), vinculada ao curso de Bacharelado em Engenharia da Computação,
+            e o Núcleo de Veterinária, ambos pertencentes ao Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais – Campus Bambuí.</h2>
+    </div>
+    <div class="conteudo-home">
+        <div class="texto">
+            <h1>Gerenciamento de Alimentos</h1>
+            <h3>- Exibição com filtros estratégicos</h3>
+            <h2> Você poderá ter uma visão melhorada do sistema implantado <br>
+                na planilha com filtros dinâmicos e pesquisas de alimentos </h2>
+            <h3>- Adição, remoção e atualização de dados alimentares</h3>
+            <h2>Todo bom sistema de gerenciamento exige um CRUD simples, <br>
+                por isso estamos desenvolvendo uma forma de você alterar <br>
+                dados de determinado alimento a qualquer hora e tela</h2>
+            <h3>- Comparação de alimentos</h3>
+            <h2>Você poderá comparar diferentes alimentos para descobrir <br>
+                quais são mais adequados para sua dieta ou fazer uma <br> 
+                análise rápida dos itens disponíveis no seu arsenal alimentar.</h2>
+        </div>
+        <div class="imagem">
+            <img src='/static/img/graos.png' style="width:300px; height:auto;">
+        </div>
+    </div>
+    <div class="conteudo-home">
+        <div class="imagem">
+            <img src='/static/img/dieta.png' style="width:300px; height:auto;">
+        </div>
+        <div class="texto">
+            <h1>Gerenciamento de Exigências</h1>
+            <h3>- Comparação de exigências</h3>
+            <h2> Você poderá comparar diferentes alimentos para descobrir quais <br>
+                são mais adequados para sua dieta ou fazer uma análise rápida dos <br> 
+                itens disponíveis no seu arsenal alimentar. </h2>
+            <h3>- Atualização de dados  de exigências</h3>
+            <h2>Todo bom sistema de gerenciamento exige um CRUD simples, <br>
+                por isso estamos desenvolvendo uma forma de você alterar <br>
+                dados de determinado alimento a qualquer hora e tela</h2>
+            <h3>- Exibição com filtros estratégicos</h3>
+            <h2>Você poderá ter uma visão melhorada do sistema implantado <br>
+                na planilha com filtros dinâmicos e pesquisas de alimentos</h2>
+        </div>
+    </div>
+</div>

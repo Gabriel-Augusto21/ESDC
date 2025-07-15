@@ -1,13 +1,13 @@
 {% load static %}
-<table class="table table-borderless tabela table-hover">
+<table class="table-responsive-sm tabela">
     <thead>
         <tr>
-            <th>Nome</th>
+            <th>Exigência</th>
             <th>Peso Vivo</th>
-            <th>Fase/Meses</th>
+            <th>Fase - Meses</th>
             <th>Esforço</th>
-            <th>ED</th>
-            <th>PB</th>
+            <th class="d-none d-sm-table-cell">ED</th>
+            <th class="d-none d-sm-table-cell">PB</th>
             <th class="text-end">Ações</th>
         </tr>
     </thead>
@@ -24,8 +24,8 @@
             <td>{{ exigencia.categoria.peso_vivo }}</td>
             <td>{{exigencia.categoria.fase}}</td>
             <td>{{exigencia.categoria.esforco}}</td>
-            <td>{{exigencia.ed}}</td>
-            <td>{{exigencia.pb}}</td>
+            <td class="d-none d-sm-table-cell">{{exigencia.ed}}</td>
+            <td class="d-none d-sm-table-cell">{{exigencia.pb}}</td>
             <td class="text-end">{% if exigencia.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Ativar">
                     <img src="{% static 'img/visibility.png' %}" width="20">
@@ -40,13 +40,8 @@
                 {% endif %}
             </td>
         </tr>
-         {% empty %}
+        {% empty %}
         <tr><td colspan="4" class="text-center">Nenhuma exigência encontrada.</td></tr>
         {% endfor %}
     </tbody>
 </table>
-<!-- Paginador -->
-{% include "paginador.html" %}
-<!-- SweetAlert2 e HTMX - Copiei todo o js e joguei dentro de dois arquivos na pasta de estaticos -->
-<script src="{% static 'js/sweetalert2@11.js'%}"></script>
-<script src="{% static 'js/htmx.js'%}"></script>
