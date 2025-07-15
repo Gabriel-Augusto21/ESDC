@@ -1,4 +1,4 @@
-import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao} from './alertas_alimentos.js'
+import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao, desativar_composicao, ativar_composicao} from './alertas_alimentos.js'
 const htmlInsercao = document.getElementById('txtInserir');
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
@@ -68,15 +68,14 @@ document.body.addEventListener('click', function (evento){
                     Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
             });
     }else if(botao.classList.contains('composicao-btn')){
-        evento.preventDefault();
         fetch(`/composicao_json/?id=${botao.id}`)
         .then(response => response.json())
         .then(({ alimento, composicao }) => {
             if (composicao && composicao.length > 0) {
-                carregar_composicao(alimento.id, alimento.nome)
+                carregar_composicao(composicao, alimento)
             } else {
                 const html = "Esse alimento não possui nutrientes vinculados!";
-                exibir_composicao(alimento, html, '400px');
+                exibir_composicao(composicao, alimento, html, '400px');
             }
 
         });
