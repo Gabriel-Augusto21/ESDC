@@ -13,13 +13,18 @@
     </thead>
     <tbody>
         {% for exigencia in exigencias %}
-        <tr class="container" data-id="{{ exigencia.id }}" data-nome="{{ exigencia.nome }}" data-id-class="{{ exigencia.categoria.id }}"
-        data-pb="{{ exigencia.pb }}" data-ed="{{ exigencia.ed }}" data-categoria="{{ exigencia.categoria.id }}" data-categorias-json='{{ categorias_json|safe }}'
-        {% if exigencia.is_active %}
-            style="background-color: #ffffff"
-        {% else %}
-            style="background-color:rgba(190, 190, 190, 0.31)"
-        {% endif %}>
+        <tr class="container"
+            data-id="{{ exigencia.id }}"
+            data-nome="{{ exigencia.nome }}"
+            data-id-class="{{ exigencia.categoria.id }}"
+            data-pb="{{ exigencia.pb }}"
+            data-ed="{{ exigencia.ed }}"
+            data-categoria="{{ exigencia.categoria.id }}"
+            {% if exigencia.is_active %}
+                style="background-color: #ffffff"
+            {% else %}
+                style="background-color:rgba(190, 190, 190, 0.31)"
+            {% endif %}>
             <td id="txtNome">{{ exigencia.nome }}</td>
             <td>{{ exigencia.categoria.peso_vivo }}</td>
             <td>{{exigencia.categoria.fase}}</td>
@@ -34,9 +39,9 @@
                     <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
                 </button>
                 {% else %}
-                <button class="btn btn-sm ativar-btn" alt="Desativar">
-                    <img src="{% static 'img/not_visibility.png' %}" width="20">
-                </button>
+                    <button class="btn btn-sm ativar-btn" alt="Ativar">
+                        <img src="{% static 'img/not_visibility.png' %}" width="20">
+                    </button>
                 {% endif %}
             </td>
         </tr>
