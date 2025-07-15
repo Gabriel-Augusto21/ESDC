@@ -1,6 +1,6 @@
 export function ativar(elemento){
     Swal.fire({
-        title: 'Tem certeza que deseja desativar esse alimento?',
+        title: 'Tem certeza que deseja ativar esse alimento?',
         text: "Você poderá desfazer isso mais tarde!",
         icon: 'warning',
         confirmButtonColor: '#2f453a',
@@ -15,7 +15,6 @@ export function ativar(elemento){
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/ativar_alimento/';
-            console.log("A ativar: ", elemento.dataset.nome);
             htmx.ajax('POST', url, {
                 values: {
                     id: elemento.dataset.id,
@@ -23,8 +22,28 @@ export function ativar(elemento){
                 },
                 swap: 'none'
             });
+        }
+    });
+}
+export function ativar_composicao(composicao, alimento, nutriente_id){
+    Swal.fire({
+        title: 'Tem certeza que deseja ativar esse nutriente da composição?',
+        text: "Você poderá desfazer isso mais tarde!",
+        icon: 'warning',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Sim, ativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
+        showCancelButton: true,
+    }).then(resp => {
+        if (resp.isConfirmed){
+            carregar_composicao(composicao, alimento)
         }else{
-            console.log("O usuário deseja cancelar")
+            carregar_composicao(composicao, alimento)
         }
     });
 }
@@ -45,7 +64,6 @@ export function desativar(elemento){
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/desativar_alimento/';
-            console.log("A desativar: ", elemento.dataset.nome);
             htmx.ajax('POST', url, {
                 values: {
                     id: elemento.dataset.id,
@@ -53,9 +71,41 @@ export function desativar(elemento){
                 },
                 swap: 'none'
             });
-        }else{
-            console.log("O usuário deseja cancelar");
         }
+    });
+}
+
+
+export function desativar_composicao(composicao, alimento, id_exclusao){
+    Swal.fire({
+        title: 'Tem certeza que deseja desativar esse nutriente da composição?',
+        text: "Você poderá desfazer isso mais tarde!",
+        icon: 'warning',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Sim, desativar!',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
+        showCancelButton: true,
+    }).then(resp => {
+        if (resp.isConfirmed){
+            // const url = `/desativar_composicaoAlimento/`;
+            // console.log(id_exclusao);     
+            // htmx.ajax('GET', url,{
+            //     values: {
+            //         id: id_exclusao
+            //     },
+            //     swap:'none'
+            // });
+            carregar_composicao(composicao, alimento)
+
+        }else{
+            carregar_composicao(composicao, alimento)
+        }
+
     });
 }
 export function atualizar(html, alimento){
@@ -110,14 +160,12 @@ export function atualizar(html, alimento){
                     alert('Erro: ' + xhr.responseText);
                 }
             });
-        }else{
-            console.log("O usuário deseja cancelar")
         }
     });
 }
 export function inserir(modalHtml){
     swal.fire({
-        width: '700px',
+        width: '800px',
         title: "Inserir Alimento",
         html: modalHtml,
         showCancelButton: true,
@@ -145,7 +193,6 @@ export function inserir(modalHtml){
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            console.log(nome, idClass, ms, ed, pb)
             return { nome, idClass, ms, ed, pb};
         }
     }).then((resp) => {
@@ -161,11 +208,155 @@ export function inserir(modalHtml){
                 swap: 'none'
             });
         }
+
     });
 }
-export function crud_composicao(composicao, html){
+export function carregar_composicao(composicao, alimento) {
+    let dados_composicao = '';
+    for (let i = 0; i < composicao.length; i += 3) {
+        const bloco = `
+            <div id="dados-composicao" class="row mb-3">
+                <div class="col">
+                    <label class="form-label">${composicao[i].nutriente_nome} <br>(${composicao[i].nutriente_unidade})</label>
+                    <div class="d-flex align-items-center">
+                        <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i].valor}">
+                        ${composicao[i].is_active ? `
+                            <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i].id}">
+                                <img src="${imagemVisibilidade}" width="20">
+                            </button>   
+                        `: `
+                            <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i].id}">
+                                <img src="${imagemNVisibilidade}" width="20">
+                            </button>
+                        `}
+                    </div>
+                </div>
+
+                ${composicao[i + 1] ? `
+                <div class="col">
+                    <label class="form-label">${composicao[i + 1].nutriente_nome} <br>(${composicao[i + 1].nutriente_unidade})</label>
+                    <div class="d-flex align-items-center">
+                        <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 1].valor}">
+                        ${composicao[i+1].is_active ? `
+                            <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i+1].id}">
+                                <img src="${imagemVisibilidade}" width="20">
+                            </button>   
+                        `: `
+                            <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i+1].id}">
+                                <img src="${imagemNVisibilidade}" width="20">
+                            </button>
+                        `}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${composicao[i + 2] ? `
+                <div class="col">
+                    <label class="form-label">${composicao[i + 2].nutriente_nome} <br>(${composicao[i + 2].nutriente_unidade})</label>
+                    <div class="d-flex align-items-center">
+                        <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 2].valor}">
+                        ${composicao[i+2].is_active ? `
+                            <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i+2].id}">
+                                <img src="${imagemVisibilidade}" width="20">
+                            </button>   
+                        `: `
+                            <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i+2].id}">
+                                <img src="${imagemNVisibilidade}" width="20">
+                            </button>
+                        `}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        dados_composicao += bloco;
+    }
+    const html = `
+        <div class="container my-3" style="text-align: start;">
+            <h3 class="text-center fs-3 fw-bold border-bottom pb-2">${alimento.nome}</h3>
+            <div class="row justify-content-end py-3">
+                <div class="col-auto">
+                    <button id="btn-terceiro" class="botao-confirma-alerta">Atualizar</button>
+                </div>
+            </div>
+            ${dados_composicao}
+        </div>
+    `;
+
+    exibir_composicao(composicao, alimento, html, '700px');
+}
+export function inserir_composicao(alimento){
+    fetch(`/nutrientes_disponiveis_json/?id_composicao=${alimento.id}`)
+    .then(response => response.json())
+    .then(nutrientes => {
+        const optionsHtml = `<option value="-1" selected>Não selecionado</option>` +
+        nutrientes.response.map(n =>
+            `<option value="${n.id}">${n.nome}</option>`).join("");
+        const htmlInserir = `
+            <div class="container my-3" style="text-align: start;">
+                <div class="row mb-4">
+                    <!-- Nutriente -->
+                    <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+                        <label for="idNutriente" class="form-label">Nome do nutriente</label>
+                        <select class="form-control" id="idNutriente">
+                            ${optionsHtml}
+                        </select>
+                    </div>
+                    <!-- Quantidade -->
+                    <div class="col-12 col-md-6">
+                        <label for="txtQuantidade" class="form-label">Quantidade</label>
+                        <input id="txtQuantidade" class="form-control" type="text" placeholder="00.00">
+                    </div>
+                </div>
+            </div>
+        `;
+        Swal.fire({
+            width: '600px',
+            title: `Adicionar nutriente à composição`,
+            html: htmlInserir,
+            confirmButtonColor: '#2f453a',
+            cancelButtonColor: '#FF0000',
+            confirmButtonText: 'Inserir',
+            cancelButtonText: 'Cancelar',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+                cancelButton: 'botao-cancela-alerta',
+            },
+            showCancelButton: true,
+            preConfirm: () => {
+                const modal = Swal.getPopup();
+                const id = modal.querySelector('#idNutriente').value.trim();
+                const normalizeNumber = (str) => str.replace(',', '.');
+                const qtd = normalizeNumber(modal.querySelector('#txtQuantidade').value.trim());
+                if (isNaN(qtd)||qtd <= 0) {
+                    Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+                    return false;
+                
+                }else if (id < 0) {
+                    Swal.showValidationMessage('Por favor, escolha um nutriente.');
+                    return false;
+                }
+                return {qtd, id, alimento};
+            }
+        }).then(resp => {
+            if (resp.isConfirmed) {
+                const { qtd, id, alimento } = resp.value;
+                htmx.ajax('POST', '/inserir_composicao_alimento/', {
+                    values: {
+                        quantidade: qtd,
+                        id_nutriente: id,
+                        id_alimento: alimento.id
+                    },
+                    swap: 'none'
+                });
+            }
+        });
+    });
+    
+}
+export function exibir_composicao(composicao, alimento, html, tam) {
     Swal.fire({
-        width: '700px',
+        width: tam,
         title: 'Composicao Alimentar',
         html: html,
         confirmButtonColor: '#2f453a',
@@ -177,17 +368,67 @@ export function crud_composicao(composicao, html){
             cancelButton: 'botao-cancela-alerta',
         },
         showCancelButton: true,
+        didOpen: () => {
+            const container = Swal.getHtmlContainer();
+            if (container) {
+                container.addEventListener('click', (event) => {
+                    const botaoDesativar = event.target.closest('.desativar-composicao-btn');
+                    const botaoAtivar = event.target.closest('.ativar-composicao-btn');
+                    if (botaoDesativar) {
+                        console.log('Elemento clicado:', botaoDesativar);
+                        desativar_composicao(composicao, alimento, botaoDesativar.dataset.id);
+                    }else if(botaoAtivar){
+                        console.log('Elemento clicado:', botaoAtivar);
+                        ativar_composicao(composicao, alimento, botaoAtivar.dataset.id);
+                    }
+                    
+                });
+            }
+        }
     }).then(resp => {
         if (resp.isConfirmed) {
-            console.log("Usuário clicou no botao de confirmação")
-        }else{
-            console.log("O usuário deseja cancelar")
+            inserir_composicao(alimento);
         }
     });
 }
+
 // Tratamento das responses
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
+    if (event.detail.xhr.status === 201) {
+        if (resp.Mensagem?.includes('inserido')) { 
+            Swal.fire({
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                timer: 3000,
+                timerProgressBar: true,   
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+            }).then(() => {
+                carregar_composicao(resp.data.composicao, resp.data.alimento)
+            });
+        }
+    }
+    if (event.detail.xhr.status === 202 && resp.Mensagem?.includes('desativada')) {
+        Swal.fire({
+            title: 'Desativado!',
+            text: resp.Mensagem,
+            icon: 'success',
+            confirmButtonText: 'Ok',
+            timer: 3000,
+            timerProgressBar: true,
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+        }).then(() => {
+            carregar_composicao(resp.composicao ?? {}, resp.alimento ?? {});
+        });
+    }          
     if (event.detail.xhr.status === 200) {
         if (resp.Mensagem?.includes('ativado')) {            
             Swal.fire({
@@ -252,7 +493,6 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }
     }
 });
-
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation(); // Evita que o erro suba
     const status = event.detail.xhr.status;
