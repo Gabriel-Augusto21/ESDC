@@ -385,7 +385,7 @@ def composicao_json(request):
     id = request.GET.get('id')
     alimento_obj = Alimento.objects.get(id=id)
     alimento_nome = alimento_obj.nome
-    composicao = ComposicaoAlimento.objects.filter(alimento_id=id).order_by('-is_active').select_related('nutriente')
+    composicao = ComposicaoAlimento.objects.filter(alimento_id=id).order_by('-is_active', 'id').select_related('nutriente')
     composicao_dict = [
         {
             'id': comp.id,
@@ -453,7 +453,7 @@ def inserir_composicao_alimento(request):
             valor=valor
         )
         alimento_obj = Alimento.objects.get(id=alimento_id)
-        composicao = ComposicaoAlimento.objects.filter(alimento_id=alimento_id).order_by('-is_active').select_related('nutriente')
+        composicao = ComposicaoAlimento.objects.filter(alimento_id=alimento_id).order_by('-is_active', '-id').select_related('nutriente')
         composicao_dict = [
             {
                 'id': comp.id,
