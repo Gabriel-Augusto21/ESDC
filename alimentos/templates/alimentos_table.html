@@ -3,7 +3,7 @@
     <thead>
         <tr>
             <th>Alimento</th>
-            <th  class="d-none d-sm-table-cell">Classificação</th>
+            <th class="d-none d-sm-table-cell">Classificação</th>
             <th>Matéria Seca</th>
             <th>Proteína Bruta</th>
             <th  class="d-none d-sm-table-cell">Energia Digestiva</th>
@@ -19,7 +19,7 @@
             style="background-color:rgba(190, 190, 190, 0.31)"
         {% endif %}>
             <td id="txtNome">{{ alimento.nome }}</td>
-            <td  class="d-none d-sm-table-cell">{{alimento.classificacao.nome}}</td>
+            <td class="d-none d-sm-table-cell">{{alimento.classificacao.nome}}</td>
             <td>{{alimento.ms}} %</td>
             <td>{{alimento.pb}} Mcal</td>
             <td  class="d-none d-sm-table-cell">{{alimento.ed}} %MS</td>
