@@ -72,7 +72,7 @@ document.body.addEventListener('click', function (evento){
         .then(response => response.json())
         .then(({ alimento, composicao }) => {
             if (composicao && composicao.length > 0) {
-                carregar_composicao(composicao, alimento)
+                carregar_composicao(composicao, alimento, botao.id)
             } else {
                 const html = "Esse alimento não possui nutrientes vinculados!";
                 exibir_composicao(composicao, alimento, html, '400px');

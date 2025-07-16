@@ -25,7 +25,7 @@ export function ativar(elemento){
         }
     });
 }
-export function ativar_composicao(composicao, alimento, nutriente_id){
+export function ativar_composicao(composicao, alimento, id_composicao){
     Swal.fire({
         title: 'Tem certeza que deseja ativar esse nutriente da composição?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -41,7 +41,16 @@ export function ativar_composicao(composicao, alimento, nutriente_id){
         showCancelButton: true,
     }).then(resp => {
         if (resp.isConfirmed){
-            carregar_composicao(composicao, alimento)
+            const url = `/ativar_composicaoAlimento/`;   
+            htmx.ajax('POST', url,{
+                values: {
+                    id: id_composicao,
+                    idAlimento: alimento.id
+                },
+                swap:'none'
+            });
+            // carregar_composicao(composicao, alimento)
+
         }else{
             carregar_composicao(composicao, alimento)
         }
@@ -76,7 +85,7 @@ export function desativar(elemento){
 }
 
 
-export function desativar_composicao(composicao, alimento, id_exclusao){
+export function desativar_composicao(composicao, alimento, id_composicao){
     Swal.fire({
         title: 'Tem certeza que deseja desativar esse nutriente da composição?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -92,15 +101,15 @@ export function desativar_composicao(composicao, alimento, id_exclusao){
         showCancelButton: true,
     }).then(resp => {
         if (resp.isConfirmed){
-            // const url = `/desativar_composicaoAlimento/`;
-            // console.log(id_exclusao);     
-            // htmx.ajax('GET', url,{
-            //     values: {
-            //         id: id_exclusao
-            //     },
-            //     swap:'none'
-            // });
-            carregar_composicao(composicao, alimento)
+            const url = `/desativar_composicaoAlimento/`;   
+            htmx.ajax('POST', url,{
+                values: {
+                    id: id_composicao,
+                    idAlimento: alimento.id
+                },
+                swap:'none'
+            });
+            // carregar_composicao(composicao, alimento)
 
         }else{
             carregar_composicao(composicao, alimento)
@@ -285,7 +294,7 @@ export function carregar_composicao(composicao, alimento) {
 
     exibir_composicao(composicao, alimento, html, '700px');
 }
-export function inserir_composicao(alimento){
+export function inserir_composicao(composicao, alimento){
     fetch(`/nutrientes_disponiveis_json/?id_composicao=${alimento.id}`)
     .then(response => response.json())
     .then(nutrientes => {
@@ -349,6 +358,8 @@ export function inserir_composicao(alimento){
                     },
                     swap: 'none'
                 });
+            }else{
+                carregar_composicao(composicao, alimento)
             }
         });
     });
@@ -375,10 +386,8 @@ export function exibir_composicao(composicao, alimento, html, tam) {
                     const botaoDesativar = event.target.closest('.desativar-composicao-btn');
                     const botaoAtivar = event.target.closest('.ativar-composicao-btn');
                     if (botaoDesativar) {
-                        console.log('Elemento clicado:', botaoDesativar);
                         desativar_composicao(composicao, alimento, botaoDesativar.dataset.id);
                     }else if(botaoAtivar){
-                        console.log('Elemento clicado:', botaoAtivar);
                         ativar_composicao(composicao, alimento, botaoAtivar.dataset.id);
                     }
                     
@@ -387,7 +396,7 @@ export function exibir_composicao(composicao, alimento, html, tam) {
         }
     }).then(resp => {
         if (resp.isConfirmed) {
-            inserir_composicao(alimento);
+            inserir_composicao(composicao, alimento);
         }
     });
 }
@@ -409,26 +418,13 @@ htmx.on("htmx:afterOnLoad", (event) => {
                     confirmButton: 'botao-confirma-alerta',
                 },
             }).then(() => {
-                carregar_composicao(resp.data.composicao, resp.data.alimento)
+                carregar_composicao(resp.data.composicao, resp.data.alimento);
             });
         }
     }
-    if (event.detail.xhr.status === 202 && resp.Mensagem?.includes('desativada')) {
-        Swal.fire({
-            title: 'Desativado!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonText: 'Ok',
-            timer: 3000,
-            timerProgressBar: true,
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
-        }).then(() => {
-            carregar_composicao(resp.composicao ?? {}, resp.alimento ?? {});
-        });
-    }          
+    if (event.detail.xhr.status === 202) {
+        carregar_composicao(resp.data.composicao, resp.data.alimento);
+    }  
     if (event.detail.xhr.status === 200) {
         if (resp.Mensagem?.includes('ativado')) {            
             Swal.fire({
