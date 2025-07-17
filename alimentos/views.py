@@ -414,7 +414,7 @@ def nutrientes_disponiveis_json(request):
         alimento_id=id
     ).values_list('nutriente_id', flat=True)
     # Filtra os nutrientes que NÃO estão nessa lista
-    nutrientes_disponiveis = Nutriente.objects.exclude(id__in=nutrientes_relacionados)
+    nutrientes_disponiveis = Nutriente.objects.exclude(id__in=nutrientes_relacionados).filter(is_active=True)
     return js({'response': list(nutrientes_disponiveis.values('id', 'nome'))})
 
 def get_composicaoAlimento(request):
@@ -447,6 +447,8 @@ def inserir_composicao_alimento(request):
     valor = request.POST.get('quantidade', '')
     print(alimento_id, nutriente_id, valor)
     if alimento_id and nutriente_id and valor:
+        # nutriente = Nutrientes.objects.filter(pk=nutriente_id|Q(is_active=True))
+        # if nutriente():
         if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
             return js({'Mensagem': 'Composição de alimento já existe!'}, status=400)
 
@@ -456,7 +458,7 @@ def inserir_composicao_alimento(request):
             valor=valor
         )
         alimento_obj = Alimento.objects.get(id=alimento_id)
-        composicao = ComposicaoAlimento.objects.filter(alimento_id=alimento_id).order_by('-id').select_related('nutriente')
+        composicao = ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente__is_active=True).order_by('-id').select_related('nutriente')
         composicao_dict = [
             {
                 'id': comp.id,
