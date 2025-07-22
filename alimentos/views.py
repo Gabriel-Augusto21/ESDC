@@ -94,6 +94,8 @@ def ativar_nutriente(request):
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.is_active = True
     nutriente.save()
+    composicao = ComposicaoAlimento.objects.filter(nutriente_id=id)
+    composicao.update(is_active = True)
     return js({'Mensagem': f'{nutriente.nome} foi ativado'}, status=200)
 
 def desativar_nutriente(request):
@@ -102,6 +104,8 @@ def desativar_nutriente(request):
       nutriente = get_object_or_404(Nutriente, pk=id)
       nutriente.is_active = False
       nutriente.save()
+      composicao = ComposicaoAlimento.objects.filter(nutriente_id=id)
+      composicao.update(is_active = False)
       return js({'Mensagem': f'{nutriente.nome} foi desativado'}, status=200)
     return js({'Mensagem': f'Não foi possível desativar {nutriente.nome}'}, status=400)
 
