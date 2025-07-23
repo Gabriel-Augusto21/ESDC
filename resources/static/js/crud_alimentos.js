@@ -57,7 +57,9 @@ document.body.addEventListener('click', function (evento){
 
                     const clone = htmlInsercao; // utilizo o clone pra nao ter perigo de o elemento ser excluido da dom
                     clone.removeAttribute('hidden'); // tirando o atributo hidden pra exibir no alert
-                    
+                    clone.querySelectorAll('input').forEach(el => {
+                        el.value = '';
+                    });
                     const select =  clone.querySelector('#idClassificacao') // pegando o select do elemento clone
                     select.innerHTML = optionsHtml; // // populando o select
                     

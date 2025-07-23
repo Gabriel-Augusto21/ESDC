@@ -145,20 +145,25 @@ export function atualizar(clone, alimento) {
                     });
 
                     input.addEventListener('blur', () => {
-                        const normalizeNumber = (str) => str.replace(',', '.');
-                        const val = normalizeNumber(input.value.trim());
-                        const num = parseFloat(val);
+                    const normalizeNumber = (str) => str.replace(',', '.');
+                    const val = normalizeNumber(input.value.trim());
+                    const num = parseFloat(val);
 
-                        // Verifica se é número válido e <= 100
-                        if (val === '' || isNaN(num) || num > 100) {
-                            // valor inválido, volta para o original
-                            input.value = input.dataset.valorOriginal;
-                        } else {
-                            // valor válido, atualiza valorOriginal para o novo
-                            input.dataset.valorOriginal = val;
-                            input.value = val; // atualiza o campo (no caso só troca ',' por '.')
-                        }
-                    });
+                    // Regras de validação
+                    const isEd = selector === '#txtEd';
+                    const limite = isEd ? 20 : 100;
+
+                    if (val === '' || isNaN(num) || num > limite) {
+                        // Valor inválido: restaura o original
+                        input.value = input.dataset.valorOriginal;
+                        Swal.showValidationMessage('Por favor, insira valores numéricos válidos, respeitando os limites.');
+                        return false;
+                    } else {
+                        // Valor válido: atualiza o valor original
+                        input.dataset.valorOriginal = val;
+                        input.value = val;
+                    }
+                });
                 }
             });
         },
@@ -185,8 +190,8 @@ export function atualizar(clone, alimento) {
                 return false;
             }
 
-            if (ms > 100 || ed > 100 || pb > 100) {
-                Swal.showValidationMessage('Por favor, insira valores numéricos menores que 100.');
+            if (ms > 100 || ed > 20 || pb > 100) {
+                Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
                 return false;
             }
 
@@ -229,23 +234,63 @@ export function inserir(modalHtml){
         },
         cancelButtonColor: '#FF0000',
         confirmButtonText: 'Inserir',
+        
+        didOpen: () => {
+            const popup = Swal.getPopup();
+            ['#txtMs', '#txtPb', '#txtEd'].forEach(selector => {
+                const input = popup.querySelector(selector);
+                if (input) {
+                    input.dataset.valorOriginal = input.value.trim();
+
+                    input.addEventListener('focus', () => {
+                        input.value = '';
+                    });
+
+                    input.addEventListener('blur', () => {
+                    const normalizeNumber = (str) => str.replace(',', '.');
+                    const val = normalizeNumber(input.value.trim());
+                    const num = parseFloat(val);
+
+                    // Regras de validação
+                    const isEd = selector === '#txtEd';
+                    const limite = isEd ? 20 : 100;
+
+                    if (val === '' || isNaN(num) || num > limite) {
+                        // Valor inválido: restaura o original
+                        input.value = input.dataset.valorOriginal;
+                    } else {
+                        // Valor válido: atualiza o valor original
+                        input.dataset.valorOriginal = val;
+                        input.value = val;
+                    }
+                });
+                }
+            });
+        },
+
+
         preConfirm: () => {
             const popup = Swal.getPopup();
             const nome = popup.querySelector('#txtNome').value.trim();
             const idClass = popup.querySelector('#idClassificacao').value.trim();
+
             const normalizeNumber = (str) => str.replace(',', '.');
-            const ms = normalizeNumber(popup.querySelector('#txtMs').value.trim());
-            const ed = normalizeNumber(popup.querySelector('#txtEd').value.trim());
-            const pb = normalizeNumber(popup.querySelector('#txtPb').value.trim());
-            if (isNaN(ms) || isNaN(ed) || isNaN(pb)) {
-                Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
-                return false;
-            }
+
+            const ms = parseFloat(normalizeNumber(popup.querySelector('#txtMs').value.trim()));
+            const ed = parseFloat(normalizeNumber(popup.querySelector('#txtEd').value.trim()));
+            const pb = parseFloat(normalizeNumber(popup.querySelector('#txtPb').value.trim()));
+
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            return { nome, idClass, ms, ed, pb};
+
+            if (isNaN(ms) || isNaN(ed) || isNaN(pb) ||ms > 100 || ed > 20 || pb > 100) {
+                Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+                return false;
+            }
+
+            return { nome, idClass, ms, ed, pb };
         }
     }).then((resp) => {
         if (resp.isConfirmed) {
