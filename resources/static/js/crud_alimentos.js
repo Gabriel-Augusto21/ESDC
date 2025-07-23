@@ -55,15 +55,22 @@ document.body.addEventListener('click', function (evento){
                     const optionsHtml = classificacoes.map(n =>
                         `<option value="${n.id}">${n.nome}</option>`).join("");
 
-                    const clone = htmlInsercao; // utilizo o clone pra nao ter perigo de o elemento ser excluido da dom
-                    clone.removeAttribute('hidden'); // tirando o atributo hidden pra exibir no alert
+                    const clone = htmlInsercao.cloneNode(true); // Clonar de fato
+                    clone.removeAttribute('hidden');
+
+                    const nomeInput = clone.querySelector('.txtNome'); // Ajuste conforme seletor real
+
                     clone.querySelectorAll('input').forEach(el => {
-                        el.value = '';
+                        if (!clone.querySelectorAll('txtNome')) {
+                            el.value = 0.00;
+                        }
                     });
-                    const select =  clone.querySelector('#idClassificacao') // pegando o select do elemento clone
-                    select.innerHTML = optionsHtml; // // populando o select
-                    
-                    inserir(clone);// chamando o alerta de inserção e inserindo 
+
+                    const select = clone.querySelector('#idClassificacao');
+                    select.innerHTML = optionsHtml;
+
+                    inserir(clone);
+
                 })
                 .catch(error => {
                     console.error('Erro ao carregar classificações:', error);

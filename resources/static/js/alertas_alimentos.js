@@ -276,18 +276,22 @@ export function inserir(modalHtml){
 
             const normalizeNumber = (str) => str.replace(',', '.');
 
-            const ms = parseFloat(normalizeNumber(popup.querySelector('#txtMs').value.trim()));
-            const ed = parseFloat(normalizeNumber(popup.querySelector('#txtEd').value.trim()));
-            const pb = parseFloat(normalizeNumber(popup.querySelector('#txtPb').value.trim()));
-
+            let ms = parseFloat(normalizeNumber(popup.querySelector('#txtMs').value.trim()));
+            let ed = parseFloat(normalizeNumber(popup.querySelector('#txtEd').value.trim()));
+            let pb = parseFloat(normalizeNumber(popup.querySelector('#txtPb').value.trim()));
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
+            
+            // Se algum for NaN, atribui 0
+            ms = isNaN(ms) ? 0 : ms;
+            ed = isNaN(ed) ? 0 : ed;
+            pb = isNaN(pb) ? 0 : pb;
 
-            if (isNaN(ms) || isNaN(ed) || isNaN(pb) ||ms > 100 || ed > 20 || pb > 100) {
+            if (ms > 100 || ed > 20 || pb > 100) {
                 Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
-                return false;
+                return false;                
             }
 
             return { nome, idClass, ms, ed, pb };
@@ -305,7 +309,6 @@ export function inserir(modalHtml){
                 swap: 'none'
             });
         }
-
     });
 }
 export function carregar_composicao(composicao, alimento) {
@@ -462,8 +465,6 @@ export function inserir_composicao(composicao, alimento){
                     },
                     swap: 'none'
                 });
-            }else{
-                carregar_composicao(composicao, alimento)
             }
         });
     });
