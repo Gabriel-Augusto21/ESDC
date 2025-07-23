@@ -7,11 +7,11 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from decimal import Decimal, InvalidOperation
 
-def safe_decimal(valor, default=Decimal('0')):
+def safe_decimal(value):
     try:
-        return Decimal(valor)
+        return Decimal(value)
     except (InvalidOperation, TypeError):
-        return default
+        return None 
 
 # NUTRIENTES
 def nutrientes(request):
@@ -261,66 +261,57 @@ def inserir_alimento(request):
             return js({'Mensagem': f'"{nome}" inserido com sucesso!'}, status=200)
 
 def atualizar_alimento(request):
-    if request.method == 'POST':
+    if request.method != 'POST':
+        return js({'Mensagem': 'Método não permitido'}, status=405)
+
+    try:
         id_alimento = int(request.POST.get('id'))
-        nome_alimento = request.POST.get('nome')
         idClass = int(request.POST.get('idClass'))
-        ms = safe_decimal(request.POST.get('ms'))
-        ed = safe_decimal(request.POST.get('ed'))
-        pb = safe_decimal(request.POST.get('pb'))
-       
-        if Alimento.objects.exclude(id=id_alimento).filter(nome__iexact=nome_alimento).exists():
-            return js({'Mensagem': "Outro alimento já existe com esse nome!"}, status=401)
-        
+    except (TypeError, ValueError):
+        return js({'Mensagem': 'ID inválido'}, status=400)
+
+    nome_alimento = request.POST.get('nome')
+    ms = safe_decimal(request.POST.get('ms'))
+    ed = safe_decimal(request.POST.get('ed'))
+    pb = safe_decimal(request.POST.get('pb'))
+
+    # Validação básica
+    if not nome_alimento or ms is None or ed is None or pb is None:
+        return js({'Mensagem': 'Dados incompletos ou inválidos.'}, status=400)
+
+    try:
         alimento = Alimento.objects.get(id=id_alimento)
-        # Verifica se todos os dados são iguais (nome, classificação, ms, ed, pb)
-        if (nome_alimento == alimento.nome and
-            idClass == alimento.classificacao.id and
-            ms == alimento.ms and
-            ed == alimento.ed and
-            pb == alimento.pb):
-            return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)#status=401 definido pra informação
+    except Alimento.DoesNotExist:
+        return js({'Mensagem': 'Alimento não encontrado.'}, status=404)
 
-        # Atualiza nome se mudou e classificação não mudou
-        if (nome_alimento != alimento.nome and idClass == alimento.classificacao.id and
-            (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
-            alimento.ms = ms
-            alimento.ed = ed
-            alimento.pb = pb
-            nomeAntigo = alimento.nome
-            alimento.nome = nome_alimento
-            alimento.save()
-            return js({'Mensagem': f"{nomeAntigo} atualizado para {alimento.nome}"}, status=200)
+    if Alimento.objects.exclude(id=id_alimento).filter(nome__iexact=nome_alimento).exists():
+        return js({'Mensagem': "Outro alimento já existe com esse nome!"}, status=409)
 
-        # Atualiza classificação se mudou e nome não mudou
-        if (nome_alimento == alimento.nome and idClass != alimento.classificacao.id and
-            (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
-            alimento.ms = ms
-            alimento.ed = ed
-            alimento.pb = pb
+    # Verifica o que mudou
+    nome_mudou = nome_alimento != alimento.nome
+    class_mudou = idClass != alimento.classificacao.id
+    ms_mudou = ms != alimento.ms
+    ed_mudou = ed != alimento.ed
+    pb_mudou = pb != alimento.pb
+
+    if not (nome_mudou or class_mudou or ms_mudou or ed_mudou or pb_mudou):
+        print("calan")
+        return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)
+
+    try:
+        if class_mudou:
             alimento.classificacao = Classificacao.objects.get(id=idClass)
-            alimento.save()
-            return js({'Mensagem': f"Classificação do alimento {alimento.nome} atualizada para {alimento.classificacao.nome}"}, status=200)
+    except Classificacao.DoesNotExist:
+        return js({'Mensagem': 'Classificação inválida'}, status=400)
 
-        # Atualiza ms, ed e pb se algum deles mudou (mantendo nome e classificação iguais)
-        if (nome_alimento == alimento.nome and idClass == alimento.classificacao.id and
-            (ms != alimento.ms or ed != alimento.ed or pb != alimento.pb)):
-            alimento.ms = ms
-            alimento.ed = ed
-            alimento.pb = pb
-            alimento.save()
-            return js({'Mensagem': f"Valores gerais atualizados"}, status=200)
+    # Atualiza os dados
+    alimento.nome = nome_alimento
+    alimento.ms = ms
+    alimento.ed = ed
+    alimento.pb = pb
+    alimento.save()
 
-        # Caso nome e classificação tenham mudado, atualiza tudo junto (incluindo ms, ed e pb)
-        alimento.nome = nome_alimento
-        alimento.classificacao = Classificacao.objects.get(id=idClass)
-        alimento.ms = ms
-        alimento.ed = ed
-        alimento.pb = pb
-        alimento.save()
-        return js({'Mensagem': "Nome, classificação e valores nutricionais atualizados"}, status=200)
-
-    return js({'Mensagem': 'erro'}, status=400)
+    return js({'Mensagem': "Alimento atualizado com sucesso!"}, status=200)
 
 def ativar_alimento(request):
     if request.method == 'POST':

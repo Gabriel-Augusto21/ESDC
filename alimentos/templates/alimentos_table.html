@@ -1,3 +1,4 @@
+{% load custom_filters %}
 {% load static %}
 <table class="tabela table-responsive-sm">
     <thead>
@@ -19,10 +20,10 @@
             style="background-color:rgba(190, 190, 190, 0.31)"
         {% endif %}>
             <td id="txtNome">{{ alimento.nome }}</td>
-            <td class="d-none d-sm-table-cell">{{alimento.classificacao.nome}}</td>
-            <td>{{alimento.ms}} %</td>
-            <td>{{alimento.pb}} Mcal</td>
-            <td  class="d-none d-sm-table-cell">{{alimento.ed}} %MS</td>
+            <td class="d-none d-sm-table-cell">{{alimento.classificacao.nome|truncar:2}}</td>
+            <td>{{alimento.ms|truncar:2}} %</td>
+            <td>{{alimento.pb|truncar:2}} Mcal</td>
+            <td class="d-none d-sm-table-cell">{{ alimento.ed|truncar:2 }} %MS</td>
             <td class="text-end">{% if alimento.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Ativar">
                     <img src="{% static 'img/visibility.png' %}" width="20">

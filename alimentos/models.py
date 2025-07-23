@@ -11,9 +11,9 @@ class Classificacao(models.Model):
 class Alimento(models.Model):
     classificacao = models.ForeignKey(Classificacao, on_delete=models.CASCADE)
     nome = models.CharField(max_length=255, null=False)
-    pb = models.DecimalField(max_digits=12, decimal_places=5, default=0.00000)
-    ms = models.DecimalField(max_digits=12, decimal_places=5, default=0.00000)
-    ed = models.DecimalField(max_digits=12, decimal_places=5, default=0.00000)
+    pb = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    ms = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    ed = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -32,7 +32,7 @@ class Nutriente(models.Model):
 class ComposicaoAlimento(models.Model):
     alimento = models.ForeignKey(Alimento, on_delete=models.CASCADE)
     nutriente = models.ForeignKey(Nutriente, on_delete=models.CASCADE)
-    valor = models.DecimalField(max_digits=12, decimal_places=5)
+    valor = models.DecimalField(max_digits=15, decimal_places=9, default=0.0)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

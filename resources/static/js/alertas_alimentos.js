@@ -117,11 +117,11 @@ export function desativar_composicao(composicao, alimento, id_composicao){
 
     });
 }
-export function atualizar(html, alimento){
+export function atualizar(clone, alimento) {
     Swal.fire({
         width: '700px',
         title: 'Atualizar Alimento',
-        html: html,
+        html: clone,
         confirmButtonText: 'Atualizar',
         confirmButtonColor: '#2f453a',
         cancelButtonText: 'Cancelar',
@@ -132,24 +132,67 @@ export function atualizar(html, alimento){
         },
         showCancelButton: true,
         focusConfirm: false,
+
+        didOpen: () => {
+            const popup = Swal.getPopup();
+            ['#txtMs', '#txtPb', '#txtEd'].forEach(selector => {
+                const input = popup.querySelector(selector);
+                if (input) {
+                    input.dataset.valorOriginal = input.value.trim();
+
+                    input.addEventListener('focus', () => {
+                        input.value = '';
+                    });
+
+                    input.addEventListener('blur', () => {
+                        const normalizeNumber = (str) => str.replace(',', '.');
+                        const val = normalizeNumber(input.value.trim());
+                        const num = parseFloat(val);
+
+                        // Verifica se é número válido e <= 100
+                        if (val === '' || isNaN(num) || num > 100) {
+                            // valor inválido, volta para o original
+                            input.value = input.dataset.valorOriginal;
+                        } else {
+                            // valor válido, atualiza valorOriginal para o novo
+                            input.dataset.valorOriginal = val;
+                            input.value = val; // atualiza o campo (no caso só troca ',' por '.')
+                        }
+                    });
+                }
+            });
+        },
+
+
         preConfirm: () => {
             const popup = Swal.getPopup();
             const nome = popup.querySelector('#txtNome').value.trim();
             const idClass = popup.querySelector('#idClassificacao').value.trim();
+
             const normalizeNumber = (str) => str.replace(',', '.');
-            const ms = normalizeNumber(popup.querySelector('#txtMs').value.trim());
-            const ed = normalizeNumber(popup.querySelector('#txtEd').value.trim());
-            const pb = normalizeNumber(popup.querySelector('#txtPb').value.trim());
-            if (isNaN(ms) || isNaN(ed) || isNaN(pb)) {
-            Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
-            return false;
-            }
+
+            const ms = parseFloat(normalizeNumber(popup.querySelector('#txtMs').value.trim()));
+            const ed = parseFloat(normalizeNumber(popup.querySelector('#txtEd').value.trim()));
+            const pb = parseFloat(normalizeNumber(popup.querySelector('#txtPb').value.trim()));
+
             if (!nome) {
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            return { nome, idClass, ms, ed, pb};
+
+            if (isNaN(ms) || isNaN(ed) || isNaN(pb)) {
+                Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+                return false;
+            }
+
+            if (ms > 100 || ed > 100 || pb > 100) {
+                Swal.showValidationMessage('Por favor, insira valores numéricos menores que 100.');
+                return false;
+            }
+
+            return { nome, idClass, ms, ed, pb };
         }
+
     }).then(resp => {
         if (resp.isConfirmed) {
             const url = '/atualizar_alimento/';
@@ -163,7 +206,6 @@ export function atualizar(html, alimento){
                     pb: resp.value.pb
                 },
                 swap: 'none',
-                // callback para erros:
                 error: function(xhr) {
                     console.error('Erro ao atualizar alimento:', xhr.status, xhr.responseText);
                     alert('Erro: ' + xhr.responseText);
@@ -172,6 +214,7 @@ export function atualizar(html, alimento){
         }
     });
 }
+
 export function inserir(modalHtml){
     swal.fire({
         width: '800px',
@@ -225,58 +268,74 @@ export function carregar_composicao(composicao, alimento) {
     for (let i = 0; i < composicao.length; i += 3) {
         const bloco = `
             <div id="dados-composicao" class="row mb-3">
-                <div class="col">
-                    <label class="form-label">${composicao[i].nutriente_nome} <br>(${composicao[i].nutriente_unidade})</label>
-                    <div class="d-flex align-items-center">
-                        <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i].valor}">
-                        ${composicao[i].is_active ? `
-                            <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i].id}">
-                                <img src="${imagemVisibilidade}" width="20">
-                            </button>   
-                        `: `
-                            <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i].id}">
-                                <img src="${imagemNVisibilidade}" width="20">
-                            </button>
-                        `}
-                    </div>
+            <div class="col">
+                <label class="form-label">
+                    ${composicao[i].nutriente_nome}
+                    <span class="d-sm-none"><br></span>
+                    <span class="d-none d-sm-inline"> </span>
+                    (${composicao[i].nutriente_unidade})
+                </label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control me-2" type="text" placeholder="Valor" value="${parseFloat(composicao[i].valor).toFixed(2)}">
+                    ${composicao[i].is_active ? `
+                        <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i].id}">
+                            <img src="${imagemVisibilidade}" width="20">
+                        </button>   
+                    ` : `
+                        <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i].id}">
+                            <img src="${imagemNVisibilidade}" width="20">
+                        </button>
+                    `}
                 </div>
-
-                ${composicao[i + 1] ? `
-                <div class="col">
-                    <label class="form-label">${composicao[i + 1].nutriente_nome} <br>(${composicao[i + 1].nutriente_unidade})</label>
-                    <div class="d-flex align-items-center">
-                        <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 1].valor}">
-                        ${composicao[i+1].is_active ? `
-                            <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i+1].id}">
-                                <img src="${imagemVisibilidade}" width="20">
-                            </button>   
-                        `: `
-                            <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i+1].id}">
-                                <img src="${imagemNVisibilidade}" width="20">
-                            </button>
-                        `}
-                    </div>
-                </div>
-                ` : ''}
-
-                ${composicao[i + 2] ? `
-                <div class="col">
-                    <label class="form-label">${composicao[i + 2].nutriente_nome} <br>(${composicao[i + 2].nutriente_unidade})</label>
-                    <div class="d-flex align-items-center">
-                        <input class="form-control me-2" type="text" placeholder="Valor" value="${composicao[i + 2].valor}">
-                        ${composicao[i+2].is_active ? `
-                            <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i+2].id}">
-                                <img src="${imagemVisibilidade}" width="20">
-                            </button>   
-                        `: `
-                            <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i+2].id}">
-                                <img src="${imagemNVisibilidade}" width="20">
-                            </button>
-                        `}
-                    </div>
-                </div>
-                ` : ''}
             </div>
+
+            ${composicao[i + 1] ? `
+            <div class="col">
+                <label class="form-label">
+                    ${composicao[i + 1].nutriente_nome}
+                    <span class="d-sm-none"><br></span>
+                    <span class="d-none d-sm-inline"> </span>
+                    (${composicao[i + 1].nutriente_unidade})
+                </label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control me-2" type="text" placeholder="Valor" value="${parseFloat(composicao[i + 1].valor).toFixed(2)}">
+                    ${composicao[i + 1].is_active ? `
+                        <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i + 1].id}">
+                            <img src="${imagemVisibilidade}" width="20">
+                        </button>   
+                    ` : `
+                        <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i + 1].id}">
+                            <img src="${imagemNVisibilidade}" width="20">
+                        </button>
+                    `}
+                </div>
+            </div>
+            ` : ''}
+
+            ${composicao[i + 2] ? `
+            <div class="col">
+                <label class="form-label">
+                    ${composicao[i + 2].nutriente_nome}
+                    <span class="d-sm-none"><br></span>
+                    <span class="d-none d-sm-inline"> </span>
+                    (${composicao[i + 2].nutriente_unidade})
+                </label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control me-2" type="text" placeholder="Valor" value="${parseFloat(composicao[i + 2].valor).toFixed(2)}">
+                    ${composicao[i + 2].is_active ? `
+                        <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i + 2].id}">
+                            <img src="${imagemVisibilidade}" width="20">
+                        </button>   
+                    ` : `
+                        <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i + 2].id}">
+                            <img src="${imagemNVisibilidade}" width="20">
+                        </button>
+                    `}
+                </div>
+            </div>
+            ` : ''}
+        </div>
+
         `;
         dados_composicao += bloco;
     }
