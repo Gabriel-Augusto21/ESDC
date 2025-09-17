@@ -161,3 +161,9 @@ def listar_composicoes_exigencia(request):
         return js({'composicoes': data})
     except Exigencia.DoesNotExist:
         return js({'Mensagem': 'Exigência não encontrada'}, status=404)
+    
+def composicao_exigencias(request):
+    nutrientes = Nutriente.objects.filter(is_active=True).order_by('nome')
+    return render(request, 'composicao_exigencia.html', {
+        'nutrientes': nutrientes,
+    })

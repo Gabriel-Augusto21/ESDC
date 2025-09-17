@@ -15,4 +15,5 @@ urlpatterns = [
    path("ativar_exigencia/", views.ativar_exigencia, name="ativar_exigencia"),
    path("desativar_exigencia/", views.desativar_exigencia, name="desativar_exigencia"),
    path("listar_composicoes_exigencia/", views.listar_composicoes_exigencia, name="listar_composicoes_exigencia"),
+   path("composicao_exigencias/", views.composicao_exigencias, name="composicao_exigencias"),
 ]
