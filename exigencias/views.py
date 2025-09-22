@@ -10,7 +10,7 @@ from decimal import Decimal, InvalidOperation
 def gerar_select_categorias():
     categorias = CategoriaAnimal.objects.filter(is_active=True)
     return ''.join(
-        f'<option value="{c.id}">{c.descricao_fase_esforco}</option>'
+        f'<option>{c.descricao_fase_esforco}</option>'
         for c in categorias
     )
 

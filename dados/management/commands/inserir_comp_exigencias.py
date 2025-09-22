@@ -1,35 +1,68 @@
 from django.core.management.base import BaseCommand
-from alimentos.models import Classificacao, Alimento, Nutriente, ComposicaoAlimento
-from exigencias.models import ComposicaoExigencia
+from exigencias.models import Exigencia, ComposicaoExigencia, CategoriaAnimal
+from alimentos.models import Nutriente
 import pandas as pd
 import os
 from django.conf import settings
-from decimal import Decimal, InvalidOperation
+from dados.management.commands.inserir_dados import tratar_decimal
 
-def tratar_decimal(valor):
-    try:
-        if pd.isna(valor):
-            return Decimal('0')
-        return Decimal(str(valor))
-    except (InvalidOperation, ValueError):
-        return Decimal('0')
 
 class Command(BaseCommand):
-    help = "Inserindo dados alimentares"
+    help = "Inserindo dados de Exigência"
 
     def handle(self, *args, **options):
-        nome_arquivo = os.path.join(settings.BASE_DIR, 'alimentos', 'formulacao.xlsm')
-        nome_tabela = 'Alimentos'
+        caminho_arquivo = os.path.join(settings.BASE_DIR, 'alimentos', 'formulacao.xlsm')
+        nome_tabela = 'ExigenciaLeitura'
+        nrows = 138
 
-        # Obtendo a leitura de nutrientes BB:BC
-        # obs. criei uma nova tabela dentro de alimentos la na formulação para obter os dados dos nutrientes
-        composicao_exigencia = pd.read_excel(
-            nome_arquivo,
+        dados_exigencia = pd.read_excel(
+            caminho_arquivo,
             sheet_name=nome_tabela,
-            usecols="BB:BC",
+            usecols="A:C",
             engine="openpyxl",
-            nrows=34
+            nrows=nrows
         )
-            
-        self.stdout.write(self.style.SUCCESS(f"{i} alimentos adicionados com sucesso!"))
-        self.stdout.write(self.style.SUCCESS(f"{a} linhas de composição alimentar adicionadas com sucesso!"))
+
+        dados_composicao_exigencia = pd.read_excel(
+            caminho_arquivo,
+            sheet_name=nome_tabela,
+            usecols="D:AI",
+            engine="openpyxl",
+            nrows=nrows
+        )
+
+        for i, primeira_col in enumerate(dados_exigencia.iloc[:, 0]):
+            if i == 0: continue  
+
+            cols_exigencia = dados_exigencia.iloc[i]
+            nome = primeira_col
+            ed = tratar_decimal(cols_exigencia.iloc[1])
+            pb = tratar_decimal(cols_exigencia.iloc[2])
+
+            exigencia_obj = Exigencia.objects.create(
+                nome=nome,
+                ed=ed,
+                pb=pb,
+                categoria=CategoriaAnimal.objects.first()  
+            )
+
+            cols_composicao = dados_composicao_exigencia.iloc[i]
+
+            for j, valor in enumerate(cols_composicao):
+                if pd.isna(valor):
+                    continue
+
+                try:
+                    nutriente = Nutriente.objects.all()[j]
+                    ComposicaoExigencia.objects.create(
+                        exigencia=exigencia_obj,
+                        nutriente=nutriente,
+                        valor=tratar_decimal(valor),
+                        is_active=True
+                    )
+                except IndexError:
+                    self.stdout.write(
+                        self.style.WARNING(f"Nutriência {j} não encontrada para exigência {nome}")
+                    )
+
+        self.stdout.write(self.style.SUCCESS(f"{i} exigências e composições adicionadas com sucesso"))

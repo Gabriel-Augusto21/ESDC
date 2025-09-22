@@ -28,7 +28,7 @@ class Exigencia(models.Model):
 class ComposicaoExigencia(models.Model):
     exigencia = models.ForeignKey(Exigencia, on_delete=models.CASCADE)
     nutriente = models.ForeignKey('alimentos.Nutriente', on_delete=models.CASCADE)
-    valor = models.DecimalField(max_digits=5, decimal_places=2)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
