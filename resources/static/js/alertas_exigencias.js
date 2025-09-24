@@ -197,3 +197,198 @@ htmx.on("htmx:afterOnLoad", (event) => {
         }
     }
 });
+
+export function ativar_composicao_exigencia(composicao, exigencia, id_composicao){
+    Swal.fire({
+        title: 'Tem certeza que deseja ativar esse nutriente da exigência?',
+        text: "Você poderá desfazer isso mais tarde!",
+        icon: 'warning',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Sim, ativar!',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+    }).then(resp => {
+        if (resp.isConfirmed){
+            const url = `/ativar_composicaoExigencia/`;   
+            htmx.ajax('POST', url, {
+                values: {
+                    id: id_composicao,
+                    idExigencia: exigencia.id
+                },
+                swap:'none'
+            });
+        } else {
+            carregar_composicao_exigencia(composicao, exigencia);
+        }
+    });
+}
+
+export function desativar_composicao_exigencia(composicao, exigencia, id_composicao){
+    Swal.fire({
+        title: 'Tem certeza que deseja desativar esse nutriente da exigência?',
+        text: "Você poderá desfazer isso mais tarde!",
+        icon: 'warning',
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Sim, desativar!',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+    }).then(resp => {
+        if (resp.isConfirmed){
+            const url = `/desativar_composicaoExigencia/`;   
+            htmx.ajax('POST', url, {
+                values: {
+                    id: id_composicao,
+                    idExigencia: exigencia.id
+                },
+                swap:'none'
+            });
+        } else {
+            carregar_composicao_exigencia(composicao, exigencia);
+        }
+    });
+}
+
+export function carregar_composicao_exigencia(composicao, exigencia) {
+    if (!exigencia) {
+        console.error('Exigência não definida!', composicao, exigencia);
+        return;
+    }
+
+    // Defina os ícones antes de usar
+    const imagemVisibilidade = '/static/img/visibility.png';
+    const imagemNVisibilidade = '/static/img/not_visibility.png';
+
+    let dados_composicao = '';
+    for (let i = 0; i < composicao.length; i++) {
+        const c = composicao[i];
+        const bloco = `
+            <div id="dados-composicao" class="row mb-3">
+                <div class="col">
+                    <label class="form-label">
+                        ${c.nutriente_nome} (${c.nutriente_unidade})
+                    </label>
+                    <div class="d-flex align-items-center">
+                        <input class="form-control me-2" type="text" value="${parseFloat(c.valor).toFixed(2)}">
+                        ${c.is_active ? `
+                            <button class="btn btn-sm desativar-composicao-exigencia-btn" data-id="${c.id}">
+                                <img src="${imagemVisibilidade}" width="20">
+                            </button>` : `
+                            <button class="btn btn-sm ativar-composicao-exigencia-btn" data-id="${c.id}">
+                                <img src="${imagemNVisibilidade}" width="20">
+                            </button>`}
+                    </div>
+                </div>
+            </div>
+        `;
+        dados_composicao += bloco;
+    }
+
+    const html = `
+        <div class="container my-3" style="text-align: start;">
+            <h3 class="text-center fs-3 fw-bold border-bottom pb-2">${exigencia.nome}</h3>
+            <div class="row justify-content-end py-3">
+                <div class="col-auto">
+                    <button id="btn-atualizar-exigencia" class="botao-confirma-alerta">Atualizar</button>
+                </div>
+            </div>
+            ${dados_composicao}
+        </div>
+    `;
+
+    exibir_composicao_exigencia(composicao, exigencia, html, '700px');
+}
+
+export function inserir_composicao_exigencia(composicao, exigencia){
+    fetch(`/nutrientes_disponiveis_exigencia_json/?id_composicao=${exigencia.id}`)
+    .then(response => response.json())
+    .then(nutrientes => {
+        const optionsHtml = `<option value="-1" selected>Não selecionado</option>` +
+            nutrientes.response.map(n => `<option value="${n.id}">${n.nome}</option>`).join("");
+
+        const htmlInserir = `
+            <div class="container my-3">
+                <div class="row mb-4">
+                    <div class="col-12 col-md-6">
+                        <label for="idNutriente" class="form-label">Nome do nutriente</label>
+                        <select class="form-control" id="idNutriente">${optionsHtml}</select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label for="txtQuantidade" class="form-label">Quantidade</label>
+                        <input id="txtQuantidade" class="form-control" type="text" placeholder="00.00">
+                    </div>
+                </div>
+            </div>
+        `;
+
+        Swal.fire({
+            width: '600px',
+            title: 'Adicionar nutriente à exigência',
+            html: htmlInserir,
+            confirmButtonColor: '#2f453a',
+            cancelButtonColor: '#FF0000',
+            confirmButtonText: 'Inserir',
+            cancelButtonText: 'Cancelar',
+            showCancelButton: true,
+            preConfirm: () => {
+                const modal = Swal.getPopup();
+                const id = modal.querySelector('#idNutriente').value.trim();
+                const normalizeNumber = str => str.replace(',', '.');
+                const qtd = normalizeNumber(modal.querySelector('#txtQuantidade').value.trim());
+
+                if (isNaN(qtd) || qtd <= 0) {
+                    Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+                    return false;
+                } else if (id < 0) {
+                    Swal.showValidationMessage('Por favor, escolha um nutriente.');
+                    return false;
+                }
+                return { qtd, id, exigencia };
+            }
+        }).then(resp => {
+            if (resp.isConfirmed) {
+                const { qtd, id, exigencia } = resp.value;
+                htmx.ajax('POST', '/inserir_composicao_exigencia/', {
+                    values: {
+                        quantidade: qtd,
+                        id_nutriente: id,
+                        id_exigencia: exigencia.id
+                    },
+                    swap: 'none'
+                });
+            }
+        });
+    });
+}
+
+export function exibir_composicao_exigencia(composicao, exigencia, html, tam){
+    Swal.fire({
+        width: tam,
+        title: 'Composição de Exigência',
+        html: html,
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#FF0000',
+        confirmButtonText: 'Inserir',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+        didOpen: () => {
+            const container = Swal.getHtmlContainer();
+            if (container) {
+                container.addEventListener('click', (event) => {
+                    const botaoDesativar = event.target.closest('.desativar-composicao-exigencia-btn');
+                    const botaoAtivar = event.target.closest('.ativar-composicao-exigencia-btn');
+                    if (botaoDesativar) {
+                        desativar_composicao_exigencia(composicao, exigencia, botaoDesativar.dataset.id);
+                    } else if (botaoAtivar) {
+                        ativar_composicao_exigencia(composicao, exigencia, botaoAtivar.dataset.id);
+                    }
+                });
+            }
+        }
+    }).then(resp => {
+        if (resp.isConfirmed) {
+            inserir_composicao_exigencia(composicao, exigencia);
+        }
+    });
+}

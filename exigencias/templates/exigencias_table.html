@@ -38,9 +38,9 @@
                 <button class="btn btn-sm update-btn" id="{{exigencia.id}}">
                     <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
                 </button>
-                <a href="{% url 'exigencias:composicao_exigencias' %}">
+                <button type="button" class="btn btn-sm composicao-btn" id="{{ exigencia.id }}">
                     <img src="{% static 'img/app_registration.png' %}" alt="Composição" width="20" height="20">
-                </a>
+                </button>
                 {% else %}
                     <button class="btn btn-sm ativar-btn" alt="Ativar">
                         <img src="{% static 'img/not_visibility.png' %}" width="20">

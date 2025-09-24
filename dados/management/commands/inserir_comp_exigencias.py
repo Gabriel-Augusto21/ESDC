@@ -18,15 +18,16 @@ class Command(BaseCommand):
         dados_exigencia = pd.read_excel(
             caminho_arquivo,
             sheet_name=nome_tabela,
-            usecols="A:C",
+            usecols="A:G",
             engine="openpyxl",
             nrows=nrows
         )
+        dados_exigencia.head()
 
         dados_composicao_exigencia = pd.read_excel(
             caminho_arquivo,
             sheet_name=nome_tabela,
-            usecols="D:AI",
+            usecols="H:AI",
             engine="openpyxl",
             nrows=nrows
         )
