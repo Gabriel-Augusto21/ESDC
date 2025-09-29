@@ -125,7 +125,6 @@ document.body.addEventListener('click', function (evento) {
                     console.error('Exigência ou composição não definida!', data);
                     return;
                 }
-                // ✅ Só chama a função, ela mesma já abre o Swal
                 carregar_composicao_exigencia(data.composicao, data.exigencia);
             })
             .catch(err => {

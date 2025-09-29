@@ -1,10 +1,8 @@
-// composicao_exigencia.js
 import { alerta_inserir, alerta_update, alerta_ativar, alerta_desativar } from './alertas_composicao_exigencias.js';
 
-console.log("composicao_exigencia.js carregado"); // confirma carregamento do módulo
+console.log("composicao_exigencia.js carregado");
 
 document.body.addEventListener('click', function (e) {
-    // debug rápido
     const target = e.target.closest('button, a');
     if (target) console.log("clicou em:", target.className, target.dataset);
 

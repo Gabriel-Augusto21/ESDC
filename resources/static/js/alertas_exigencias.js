@@ -256,33 +256,37 @@ export function carregar_composicao_exigencia(composicao, exigencia) {
         return;
     }
 
-    // Defina os ícones antes de usar
     const imagemVisibilidade = '/static/img/visibility.png';
     const imagemNVisibilidade = '/static/img/not_visibility.png';
 
     let dados_composicao = '';
     for (let i = 0; i < composicao.length; i++) {
+        if (i % 3 === 0) {
+            dados_composicao += `<div class="row mb-3">`;
+        }
+
         const c = composicao[i];
-        const bloco = `
-            <div id="dados-composicao" class="row mb-3">
-                <div class="col">
-                    <label class="form-label">
-                        ${c.nutriente_nome} (${c.nutriente_unidade})
-                    </label>
-                    <div class="d-flex align-items-center">
-                        <input class="form-control me-2" type="text" value="${parseFloat(c.valor).toFixed(2)}">
-                        ${c.is_active ? `
-                            <button class="btn btn-sm desativar-composicao-exigencia-btn" data-id="${c.id}">
-                                <img src="${imagemVisibilidade}" width="20">
-                            </button>` : `
-                            <button class="btn btn-sm ativar-composicao-exigencia-btn" data-id="${c.id}">
-                                <img src="${imagemNVisibilidade}" width="20">
-                            </button>`}
-                    </div>
+        dados_composicao += `
+            <div class="col-12 col-md-4">
+                <label class="form-label">
+                    ${c.nutriente_nome} (${c.nutriente_unidade})
+                </label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control me-2" type="text" value="${parseFloat(c.valor).toFixed(2)}">
+                    ${c.is_active ? `
+                        <button class="btn btn-sm desativar-composicao-exigencia-btn" data-id="${c.id}">
+                            <img src="${imagemVisibilidade}" width="20">
+                        </button>` : `
+                        <button class="btn btn-sm ativar-composicao-exigencia-btn" data-id="${c.id}">
+                            <img src="${imagemNVisibilidade}" width="20">
+                        </button>`}
                 </div>
             </div>
         `;
-        dados_composicao += bloco;
+
+        if ((i % 3 === 2) || (i === composicao.length - 1)) {
+            dados_composicao += `</div>`;
+        }
     }
 
     const html = `
@@ -299,6 +303,7 @@ export function carregar_composicao_exigencia(composicao, exigencia) {
 
     exibir_composicao_exigencia(composicao, exigencia, html, '700px');
 }
+
 
 export function inserir_composicao_exigencia(composicao, exigencia){
     fetch(`/nutrientes_disponiveis_exigencia_json/?id_composicao=${exigencia.id}`)
@@ -392,3 +397,4 @@ export function exibir_composicao_exigencia(composicao, exigencia, html, tam){
         }
     });
 }
+
