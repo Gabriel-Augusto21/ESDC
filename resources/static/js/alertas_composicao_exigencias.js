@@ -1,4 +1,4 @@
-// 🔔 Inserir Composição de Exigência (modelo baseado no alerta de alimento)
+// 🔔 Inserir Composição de Exigência
 export function alerta_inserir(btn) {
     fetch('/listar_exigencias_nutrientes/')
         .then(response => response.json())
@@ -42,8 +42,6 @@ export function alerta_inserir(btn) {
                         `?exigencia_id=${encodeURIComponent(exigencia_id)}` +
                         `&nutriente_id=${encodeURIComponent(nutriente_id)}` +
                         `&valor=${encodeURIComponent(valor)}`;
-
-                    // usa htmx para enviar (mantendo comportamento do seu projeto)
                     htmx.ajax('GET', url, { swap: 'none' });
                 }
             });
@@ -62,7 +60,6 @@ export function alerta_update(btn) {
         fetch(`/get_composicaoExigencia/?id=${id}`).then(r => r.json())
     ])
     .then(([listas, composicao]) => {
-        // seleciona pelo id (mais confiável que comparar nomes)
         const exigenciasOptions = listas.exigencias.map(e =>
             `<option value="${e.id}" ${String(composicao.exigencia_id) === String(e.id) ? 'selected' : ''}>${e.nome}</option>`
         ).join('');
@@ -144,7 +141,6 @@ export function alerta_desativar(btn) {
     });
 }
 
-// --- handlers HTMX (mesma lógica do alimento, adaptada aos endpoints)
 htmx.on("htmx:afterOnLoad", (event) => {
     try {
         const resp = JSON.parse(event.detail.xhr.response);
@@ -157,7 +153,6 @@ htmx.on("htmx:afterOnLoad", (event) => {
             }
         }
     } catch (e) {
-        // silent
     }
 });
 

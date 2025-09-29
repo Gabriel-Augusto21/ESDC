@@ -17,7 +17,7 @@ urlpatterns = [
 
    path("composicaoExigencia/", views.composicaoExigencia, name="composicaoExigencia"),
    path("composicao_exigencia_json/", views.composicao_exigencia_json, name="composicao_exigencia_json"),
-   path("nutrientes_disponiveis_json/", views.nutrientes_disponiveis_json, name="nutrientes_disponiveis_json"),
+   path("nutrientes_disponiveis_exigencia_json/", views.nutrientes_disponiveis_json, name="nutrientes_disponiveis_json"),
    path("get_composicaoExigencia/", views.get_composicaoExigencia, name="get_composicaoExigencia"),
    path("busca_composicaoExigencia_nome/", views.busca_composicaoExigencia_nome, name="busca_composicaoExigencia_nome"),
    path("inserir_composicao_exigencia/", views.inserir_composicao_exigencia, name="inserir_composicao_exigencia"),

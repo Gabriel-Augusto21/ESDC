@@ -27,7 +27,8 @@
                     data-exigencia="{{ composicao.exigencia.nome|escapejs }}"
                     data-nutriente-id="{{ composicao.nutriente.id }}"
                     data-nutriente="{{ composicao.nutriente.nome|escapejs }}"
-                    data-valor="{{ composicao.valor|default_if_none:''|escapejs }}">
+                    data-valor="{{ composicao.valor|default_if_none:''|escapejs }}"
+                    data-url="{% url 'exigencias:atualizar_composicaoExigencia' %}">
                 <img src="{% static 'img/update.png' %}" width="20">
             </button>
             <button class="btn btn-sm desativar-btn"

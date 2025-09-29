@@ -203,7 +203,6 @@ def nutrientes_disponiveis_json(request):
     nutrientes_relacionados = ComposicaoExigencia.objects.filter(
         exigencia_id=id
     ).values_list('nutriente_id', flat=True)
-    # Filtra os nutrientes que NÃO estão nessa lista
     nutrientes_disponiveis = Nutriente.objects.exclude(id__in=nutrientes_relacionados).filter(is_active=True)
     return js({'response': list(nutrientes_disponiveis.values('id', 'nome'))})
 
@@ -234,7 +233,6 @@ def busca_composicaoExigencia_nome(request):
     return js({'mensagem': 'Informe um nome para busca'}, status=400)
 
 def inserir_composicao_exigencia(request):
-    # aceita nomes variados para compatibilidade com seu JS atual e possíveis futuros POSTs
     if request.method == 'POST':
         exigencia_id = request.POST.get('exigencia_id') or request.POST.get('id_exigencia')
         nutriente_id = request.POST.get('nutriente_id') or request.POST.get('id_nutriente')
@@ -246,8 +244,6 @@ def inserir_composicao_exigencia(request):
 
     if not (exigencia_id and nutriente_id and valor):
         return js({'Mensagem': 'Informe exigência, nutriente e valor'}, status=400)
-
-    # valida Decimal
     try:
         valor_dec = Decimal(str(valor))
     except (InvalidOperation, TypeError):
@@ -303,8 +299,6 @@ def atualizar_composicaoExigencia(request):
         valor_dec = Decimal(str(valor))
     except (InvalidOperation, TypeError):
         return js({'Mensagem': 'Valor inválido'}, status=400)
-
-    # detecta ausência de mudanças (comparando valores normalizados)
     if (str(composicao.exigencia_id) == str(exigencia_id) and
         str(composicao.nutriente_id) == str(nutriente_id) and
         str(composicao.valor) == str(valor_dec)):
@@ -395,8 +389,6 @@ def listar_composicaoExigencia(request):
     paginator = Paginator(composicoes, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    # Se você usa um partial HTMX: renderiza a tabela parcial (mesmo template que já mostrou)
     return render(request, 'composicao_exigencia.html', {
         'composicao_exigencia': page_obj,
         'page_obj': page_obj,
