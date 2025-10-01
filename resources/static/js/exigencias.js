@@ -1,21 +1,34 @@
-import { ativar, desativar, atualizar, inserir } from './alertas_exigencias.js';
+import { 
+    ativar, 
+    desativar, 
+    atualizar, 
+    inserir, 
+    exibir_composicao_exigencia, 
+    carregar_composicao_exigencia, 
+    desativar_composicao_exigencia, 
+    ativar_composicao_exigencia 
+} from './alertas_exigencias.js';
 
 document.body.addEventListener('click', function (evento) { 
-    const botao = evento.target.closest('button');
-    if (!botao) return;
-    const linha = botao.closest('tr');
+    const el = evento.target.closest('button, a');
+    if (!el) return;
+    const linha = el.closest('tr');
 
-    if (botao.classList.contains('desativar-btn')) {
+    if (el.classList.contains('desativar-btn')) {
         evento.preventDefault();
         desativar(linha);
+        return;
+    }
 
-    } else if (botao.classList.contains('ativar-btn')) {
+    if (el.classList.contains('ativar-btn')) {
         evento.preventDefault();
         ativar(linha);
+        return;
+    }
 
-    } else if (botao.classList.contains('update-btn')) {
+    if (el.classList.contains('update-btn')) {
         evento.preventDefault();
-        const id = botao.id;
+        const id = el.id || el.dataset.id || (linha && linha.dataset.id);
         fetch(`/get_exigencia/?id=${id}`)
             .then(resp => resp.json())
             .then(exigencia => {
@@ -54,8 +67,10 @@ document.body.addEventListener('click', function (evento) {
                         atualizar(html, exigencia);
                     });
             });
+        return;
+    }
 
-    } else if (botao.classList.contains('insert-btn')) {
+    if (el.classList.contains('insert-btn')) {
         evento.preventDefault();
         fetch('/get_categorias/')
             .then(resp => resp.json())
@@ -91,5 +106,30 @@ document.body.addEventListener('click', function (evento) {
 
                 inserir(html);
             });
+        return;
+    }
+
+    const href = el.tagName === 'A' ? (el.getAttribute('href') || '') : '';
+    if (el.classList.contains('composicao-btn') || href.includes('composicao')) {
+        evento.preventDefault();
+        const id = el.id || el.dataset.id || (linha && linha.dataset.id);
+        if (!id) {
+            console.error('id da exigência não encontrado para composicao', el, linha);
+            return;
+        }
+
+        fetch(`/composicao_exigencia_json/?id=${id}`)
+            .then(r => r.json())
+            .then(data => {
+                if (!data || !data.exigencia || !data.composicao) {
+                    console.error('Exigência ou composição não definida!', data);
+                    return;
+                }
+                carregar_composicao_exigencia(data.composicao, data.exigencia);
+            })
+            .catch(err => {
+                console.error('erro ao buscar composicao', err);
+            });
+        return;
     }
 });
