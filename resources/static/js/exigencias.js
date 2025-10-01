@@ -23,7 +23,7 @@ document.body.addEventListener('click', function (evento){
                 ).join('');
                 const html = `
                     <div class="container my-3" style="text-align: start;">
-                        <div class="row mb-3">
+                        <div class="row mb-2">
                             <div class="col">
                                 <label>Nome da Exigência</label>
                                 <input id="txtNome" class="form-control" type="text" value="${exigencia.nome}">

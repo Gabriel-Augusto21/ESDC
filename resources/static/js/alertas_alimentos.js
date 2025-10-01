@@ -357,7 +357,7 @@ export function inserir_composicao(alimento){
 export function exibir_composicao(composicao, alimento, html, tam) {
     Swal.fire({
         width: tam,
-        title: 'Composicao Alimentar',
+        title: 'Composição Alimentar',
         html: html,
         confirmButtonColor: '#2f453a',
         cancelButtonColor: '#FF0000',
