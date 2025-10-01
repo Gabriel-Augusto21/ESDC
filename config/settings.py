@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'core',
     'resources',
     'exigencias',
+    'animais',
+    'dietas'
 ]
 
 MIDDLEWARE = [
