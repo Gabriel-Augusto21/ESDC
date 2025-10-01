@@ -20,6 +20,7 @@ export function ativar(elemento){
         }
     });
 }
+
 export function desativar(elemento){
     Swal.fire({
         title: 'Deseja desativar essa exigência?',
@@ -42,6 +43,7 @@ export function desativar(elemento){
         }
     });
 }
+
 export function inserir(html){
     Swal.fire({
         width: '700px',
@@ -75,6 +77,7 @@ export function inserir(html){
         }
     });
 }
+
 export function atualizar(html, exigencia){
     Swal.fire({
         width: '700px',
@@ -114,15 +117,19 @@ export function atualizar(html, exigencia){
         }
     });
 }
+
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation();
+    const status = event.detail.xhr.status;
     let mensagem = 'Erro inesperado.';
+
     try {
         const resp = JSON.parse(event.detail.xhr.responseText);
         if (resp.Mensagem) mensagem = resp.Mensagem;
     } catch (e) {
         console.error("Erro ao interpretar JSON:", e);
     }
+
     Swal.fire({
         title: 'Erro!',
         text: mensagem,
@@ -131,31 +138,58 @@ htmx.on("htmx:responseError", (event) => {
         confirmButtonColor: '#2f453a',
     });
 });
+
+
 htmx.on("htmx:afterOnLoad", (event) => {
-    const resp = JSON.parse(event.detail.xhr.response);
+    let resp = {};
+    try {
+        resp = JSON.parse(event.detail.xhr.response);
+    } catch (e) {
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Resposta do servidor não é JSON válida.',
+            icon: 'error',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+        });
+        return;
+    }
+
+    const mensagem = resp.Mensagem || resp.mensagem || '';
+
     if (event.detail.xhr.status === 200) {
-        if (resp.Mensagem?.includes('inserido') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('ativado') || resp.Mensagem?.includes('desativado')) {
+        if (mensagem.toLowerCase().includes('inserido') || 
+            mensagem.toLowerCase().includes('atualizada') ||
+            mensagem.toLowerCase().includes('ativada') ||
+            mensagem.toLowerCase().includes('ativado') ||
+            mensagem.toLowerCase().includes('desativada') ||
+            mensagem.toLowerCase().includes('desativado')) {
+
             Swal.fire({
                 title: 'Sucesso!',
-                text: resp.Mensagem,
+                text: mensagem,
                 icon: 'success',
                 confirmButtonText: 'Ok',
                 confirmButtonColor: '#2f453a',
                 timer: 3000,
                 timerProgressBar: true,
             }).then(() => window.location.reload());
-        } else if (resp.Mensagem?.includes('já existe') || resp.Mensagem?.includes('já existente')) {
+
+        } else if (mensagem.toLowerCase().includes('já existe') || 
+                   mensagem.toLowerCase().includes('já existente')) {
+
             Swal.fire({
                 title: 'Erro!',
-                text: resp.Mensagem,
+                text: mensagem,
                 icon: 'error',
                 confirmButtonText: 'Ok',
                 confirmButtonColor: '#2f453a',
             });
+
         } else {
             Swal.fire({
                 title: 'Erro inesperado',
-                text: 'Resposta inesperada do servidor.',
+                text: mensagem || 'Resposta inesperada do servidor.',
                 icon: 'error',
                 confirmButtonText: 'Ok',
                 confirmButtonColor: '#2f453a',

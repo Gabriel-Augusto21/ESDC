@@ -221,8 +221,8 @@ export function alerta_desativar(btn) {
         confirmButtonText: 'Sim, desativar!',
         cancelButtonText: 'Cancelar',
         customClass: {
-            confirmButton: 'botao-confirma-alerta',
             cancelButton: 'botao-cancela-alerta',
+            confirmButton: 'botao-confirma-alerta',
         },
     }).then(result => {
         if (result.isConfirmed) {

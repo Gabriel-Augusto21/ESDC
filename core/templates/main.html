@@ -11,12 +11,17 @@
     <!-- Apresentação-->
     <div class="row align-items-center" >
         <h1 class="mx-auto text-center mb-5"><!-- text-center centraliza o texto; mx-auto alinha a horizontal automaticamente; mb-4 dá uma margem abaixo do elemento de 4 unidades do bootstrap-->
-            Software de Nutrição Equina com Balanceamento de Dietas e <br>Gerenciamento de dados
+            Software para Cálculo e Gestão da Dieta de Equinos: <br>Tecnologia a Serviço da Nutrição e Bem-Estar Animal
         </h1>
         <div class="mx-auto" style="max-width: 900px;">
-            <h2 class="h5 text-center mx-5">Escola de Saúde Digestiva do Cavalo é um software educacional desenvolvido com foco em profissionais das áreas de Medicina Veterinária e Zootecnia.
-                A iniciativa é fruto de uma colaboração entre a Fábrica de Soluções Tecnológicas (FAST), vinculada ao curso de Bacharelado em Engenharia da Computação,
-                e o Núcleo de Veterinária, ambos pertencentes ao Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais – Campus Bambuí.
+            <!-- Texto completo - visível em telas médias -->
+            <h2 class="h5 text-center mx-5 d-none d-md-block">
+                A nutrição equina é essencial para a saúde, desempenho e bem-estar dos cavalos, mas muitos criadores enfrentam dificuldades na formulação de dietas equilibradas devido à falta de conhecimento técnico, à complexidade dos cálculos nutricionais e ao difícil acesso a ferramentas adequadas. Embora existam diretrizes confiáveis para alimentação equina, sua aplicação prática ainda é limitada, especialmente entre pequenos criadores. Diante disso, este projeto de extensão propõe o desenvolvimento de um software acessível e intuitivo para cálculo e gestão de dietas equinas, com base em parâmetros científicos, visando facilitar a elaboração de planos alimentares personalizados conforme as necessidades específicas de cada animal.
+            </h2>
+
+            <!-- Texto reduzido - visível apenas em telas pequenas -->
+            <h2 class="h5 text-center mx-5 d-block d-md-none">
+                A nutrição equina é essencial para a saúde e desempenho dos cavalos, mas muitos criadores enfrentam dificuldades por falta de conhecimento técnico e acesso a ferramentas adequadas. Este projeto propõe um software intuitivo e acessível, baseado em parâmetros científicos, para facilitar a formulação de dietas personalizadas para diferentes categorias de equinos.
             </h2>
         </div>  
     </div>
@@ -26,24 +31,21 @@
         <!-- texto -->
         <div class="col">
             <h1 class="m-4">Gerenciamento de Alimentos</h1>
-            <div class="mx-4">
-                <h3>Exibição com filtros estratégicos</h3>
+            <div class="mx-4" style="max-width: 410px;">  
+                <ul>
+                <li style="list-style-type: square"><h3>Pesquisa dos alimentos </h3> </li>
+                
                 <h2 class="ml-3 h5">
-                    Você poderá ter uma visão melhorada do sistema implantado
-                    na planilha com filtros dinâmicos e pesquisas de alimentos.
+                    O sistema possui ampla base de dados com diversos alimentos que podem compor a dieta dos animais. 
+                    Você pode pesquisar facilmente o alimento que deseja dentro dessa variedade e encontrá-lo com praticidade.
                 </h2>
+                <li style="list-style-type: square">
                 <h3>Adição, remoção e atualização de dados alimentares</h3>
                 <h2 class="ml-3 h5">
-                    Todo bom sistema de gerenciamento exige um CRUD simples,
-                    por isso estamos desenvolvendo uma forma de você alterar
-                    dados de determinado alimento a qualquer hora e tela.
+                    Um sistema de nutrição eficiente exige flexibilidade. Por isso, desenvolvemos uma interface intuitiva para que você possa cadastrar, 
+                    editar ou remover alimentos, nutrientes, e composições alimentares, garantindo precisão e controle a qualquer momento.
                 </h2>
-                <h3>Comparação de alimentos</h3>
-                <h2 class="ml-3 h5">
-                    Você poderá comparar diferentes alimentos para descobrir
-                    quais são mais adequados para sua dieta ou fazer uma 
-                    análise rápida dos itens disponíveis no seu arsenal alimentar.
-                </h2>
+                </ul>
             </div>
         </div>
         <!-- imagem -->
@@ -59,24 +61,19 @@
         </div>
         <div class="col">
             <h1 class="m-4">Gerenciamento de Exigências</h1>
-            <div class="mx-5">
-                <h3>Comparação de exigências</h3>
+            <div class="mx-5" style="max-width: 410px;">
+                <ul>
+                <li style="list-style-type: square"><h3>Atualização de dados de exigências</h3></li>
                 <h2 class="ml-3 h5">
-                    Você poderá comparar diferentes alimentos para descobrir quais
-                    são mais adequados para sua dieta ou fazer uma análise rápida dos 
-                    itens disponíveis no seu arsenal alimentar.
+                    Nosso sistema permite o cadastro e a edição das exigências nutricionais de acordo com a categoria do cavalo. De forma simples e organizada,
+                    é possível manter atualizados os valores exigidos para cada nutriente, facilitando o controle e a gestão dos dados.
                 </h2>
-                <h3>Atualização de dados de exigências</h3>
+                <li style="list-style-type: square"><h3>Pesquisa de exigências</h3></li>
                 <h2 class="ml-3 h5">
-                    Todo bom sistema de gerenciamento exige um CRUD simples,
-                    por isso estamos desenvolvendo uma forma de você alterar
-                    dados de determinado alimento a qualquer hora e tela
+                   Encontre rapidamente as exigências nutricionais já cadastradas no sistema por meio de uma busca eficiente. Você poderá buscar por categoria do cavalo, 
+                   ou seja, o nome da exigência, facilitando a visualização e o gerenciamento das informações disponíveis.
                 </h2>
-                <h3>Exibição com filtros estratégicos</h3>
-                <h2 class="ml-3 h5">
-                    Você poderá ter uma visão melhorada do sistema implantado
-                    na planilha com filtros dinâmicos e pesquisas de alimentos
-                </h2>
+                </ul>
             </div>
         </div>
     </div>

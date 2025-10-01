@@ -7,11 +7,11 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from decimal import Decimal, InvalidOperation
 
-def safe_decimal(valor, default=Decimal('0')):
+def safe_decimal(value):
     try:
-        return Decimal(valor)
+        return Decimal(value)
     except (InvalidOperation, TypeError):
-        return default
+        return None 
 
 # NUTRIENTES
 def nutrientes(request):
@@ -94,6 +94,8 @@ def ativar_nutriente(request):
     nutriente = get_object_or_404(Nutriente, pk=id)
     nutriente.is_active = True
     nutriente.save()
+    composicao = ComposicaoAlimento.objects.filter(nutriente_id=id)
+    composicao.update(is_active = True)
     return js({'Mensagem': f'{nutriente.nome} foi ativado'}, status=200)
 
 def desativar_nutriente(request):
@@ -102,6 +104,8 @@ def desativar_nutriente(request):
       nutriente = get_object_or_404(Nutriente, pk=id)
       nutriente.is_active = False
       nutriente.save()
+      composicao = ComposicaoAlimento.objects.filter(nutriente_id=id)
+      composicao.update(is_active = False)
       return js({'Mensagem': f'{nutriente.nome} foi desativado'}, status=200)
     return js({'Mensagem': f'Não foi possível desativar {nutriente.nome}'}, status=400)
 
@@ -257,66 +261,57 @@ def inserir_alimento(request):
             return js({'Mensagem': f'"{nome}" inserido com sucesso!'}, status=200)
 
 def atualizar_alimento(request):
-    if request.method == 'POST':
+    if request.method != 'POST':
+        return js({'Mensagem': 'Método não permitido'}, status=405)
+
+    try:
         id_alimento = int(request.POST.get('id'))
-        nome_alimento = request.POST.get('nome')
         idClass = int(request.POST.get('idClass'))
-        ms = safe_decimal(request.POST.get('ms'))
-        ed = safe_decimal(request.POST.get('ed'))
-        pb = safe_decimal(request.POST.get('pb'))
-       
-        if Alimento.objects.exclude(id=id_alimento).filter(nome__iexact=nome_alimento).exists():
-            return js({'Mensagem': "Outro alimento já existe com esse nome!"}, status=401)
-        
+    except (TypeError, ValueError):
+        return js({'Mensagem': 'ID inválido'}, status=400)
+
+    nome_alimento = request.POST.get('nome')
+    ms = safe_decimal(request.POST.get('ms'))
+    ed = safe_decimal(request.POST.get('ed'))
+    pb = safe_decimal(request.POST.get('pb'))
+
+    # Validação básica
+    if not nome_alimento or ms is None or ed is None or pb is None:
+        return js({'Mensagem': 'Dados incompletos ou inválidos.'}, status=400)
+
+    try:
         alimento = Alimento.objects.get(id=id_alimento)
-        # Verifica se todos os dados são iguais (nome, classificação, ms, ed, pb)
-        if (nome_alimento == alimento.nome and
-            idClass == alimento.classificacao.id and
-            ms == alimento.ms and
-            ed == alimento.ed and
-            pb == alimento.pb):
-            return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)#status=401 definido pra informação
+    except Alimento.DoesNotExist:
+        return js({'Mensagem': 'Alimento não encontrado.'}, status=404)
 
-        # Atualiza nome se mudou e classificação não mudou
-        if (nome_alimento != alimento.nome and idClass == alimento.classificacao.id and
-            (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
-            alimento.ms = ms
-            alimento.ed = ed
-            alimento.pb = pb
-            nomeAntigo = alimento.nome
-            alimento.nome = nome_alimento
-            alimento.save()
-            return js({'Mensagem': f"{nomeAntigo} atualizado para {alimento.nome}"}, status=200)
+    if Alimento.objects.exclude(id=id_alimento).filter(nome__iexact=nome_alimento).exists():
+        return js({'Mensagem': "Outro alimento já existe com esse nome!"}, status=409)
 
-        # Atualiza classificação se mudou e nome não mudou
-        if (nome_alimento == alimento.nome and idClass != alimento.classificacao.id and
-            (ms == alimento.ms or ed == alimento.ed or pb == alimento.pb)):
-            alimento.ms = ms
-            alimento.ed = ed
-            alimento.pb = pb
+    # Verifica o que mudou
+    nome_mudou = nome_alimento != alimento.nome
+    class_mudou = idClass != alimento.classificacao.id
+    ms_mudou = ms != alimento.ms
+    ed_mudou = ed != alimento.ed
+    pb_mudou = pb != alimento.pb
+
+    if not (nome_mudou or class_mudou or ms_mudou or ed_mudou or pb_mudou):
+        print("calan")
+        return js({'Mensagem': "Nenhum dado foi alterado!"}, status=401)
+
+    try:
+        if class_mudou:
             alimento.classificacao = Classificacao.objects.get(id=idClass)
-            alimento.save()
-            return js({'Mensagem': f"Classificação do alimento {alimento.nome} atualizada para {alimento.classificacao.nome}"}, status=200)
+    except Classificacao.DoesNotExist:
+        return js({'Mensagem': 'Classificação inválida'}, status=400)
 
-        # Atualiza ms, ed e pb se algum deles mudou (mantendo nome e classificação iguais)
-        if (nome_alimento == alimento.nome and idClass == alimento.classificacao.id and
-            (ms != alimento.ms or ed != alimento.ed or pb != alimento.pb)):
-            alimento.ms = ms
-            alimento.ed = ed
-            alimento.pb = pb
-            alimento.save()
-            return js({'Mensagem': f"Valores gerais atualizados"}, status=200)
+    # Atualiza os dados
+    alimento.nome = nome_alimento
+    alimento.ms = ms
+    alimento.ed = ed
+    alimento.pb = pb
+    alimento.save()
 
-        # Caso nome e classificação tenham mudado, atualiza tudo junto (incluindo ms, ed e pb)
-        alimento.nome = nome_alimento
-        alimento.classificacao = Classificacao.objects.get(id=idClass)
-        alimento.ms = ms
-        alimento.ed = ed
-        alimento.pb = pb
-        alimento.save()
-        return js({'Mensagem': "Nome, classificação e valores nutricionais atualizados"}, status=200)
-
-    return js({'Mensagem': 'erro'}, status=400)
+    return js({'Mensagem': "Alimento atualizado com sucesso!"}, status=200)
 
 def ativar_alimento(request):
     if request.method == 'POST':
@@ -385,7 +380,7 @@ def composicao_json(request):
     id = request.GET.get('id')
     alimento_obj = Alimento.objects.get(id=id)
     alimento_nome = alimento_obj.nome
-    composicao = ComposicaoAlimento.objects.filter(alimento_id=id).order_by('-is_active').select_related('nutriente')
+    composicao = ComposicaoAlimento.objects.filter(alimento_id=id).order_by('nutriente__nome').select_related('nutriente')
     composicao_dict = [
         {
             'id': comp.id,
@@ -410,9 +405,8 @@ def nutrientes_disponiveis_json(request):
         alimento_id=id
     ).values_list('nutriente_id', flat=True)
     # Filtra os nutrientes que NÃO estão nessa lista
-    nutrientes_disponiveis = Nutriente.objects.exclude(id__in=nutrientes_relacionados)
+    nutrientes_disponiveis = Nutriente.objects.exclude(id__in=nutrientes_relacionados).filter(is_active=True)
     return js({'response': list(nutrientes_disponiveis.values('id', 'nome'))})
-
 
 def get_composicaoAlimento(request):
     if request.method == "GET":
@@ -444,6 +438,8 @@ def inserir_composicao_alimento(request):
     valor = request.POST.get('quantidade', '')
     print(alimento_id, nutriente_id, valor)
     if alimento_id and nutriente_id and valor:
+        # nutriente = Nutrientes.objects.filter(pk=nutriente_id|Q(is_active=True))
+        # if nutriente():
         if ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente_id=nutriente_id).exists():
             return js({'Mensagem': 'Composição de alimento já existe!'}, status=400)
 
@@ -453,7 +449,7 @@ def inserir_composicao_alimento(request):
             valor=valor
         )
         alimento_obj = Alimento.objects.get(id=alimento_id)
-        composicao = ComposicaoAlimento.objects.filter(alimento_id=alimento_id).order_by('-is_active').select_related('nutriente')
+        composicao = ComposicaoAlimento.objects.filter(alimento_id=alimento_id, nutriente__is_active=True).order_by('-id').select_related('nutriente')
         composicao_dict = [
             {
                 'id': comp.id,
@@ -470,7 +466,6 @@ def inserir_composicao_alimento(request):
             'alimento': {'id': alimento_id,'nome': alimento_obj.nome},
             'composicao': composicao_dict,
         }
-        alimento = Alimento.objects.get(id=alimento_id)
         return js({'Mensagem': 'Nutriente inserido na composição com sucesso!', 'data': data}, status=201)
 
     return js({'Mensagem': 'Informe alimento, nutriente e valor'}, status=400)
@@ -504,23 +499,66 @@ def atualizar_composicaoAlimento(request):
     return js({'Mensagem': 'Composição de alimento atualizada com sucesso!'}, status=200)
 
 def ativar_composicaoAlimento(request):
-    id = request.GET.get('id')
-    composicao = get_object_or_404(ComposicaoAlimento, pk=id)
-    composicao.is_active = True
-    composicao.save()
-    return js({'Mensagem': f'Composição de alimento {composicao.alimento.nome} foi ativada'})
-
-def desativar_composicaoAlimento(request):
-    id = request.GET.get('id')
+    id = request.POST.get('id')
     if id:
         try:
-            composicao = ComposicaoAlimento.objects.get(nutriente_id=id)
-            composicao.is_active = False
+            composicao = ComposicaoAlimento.objects.get(id=id)
+            composicao.is_active = True
             composicao.save()
-            return js({'Mensagem': 'Composição de alimento foi desativada'}, status=202)
+            alimento_obj = Alimento.objects.get(id=composicao.alimento.id)
+            composicao = ComposicaoAlimento.objects.filter(alimento_id=composicao.alimento.id).order_by('nutriente__nome').select_related('nutriente')
+            composicao_dict = [
+                {
+                    'id': comp.id,
+                    'is_active': comp.is_active,
+                    'alimento_id': comp.alimento_id,
+                    'nutriente_id': comp.nutriente.id,
+                    'nutriente_nome': comp.nutriente.nome,
+                    'nutriente_unidade': comp.nutriente.unidade,
+                    'valor': str(comp.valor)
+                }
+                for comp in composicao
+            ]
+            data = {
+                'alimento': {'id': alimento_obj.id,'nome': alimento_obj.nome},
+                'composicao': composicao_dict,
+            }
+            return js({'Mensagem': 'Composição de alimento foi ativada', 'data': data}, status=202)
         except ComposicaoAlimento.DoesNotExist:
             return js({'Mensagem': 'Composição não encontrada'}, status=404)
     return js({'Mensagem': 'Parâmetro "id" ausente'}, status=400)
+
+
+def desativar_composicaoAlimento(request):
+    id = request.POST.get('id')
+    if id:
+        try:
+            composicao = ComposicaoAlimento.objects.get(id=id)
+            composicao.is_active = False
+            composicao.save()
+            alimento_obj = Alimento.objects.get(id=composicao.alimento.id)
+            composicao = ComposicaoAlimento.objects.filter(alimento_id=composicao.alimento.id).order_by('nutriente__nome').select_related('nutriente')
+            composicao_dict = [
+                {
+                    'id': comp.id,
+                    'is_active': comp.is_active,
+                    'alimento_id': comp.alimento_id,
+                    'nutriente_id': comp.nutriente.id,
+                    'nutriente_nome': comp.nutriente.nome,
+                    'nutriente_unidade': comp.nutriente.unidade,
+                    'valor': str(comp.valor)
+                }
+                for comp in composicao
+            ]
+            data = {
+                'alimento': {'id': alimento_obj.id,'nome': alimento_obj.nome},
+                'composicao': composicao_dict,
+            }
+            return js({'Mensagem': 'Composição de alimento foi desativada', 'data': data}, status=202)
+        except ComposicaoAlimento.DoesNotExist:
+            return js({'Mensagem': 'Composição não encontrada'}, status=404)
+    return js({'Mensagem': 'Parâmetro "id" ausente'}, status=400)
+
 def listar_composicaoAlimento(request):
     query = request.GET.get('query', '').strip()
     composicoes = ComposicaoAlimento.objects.all()
