@@ -6,7 +6,8 @@ import {
     exibir_composicao_exigencia, 
     carregar_composicao_exigencia, 
     desativar_composicao_exigencia, 
-    ativar_composicao_exigencia 
+    ativar_composicao_exigencia,
+    alerta_update
 } from './alertas_exigencias.js';
 
 document.body.addEventListener('click', function (evento) { 
@@ -29,6 +30,11 @@ document.body.addEventListener('click', function (evento) {
     if (el.classList.contains('update-btn')) {
         evento.preventDefault();
         const id = el.id || el.dataset.id || (linha && linha.dataset.id);
+        if (!id) {
+            console.error('ID da exigência não encontrado');
+            return;
+        }
+
         fetch(`/get_exigencia/?id=${id}`)
             .then(resp => resp.json())
             .then(exigencia => {
@@ -130,6 +136,12 @@ document.body.addEventListener('click', function (evento) {
             .catch(err => {
                 console.error('erro ao buscar composicao', err);
             });
+        return;
+    }
+
+    if (el.classList.contains('update-composicao-btn')) {
+        evento.preventDefault();
+        alerta_update(el);
         return;
     }
 });

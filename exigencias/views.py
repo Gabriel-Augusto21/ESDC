@@ -279,18 +279,10 @@ def inserir_composicao_exigencia(request):
     return js({'Mensagem': 'Nutriente inserido na composição com sucesso!', 'data': data}, status=201)
 
 def atualizar_composicaoExigencia(request):
-    if request.method == 'POST':
-        id = request.POST.get('id')
-        exigencia_id = request.POST.get('exigencia_id')
-        nutriente_id = request.POST.get('nutriente_id')
-        valor = request.POST.get('valor')
-    else:
-        id = request.GET.get('id')
-        exigencia_id = request.GET.get('exigencia_id')
-        nutriente_id = request.GET.get('nutriente_id')
-        valor = request.GET.get('valor')
+    id = request.POST.get('id') if request.method == 'POST' else request.GET.get('id')
+    valor = request.POST.get('valor') if request.method == 'POST' else request.GET.get('valor')
 
-    if not id or not exigencia_id or not nutriente_id or not valor:
+    if not id or not valor:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
     composicao = get_object_or_404(ComposicaoExigencia, pk=id)
@@ -299,22 +291,15 @@ def atualizar_composicaoExigencia(request):
         valor_dec = Decimal(str(valor))
     except (InvalidOperation, TypeError):
         return js({'Mensagem': 'Valor inválido'}, status=400)
-    if (str(composicao.exigencia_id) == str(exigencia_id) and
-        str(composicao.nutriente_id) == str(nutriente_id) and
-        str(composicao.valor) == str(valor_dec)):
+
+    if str(composicao.valor) == str(valor_dec):
         return js({'Mensagem': 'Nenhuma alteração detectada.'}, status=400)
 
-    if ComposicaoExigencia.objects.filter(
-        exigencia_id=exigencia_id,
-        nutriente_id=nutriente_id
-    ).exclude(id=id).exists():
-        return js({'Mensagem': 'Composição de exigência já existe!'}, status=400)
-
-    composicao.exigencia_id = exigencia_id
-    composicao.nutriente_id = nutriente_id
     composicao.valor = valor_dec
     composicao.save()
-    return js({'Mensagem': 'Composição atualizada com sucesso!'}, status=200)
+
+    return js({'Mensagem': 'Valor atualizado com sucesso!'}, status=200)
+
 
 def ativar_composicaoExigencia(request):
     id = request.POST.get('id') if request.method == 'POST' else request.GET.get('id')
