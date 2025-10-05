@@ -44,6 +44,14 @@ export function desativar(elemento){
     });
 }
 
+function _lerPB_ED(popup) {
+    const rawPb = (popup.querySelector('#txtPb') && popup.querySelector('#txtPb').value) || '';
+    const rawEd = (popup.querySelector('#txtEd') && popup.querySelector('#txtEd').value) || '';
+    const pb = parseFloat(rawPb.toString().replace(',', '.'));
+    const ed = parseFloat(rawEd.toString().replace(',', '.'));
+    return { pb, ed };
+}
+
 export function inserir(html){
     Swal.fire({
         width: '700px',
@@ -57,15 +65,46 @@ export function inserir(html){
         focusConfirm: false,
         preConfirm: () => {
             const popup = Swal.getPopup();
-            const nome = popup.querySelector('#txtNome').value.trim();
-            const categoria = popup.querySelector('#idCategoria').value;
-            const pb = parseFloat(popup.querySelector('#txtPb').value.replace(',', '.'));
-            const ed = parseFloat(popup.querySelector('#txtEd').value.replace(',', '.'));
-            if (!nome || isNaN(pb) || isNaN(ed)) {
-                Swal.showValidationMessage('Preencha todos os campos corretamente.');
+
+            const nomeEl = popup.querySelector('#txtNome');
+            const mesesEl = popup.querySelector('#txtMeses');
+            const esforcoEl = popup.querySelector('#selectEsforco');
+            const categoriaEl = popup.querySelector('#idCategoria');
+            const pesoVivoEl = popup.querySelector('#txtPesoVivo');
+            const nome = nomeEl ? nomeEl.value.trim() : '';
+            const fase_raw = mesesEl ? mesesEl.value : null;
+            const esforco = esforcoEl ? esforcoEl.value : (categoriaEl ? categoriaEl.options[categoriaEl.selectedIndex].text : null);
+            const { pb, ed } = _lerPB_ED(popup);
+            const pesoVivoRaw = pesoVivoEl ? pesoVivoEl.value.trim() : '';
+            const peso_vivo = pesoVivoRaw ? pesoVivoRaw.replace(',', '.') : '';
+
+            if (!nome) {
+                Swal.showValidationMessage('Informe o nome da exigência.');
                 return false;
             }
-            return { nome, pb, ed, categoria };
+
+            if (isNaN(pb) || isNaN(ed)) {
+                Swal.showValidationMessage('PB e ED devem ser números válidos.');
+                return false;
+            }
+
+            const faseInt = fase_raw !== null && fase_raw !== '' ? parseInt(fase_raw, 10) : NaN;
+            if (isNaN(faseInt) || faseInt < 0) {
+                Swal.showValidationMessage('Informe a idade em meses (valor inteiro ≥ 0).');
+                return false;
+            }
+
+            if (!esforco) {
+                Swal.showValidationMessage('Selecione o esforço.');
+                return false;
+            }
+
+            if (peso_vivo !== '' && isNaN(parseFloat(peso_vivo))) {
+                Swal.showValidationMessage('Peso vivo inválido. Use número (ex: 350.5).');
+                return false;
+            }
+
+            return { nome, pb, ed, fase: faseInt, esforco, peso_vivo };
         }
     }).then(resp => {
         if (resp.isConfirmed) {
@@ -91,15 +130,45 @@ export function atualizar(html, exigencia){
         focusConfirm: false,
         preConfirm: () => {
             const popup = Swal.getPopup();
-            const nome = popup.querySelector('#txtNome').value.trim();
-            const categoria = popup.querySelector('#idCategoria').value;
-            const pb = parseFloat(popup.querySelector('#txtPb').value.replace(',', '.'));
-            const ed = parseFloat(popup.querySelector('#txtEd').value.replace(',', '.'));
-            if (!nome || isNaN(pb) || isNaN(ed)) {
-                Swal.showValidationMessage('Preencha todos os campos corretamente.');
+
+            const nomeEl = popup.querySelector('#txtNome');
+            const mesesEl = popup.querySelector('#txtMeses');
+            const esforcoEl = popup.querySelector('#selectEsforco');
+            const categoriaEl = popup.querySelector('#idCategoria');
+            const pesoVivoEl = popup.querySelector('#txtPesoVivo');
+            const nome = nomeEl ? nomeEl.value.trim() : '';
+            const fase_raw = mesesEl ? mesesEl.value : null;
+            const esforco = esforcoEl ? esforcoEl.value : (categoriaEl ? categoriaEl.options[categoriaEl.selectedIndex].text : null);
+            const { pb, ed } = _lerPB_ED(popup);
+            const pesoVivoRaw = pesoVivoEl ? pesoVivoEl.value.trim() : '';
+            const peso_vivo = pesoVivoRaw ? pesoVivoRaw.replace(',', '.') : '';
+
+            if (!nome) {
+                Swal.showValidationMessage('Informe o nome da exigência.');
                 return false;
             }
-            return { nome, pb, ed, categoria };
+            if (isNaN(pb) || isNaN(ed)) {
+                Swal.showValidationMessage('PB e ED devem ser números válidos.');
+                return false;
+            }
+
+            const faseInt = fase_raw !== null && fase_raw !== '' ? parseInt(fase_raw, 10) : NaN;
+            if (isNaN(faseInt) || faseInt < 0) {
+                Swal.showValidationMessage('Informe a idade em meses (valor inteiro ≥ 0).');
+                return false;
+            }
+
+            if (!esforco) {
+                Swal.showValidationMessage('Selecione o esforço.');
+                return false;
+            }
+
+            if (peso_vivo !== '' && isNaN(parseFloat(peso_vivo))) {
+                Swal.showValidationMessage('Peso vivo inválido. Use número (ex: 350.5).');
+                return false;
+            }
+
+            return { nome, pb, ed, fase: faseInt, esforco, peso_vivo };
         }
     }).then(resp => {
         if (resp.isConfirmed) {
@@ -110,13 +179,16 @@ export function atualizar(html, exigencia){
                     nome: resp.value.nome,
                     pb: resp.value.pb,
                     ed: resp.value.ed,
-                    categoria: resp.value.categoria
+                    fase: resp.value.fase,
+                    esforco: resp.value.esforco,
+                    peso_vivo: resp.value.peso_vivo
                 },
                 swap: 'none'
             });
         }
     });
 }
+
 
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation();
