@@ -10,7 +10,7 @@ class Animal(models.Model):
         validators=[FileExtensionValidator(allowed_extensions=["jpg", "png", "jpeg"])],
         null=True,
         blank=True,
-        default="fotos_perfil/default.jpg"  # imagem padrão
+        default="default.jpg"  # imagem padrão
     )
 
     proprietario = models.CharField(max_length=100)
@@ -21,7 +21,7 @@ class Animal(models.Model):
     id_dieta = models.IntegerField(null=True, blank=True)
 
     def delete_imagem(self, *args, **kwargs):
-        if self.imagem and os.path.isfile(self.imagem.path) and self.imagem.name != "fotos_perfil/default.jpg":
+        if self.imagem and os.path.isfile(self.imagem.path) and self.imagem.name != "default.jpg":
             os.remove(self.imagem.path)
         super().delete(*args, **kwargs)
 
