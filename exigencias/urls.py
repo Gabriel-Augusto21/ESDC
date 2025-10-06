@@ -26,4 +26,5 @@ urlpatterns = [
    path("ativar_composicaoExigencia/", views.ativar_composicaoExigencia, name="ativar_composicaoExigencia"),
    path("listar_composicaoExigencia/", views.listar_composicaoExigencia, name="listar_composicaoExigencia"),
    path("listar_exigencias_nutrientes/", views.listar_exigencias_nutrientes, name="listar_exigencias_nutrientes"),
+   path("_get_or_create_or_update_categoria/", views._get_or_create_or_update_categoria, name="_get_or_create_or_update_categoria"),
 ]

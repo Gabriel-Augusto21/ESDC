@@ -44,6 +44,14 @@ export function desativar(elemento){
     });
 }
 
+function _lerPB_ED(popup) {
+    const rawPb = (popup.querySelector('#txtPb') && popup.querySelector('#txtPb').value) || '';
+    const rawEd = (popup.querySelector('#txtEd') && popup.querySelector('#txtEd').value) || '';
+    const pb = parseFloat(rawPb.toString().replace(',', '.'));
+    const ed = parseFloat(rawEd.toString().replace(',', '.'));
+    return { pb, ed };
+}
+
 export function inserir(html){
     Swal.fire({
         width: '700px',
@@ -57,15 +65,46 @@ export function inserir(html){
         focusConfirm: false,
         preConfirm: () => {
             const popup = Swal.getPopup();
-            const nome = popup.querySelector('#txtNome').value.trim();
-            const categoria = popup.querySelector('#idCategoria').value;
-            const pb = parseFloat(popup.querySelector('#txtPb').value.replace(',', '.'));
-            const ed = parseFloat(popup.querySelector('#txtEd').value.replace(',', '.'));
-            if (!nome || isNaN(pb) || isNaN(ed)) {
-                Swal.showValidationMessage('Preencha todos os campos corretamente.');
+
+            const nomeEl = popup.querySelector('#txtNome');
+            const mesesEl = popup.querySelector('#txtMeses');
+            const esforcoEl = popup.querySelector('#selectEsforco');
+            const categoriaEl = popup.querySelector('#idCategoria');
+            const pesoVivoEl = popup.querySelector('#txtPesoVivo');
+            const nome = nomeEl ? nomeEl.value.trim() : '';
+            const fase_raw = mesesEl ? mesesEl.value : null;
+            const esforco = esforcoEl ? esforcoEl.value : (categoriaEl ? categoriaEl.options[categoriaEl.selectedIndex].text : null);
+            const { pb, ed } = _lerPB_ED(popup);
+            const pesoVivoRaw = pesoVivoEl ? pesoVivoEl.value.trim() : '';
+            const peso_vivo = pesoVivoRaw ? pesoVivoRaw.replace(',', '.') : '';
+
+            if (!nome) {
+                Swal.showValidationMessage('Informe o nome da exigência.');
                 return false;
             }
-            return { nome, pb, ed, categoria };
+
+            if (isNaN(pb) || isNaN(ed)) {
+                Swal.showValidationMessage('PB e ED devem ser números válidos.');
+                return false;
+            }
+
+            const faseInt = fase_raw !== null && fase_raw !== '' ? parseInt(fase_raw, 10) : NaN;
+            if (isNaN(faseInt) || faseInt < 0) {
+                Swal.showValidationMessage('Informe a idade em meses (valor inteiro ≥ 0).');
+                return false;
+            }
+
+            if (!esforco) {
+                Swal.showValidationMessage('Selecione o esforço.');
+                return false;
+            }
+
+            if (peso_vivo !== '' && isNaN(parseFloat(peso_vivo))) {
+                Swal.showValidationMessage('Peso vivo inválido. Use número (ex: 350.5).');
+                return false;
+            }
+
+            return { nome, pb, ed, fase: faseInt, esforco, peso_vivo };
         }
     }).then(resp => {
         if (resp.isConfirmed) {
@@ -91,15 +130,45 @@ export function atualizar(html, exigencia){
         focusConfirm: false,
         preConfirm: () => {
             const popup = Swal.getPopup();
-            const nome = popup.querySelector('#txtNome').value.trim();
-            const categoria = popup.querySelector('#idCategoria').value;
-            const pb = parseFloat(popup.querySelector('#txtPb').value.replace(',', '.'));
-            const ed = parseFloat(popup.querySelector('#txtEd').value.replace(',', '.'));
-            if (!nome || isNaN(pb) || isNaN(ed)) {
-                Swal.showValidationMessage('Preencha todos os campos corretamente.');
+
+            const nomeEl = popup.querySelector('#txtNome');
+            const mesesEl = popup.querySelector('#txtMeses');
+            const esforcoEl = popup.querySelector('#selectEsforco');
+            const categoriaEl = popup.querySelector('#idCategoria');
+            const pesoVivoEl = popup.querySelector('#txtPesoVivo');
+            const nome = nomeEl ? nomeEl.value.trim() : '';
+            const fase_raw = mesesEl ? mesesEl.value : null;
+            const esforco = esforcoEl ? esforcoEl.value : (categoriaEl ? categoriaEl.options[categoriaEl.selectedIndex].text : null);
+            const { pb, ed } = _lerPB_ED(popup);
+            const pesoVivoRaw = pesoVivoEl ? pesoVivoEl.value.trim() : '';
+            const peso_vivo = pesoVivoRaw ? pesoVivoRaw.replace(',', '.') : '';
+
+            if (!nome) {
+                Swal.showValidationMessage('Informe o nome da exigência.');
                 return false;
             }
-            return { nome, pb, ed, categoria };
+            if (isNaN(pb) || isNaN(ed)) {
+                Swal.showValidationMessage('PB e ED devem ser números válidos.');
+                return false;
+            }
+
+            const faseInt = fase_raw !== null && fase_raw !== '' ? parseInt(fase_raw, 10) : NaN;
+            if (isNaN(faseInt) || faseInt < 0) {
+                Swal.showValidationMessage('Informe a idade em meses (valor inteiro ≥ 0).');
+                return false;
+            }
+
+            if (!esforco) {
+                Swal.showValidationMessage('Selecione o esforço.');
+                return false;
+            }
+
+            if (peso_vivo !== '' && isNaN(parseFloat(peso_vivo))) {
+                Swal.showValidationMessage('Peso vivo inválido. Use número (ex: 350.5).');
+                return false;
+            }
+
+            return { nome, pb, ed, fase: faseInt, esforco, peso_vivo };
         }
     }).then(resp => {
         if (resp.isConfirmed) {
@@ -110,13 +179,16 @@ export function atualizar(html, exigencia){
                     nome: resp.value.nome,
                     pb: resp.value.pb,
                     ed: resp.value.ed,
-                    categoria: resp.value.categoria
+                    fase: resp.value.fase,
+                    esforco: resp.value.esforco,
+                    peso_vivo: resp.value.peso_vivo
                 },
                 swap: 'none'
             });
         }
     });
 }
+
 
 htmx.on("htmx:responseError", (event) => {
     event.stopPropagation();
@@ -198,7 +270,7 @@ htmx.on("htmx:afterOnLoad", (event) => {
     }
 });
 
-export function ativar_composicao_exigencia(composicao, exigencia, id_composicao){
+export function ativar_composicao_exigencia(composicao, exigencia, id_composicao) {
     Swal.fire({
         title: 'Tem certeza que deseja ativar esse nutriente da exigência?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -208,23 +280,49 @@ export function ativar_composicao_exigencia(composicao, exigencia, id_composicao
         confirmButtonText: 'Sim, ativar!',
         cancelButtonText: 'Cancelar',
         showCancelButton: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading()
     }).then(resp => {
-        if (resp.isConfirmed){
-            const url = `/ativar_composicaoExigencia/`;   
-            htmx.ajax('POST', url, {
-                values: {
-                    id: id_composicao,
-                    idExigencia: exigencia.id
-                },
-                swap:'none'
+        if (!resp.isConfirmed) return;
+
+        const formData = new FormData();
+        formData.append('id', id_composicao);
+        formData.append('idExigencia', exigencia.id);
+
+        fetch('/ativar_composicaoExigencia/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            credentials: 'same-origin'
+        })
+        .then(r => r.json().then(json => ({ ok: r.ok, json })))
+        .then(({ ok, json }) => {
+            if (!ok) throw json;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: json.Mensagem || 'Ativado',
+                confirmButtonColor: '#2f453a',
+                showConfirmButton: true
+            }).then(() => {
+                if (json.data && json.data.composicao) {
+                    carregar_composicao_exigencia(json.data.composicao, json.data.exigencia);
+                } else {
+                    carregar_composicao_exigencia(composicao, exigencia);
+                }
             });
-        } else {
+        })
+        .catch(err => {
+            console.error('erro ativar_composicao_exigencia', err);
+            const msg = (err && err.Mensagem) ? err.Mensagem : 'Falha ao ativar a composição.';
+            Swal.fire({ icon: 'error', title: 'Erro', text: msg, confirmButtonColor: '#2f453a', showConfirmButton: true });
             carregar_composicao_exigencia(composicao, exigencia);
-        }
+        });
     });
 }
 
-export function desativar_composicao_exigencia(composicao, exigencia, id_composicao){
+export function desativar_composicao_exigencia(composicao, exigencia, id_composicao) {
     Swal.fire({
         title: 'Tem certeza que deseja desativar esse nutriente da exigência?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -234,21 +332,48 @@ export function desativar_composicao_exigencia(composicao, exigencia, id_composi
         confirmButtonText: 'Sim, desativar!',
         cancelButtonText: 'Cancelar',
         showCancelButton: true,
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading()
     }).then(resp => {
-        if (resp.isConfirmed){
-            const url = `/desativar_composicaoExigencia/`;   
-            htmx.ajax('POST', url, {
-                values: {
-                    id: id_composicao,
-                    idExigencia: exigencia.id
-                },
-                swap:'none'
+        if (!resp.isConfirmed) return;
+
+        const formData = new FormData();
+        formData.append('id', id_composicao);
+        formData.append('idExigencia', exigencia.id);
+
+        fetch('/desativar_composicaoExigencia/', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            credentials: 'same-origin'
+        })
+        .then(r => r.json().then(json => ({ ok: r.ok, json })))
+        .then(({ ok, json }) => {
+            if (!ok) throw json;
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: json.Mensagem || 'Desativado',
+                confirmButtonColor: '#2f453a',
+                showConfirmButton: true
+            }).then(() => {
+                if (json.data && json.data.composicao) {
+                    carregar_composicao_exigencia(json.data.composicao, json.data.exigencia);
+                } else {
+                    carregar_composicao_exigencia(composicao, exigencia);
+                }
             });
-        } else {
+        })
+        .catch(err => {
+            console.error('erro desativar_composicao_exigencia', err);
+            const msg = (err && err.Mensagem) ? err.Mensagem : 'Falha ao desativar a composição.';
+            Swal.fire({ icon: 'error', title: 'Erro', text: msg, confirmButtonColor: '#2f453a', showConfirmButton: true });
             carregar_composicao_exigencia(composicao, exigencia);
-        }
+        });
     });
 }
+
 
 export function carregar_composicao_exigencia(composicao, exigencia) {
     if (!exigencia) {
@@ -258,6 +383,7 @@ export function carregar_composicao_exigencia(composicao, exigencia) {
 
     const imagemVisibilidade = '/static/img/visibility.png';
     const imagemNVisibilidade = '/static/img/not_visibility.png';
+    const imagemEditar = '/static/img/edit.png'; 
 
     let dados_composicao = '';
     for (let i = 0; i < composicao.length; i++) {
@@ -273,13 +399,20 @@ export function carregar_composicao_exigencia(composicao, exigencia) {
                 </label>
                 <div class="d-flex align-items-center">
                     <input class="form-control me-2" type="text" value="${parseFloat(c.valor).toFixed(2)}">
+
+                    <!-- Botão ativar/desativar -->
                     ${c.is_active ? `
-                        <button class="btn btn-sm desativar-composicao-exigencia-btn" data-id="${c.id}">
+                        <button class="btn btn-sm desativar-composicao-exigencia-btn me-1" data-id="${c.id}">
                             <img src="${imagemVisibilidade}" width="20">
                         </button>` : `
-                        <button class="btn btn-sm ativar-composicao-exigencia-btn" data-id="${c.id}">
+                        <button class="btn btn-sm ativar-composicao-exigencia-btn me-1" data-id="${c.id}">
                             <img src="${imagemNVisibilidade}" width="20">
                         </button>`}
+
+                    <!-- 🔔 Botão atualizar -->
+                    <button class="btn btn-sm atualizar-composicao-exigencia-btn" data-id="${c.id}">
+                        <img src="${imagemEditar}" width="20">
+                    </button>
                 </div>
             </div>
         `;
@@ -293,23 +426,23 @@ export function carregar_composicao_exigencia(composicao, exigencia) {
         <div class="container my-3" style="text-align: start;">
             <h3 class="text-center fs-3 fw-bold border-bottom pb-2">${exigencia.nome}</h3>
             <div class="row justify-content-end py-3">
-                <div class="col-auto">
-                    <button id="btn-atualizar-exigencia" class="botao-confirma-alerta">Atualizar</button>
-                </div>
+                
             </div>
             ${dados_composicao}
         </div>
     `;
 
-    exibir_composicao_exigencia(composicao, exigencia, html, '700px');
+    exibir_composicao_exigencia(composicao, exigencia, html, '900px');
 }
 
-
-export function inserir_composicao_exigencia(composicao, exigencia){
-    fetch(`/nutrientes_disponiveis_exigencia_json/?id_composicao=${exigencia.id}`)
-    .then(response => response.json())
+export function inserir_composicao_exigencia(composicao, exigencia) {
+    fetch(`/nutrientes_disponiveis_exigencia_json/?id_exigencia=${exigencia.id}`)
+    .then(response => {
+        if (!response.ok) throw new Error('Falha ao carregar nutrientes disponíveis');
+        return response.json();
+    })
     .then(nutrientes => {
-        const optionsHtml = `<option value="-1" selected>Não selecionado</option>` +
+        const optionsHtml = `<option value="-1" selected>Selecione um nutriente</option>` +
             nutrientes.response.map(n => `<option value="${n.id}">${n.nome}</option>`).join("");
 
         const htmlInserir = `
@@ -336,38 +469,64 @@ export function inserir_composicao_exigencia(composicao, exigencia){
             confirmButtonText: 'Inserir',
             cancelButtonText: 'Cancelar',
             showCancelButton: true,
+            focusConfirm: false,
+            allowOutsideClick: false,
+            showLoaderOnConfirm: true,
             preConfirm: () => {
                 const modal = Swal.getPopup();
                 const id = modal.querySelector('#idNutriente').value.trim();
-                const normalizeNumber = str => str.replace(',', '.');
-                const qtd = normalizeNumber(modal.querySelector('#txtQuantidade').value.trim());
+                const qtd = modal.querySelector('#txtQuantidade').value.trim().replace(',', '.');
 
-                if (isNaN(qtd) || qtd <= 0) {
-                    Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
-                    return false;
-                } else if (id < 0) {
-                    Swal.showValidationMessage('Por favor, escolha um nutriente.');
+                if (id < 0) {
+                    Swal.showValidationMessage('Selecione um nutriente válido.');
                     return false;
                 }
-                return { qtd, id, exigencia };
+                if (isNaN(qtd) || qtd <= 0) {
+                    Swal.showValidationMessage('Informe uma quantidade numérica válida.');
+                    return false;
+                }
+
+                const formData = new FormData();
+                formData.append('quantidade', qtd);
+                formData.append('id_nutriente', id);
+                formData.append('id_exigencia', exigencia.id);
+
+                return fetch('/inserir_composicao_exigencia/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                    credentials: 'same-origin'
+                })
+                .then(r => r.json());
             }
-        }).then(resp => {
-            if (resp.isConfirmed) {
-                const { qtd, id, exigencia } = resp.value;
-                htmx.ajax('POST', '/inserir_composicao_exigencia/', {
-                    values: {
-                        quantidade: qtd,
-                        id_nutriente: id,
-                        id_exigencia: exigencia.id
-                    },
-                    swap: 'none'
+        }).then(result => {
+            if (result.isConfirmed && result.value) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso!',
+                    text: result.value.Mensagem || 'Nutriente adicionado com sucesso.',
+                    confirmButtonColor: '#2f453a'
+                }).then(() => {
+                    carregar_composicao_exigencia(
+                        result.value.data?.composicao || composicao,
+                        result.value.data?.exigencia || exigencia
+                    );
                 });
             }
+        });
+    })
+    .catch(err => {
+        console.error('Erro ao abrir pop-up de inserção:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Não foi possível carregar os nutrientes disponíveis para inserção.',
+            confirmButtonColor: '#2f453a'
         });
     });
 }
 
-export function exibir_composicao_exigencia(composicao, exigencia, html, tam){
+export function exibir_composicao_exigencia(composicao, exigencia, html, tam) {
     Swal.fire({
         width: tam,
         title: 'Composição de Exigência',
@@ -383,10 +542,14 @@ export function exibir_composicao_exigencia(composicao, exigencia, html, tam){
                 container.addEventListener('click', (event) => {
                     const botaoDesativar = event.target.closest('.desativar-composicao-exigencia-btn');
                     const botaoAtivar = event.target.closest('.ativar-composicao-exigencia-btn');
+                    const botaoAtualizar = event.target.closest('.atualizar-composicao-exigencia-btn');
+
                     if (botaoDesativar) {
                         desativar_composicao_exigencia(composicao, exigencia, botaoDesativar.dataset.id);
                     } else if (botaoAtivar) {
                         ativar_composicao_exigencia(composicao, exigencia, botaoAtivar.dataset.id);
+                    } else if (botaoAtualizar) {
+                        alerta_update(botaoAtualizar); 
                     }
                 });
             }
@@ -398,3 +561,107 @@ export function exibir_composicao_exigencia(composicao, exigencia, html, tam){
     });
 }
 
+export function alerta_update(botao) {
+    const id = botao.dataset.id;
+    if (!id) {
+        Swal.fire('Erro', 'ID da composição ausente no botão.', 'error');
+        return;
+    }
+
+    fetch(`/get_composicaoExigencia/?id=${id}`)
+        .then(resp => {
+            if (!resp.ok) throw new Error('Erro ao carregar composição');
+            return resp.json();
+        })
+        .then(composicao => {
+            Swal.fire({
+                title: `Editar valor do nutriente`,
+                html: `
+                    <input type="hidden" id="comp_id" value="${composicao.id}">
+                    <div class="mb-3">
+                        <label class="form-label">Valor (${composicao.nutriente_nome})</label>
+                        <input type="number" step="0.01" id="comp_valor" class="form-control" value="${composicao.valor}">
+                    </div>
+                `,
+                confirmButtonText: 'Salvar',
+                cancelButtonText: 'Cancelar',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                preConfirm: () => {
+                    const id = document.getElementById('comp_id').value;
+                    const valor = document.getElementById('comp_valor').value;
+
+                    if (!valor || parseFloat(valor) <= 0) {
+                        Swal.showValidationMessage('Informe um valor válido');
+                        return false;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('id', id);
+                    formData.append('valor', valor);
+
+                    return fetch('/atualizar_composicaoExigencia/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                        credentials: 'same-origin'
+                    })
+                    .then(r => r.json().then(json => ({ ok: r.ok, json })))
+                    .then(({ ok, json }) => {
+                        if (!ok) throw json;
+                        return json;
+                    })
+                    .catch(err => {
+                        console.error('erro atualizar_composicaoExigencia', err);
+                        Swal.showValidationMessage((err && err.Mensagem) ? err.Mensagem : 'Erro ao comunicar com o servidor.');
+                        return false;
+                    });
+                }
+            }).then(result => {
+                if (result.isConfirmed && result.value) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: result.value.Mensagem,
+                        confirmButtonColor: '#2f453a',
+                        showConfirmButton: true
+                    }).then(() => {
+                        if (result.value.data && result.value.data.composicao) {
+                            carregar_composicao_exigencia(result.value.data.composicao, result.value.data.exigencia);
+                        } else {
+                            fetch(`/composicao_exigencia_json/?id=${composicao.exigencia_id}`)
+                                .then(r => r.json())
+                                .then(j => carregar_composicao_exigencia(j.composicao, j.exigencia))
+                                .catch(e => {
+                                    console.error('Erro ao recarregar composição', e);
+                                    carregar_composicao_exigencia([], composicao);
+                                });
+                        }
+                    });
+                }
+            });
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire('Erro', 'Falha ao carregar dados da composição.', 'error');
+        });
+}
+
+function getCookie(name) {
+    let cookieValue = null
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';')
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim()
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+                break
+            }
+        }
+    }
+    return cookieValue
+}
+//tive que colocar essa função getCookie, que serve para buscar o csrftoken que o django salva nos cookies do navegador
+//sem esse token, o servidor não aceita a atualização
+//então basicamente, o getCookie pega esse token e envia a requisição de atualização

@@ -38,17 +38,26 @@ def get_exigencia(request):
             "pb": float(exigencia.pb),
             "ed": float(exigencia.ed),
             "categoria_id": exigencia.categoria.id,
+            "categoria_fase": exigencia.categoria.fase,
+            "categoria_esforco": exigencia.categoria.esforco,
+            "categoria_peso_vivo": float(exigencia.categoria.peso_vivo or 0),
             "categoria_descricao": exigencia.categoria.descricao_fase_esforco
         }
         return js(data)
     except Exigencia.DoesNotExist:
         return js({"error": "Exigência não encontrada"}, status=404)
-    
+        
 def get_categorias(request):
     try:
-        categorias = CategoriaAnimal.objects.filter(is_active=True)
+        categorias = CategoriaAnimal.objects.filter(is_active=True).order_by('fase', 'esforco')
         data = [
-            {"id": cat.id, "descricao": cat.descricao_fase_esforco}
+            {
+            "id": cat.id,
+            "fase": cat.fase,
+            "esforco": cat.esforco,
+            "descricao": cat.descricao_fase_esforco,
+            "peso_vivo": float(cat.peso_vivo or 0)
+            }
             for cat in categorias
         ]
         return js(data, safe=False)
@@ -64,28 +73,92 @@ def busca_exigencia_nome(request):
         return js({'mensagem': 'Exigência não encontrada'})
     return js({'mensagem': 'Informe um nome para busca'}, status=400)
 
+def _get_or_create_or_update_categoria(fase, esforco, peso_vivo=None):
+    if fase is None or esforco is None:
+        raise ValueError('Fase (meses) e esforço são necessários')
+    try:
+        fase_val = int(fase)
+    except Exception:
+        raise ValueError('Fase (meses) inválida')
+
+    peso_vivo_dec = None
+    if peso_vivo is not None and peso_vivo != '':
+        try:
+            peso_vivo_dec = Decimal(str(peso_vivo))
+        except (InvalidOperation, TypeError):
+            raise ValueError('Peso vivo inválido')
+
+    from django.db import IntegrityError
+
+    try:
+        categoria, created = CategoriaAnimal.objects.get_or_create(
+            fase=fase_val,
+            esforco=esforco,
+            defaults={
+                'peso_vivo': peso_vivo_dec if peso_vivo_dec is not None else Decimal('0.00'),
+                'gmd': Decimal('0.00'),
+                'is_active': True
+            }
+        )
+    except IntegrityError:
+        qs = CategoriaAnimal.objects.filter(fase=fase_val, esforco=esforco)
+        if qs.exists():
+            categoria = qs.first()
+            created = False
+        else:
+            raise ValueError('Erro ao obter/criar categoria')
+
+    updated = False
+    if not created and peso_vivo_dec is not None:
+        try:
+            current = categoria.peso_vivo or Decimal('0.00')
+        except Exception:
+            current = Decimal('0.00')
+        if current != peso_vivo_dec:
+            categoria.peso_vivo = peso_vivo_dec
+            categoria.save(update_fields=['peso_vivo'])
+            updated = True
+
+    return categoria, created, updated
+
 def inserir_exigencia(request):
     if request.method != "POST":
         return js({'Mensagem': 'Método não permitido'}, status=405)
 
     nome = request.POST.get('nome', '').strip()
-    categoria_id = request.POST.get('categoria')
+    categoria_id = request.POST.get('categoria')  
+    fase = request.POST.get('fase')               
+    esforco = request.POST.get('esforco')        
+    peso_vivo = request.POST.get('peso_vivo')  
+
     try:
-        pb = Decimal(request.POST.get('pb', 0))
-        ed = Decimal(request.POST.get('ed', 0))
+        pb = Decimal(request.POST.get('pb', 0) or 0)
+        ed = Decimal(request.POST.get('ed', 0) or 0)
     except (TypeError, InvalidOperation):
         return js({'Mensagem': 'PB ou ED inválidos'}, status=400)
 
-    if not nome or not categoria_id:
-        return js({'Mensagem': 'Nome e categoria são obrigatórios'}, status=400)
+    if not nome:
+        return js({'Mensagem': 'Nome é obrigatório'}, status=400)
 
-    if Exigencia.objects.filter(nome__iexact=nome, categoria_id=categoria_id).exists():
+    categoria = None
+    created_categoria = False
+    updated_categoria = False
+
+    if categoria_id:
+        try:
+            categoria = CategoriaAnimal.objects.get(id=categoria_id)
+        except CategoriaAnimal.DoesNotExist:
+            return js({'Mensagem': 'Categoria inválida'}, status=400)
+    else:
+        if fase is None or esforco is None:
+            return js({'Mensagem': 'Informe categoria (id) ou fase (meses) e esforço'}, status=400)
+        try:
+            categoria, created_categoria, updated_categoria = _get_or_create_or_update_categoria(fase, esforco, peso_vivo)
+        except ValueError as e:
+            return js({'Mensagem': str(e)}, status=400)
+
+    if Exigencia.objects.filter(nome__iexact=nome, categoria=categoria).exists():
         return js({'Mensagem': f'{nome} já existe para esta categoria'}, status=400)
-
-    try:
-        categoria = CategoriaAnimal.objects.get(id=categoria_id)
-    except CategoriaAnimal.DoesNotExist:
-        return js({'Mensagem': 'Categoria inválida'}, status=400)
 
     Exigencia.objects.create(
         nome=nome,
@@ -94,36 +167,67 @@ def inserir_exigencia(request):
         ed=ed
     )
 
-    return js({'Mensagem': f'{nome} inserido com sucesso!'}, status=200)
+    mensagem = f'{nome} inserido com sucesso!'
+    return js({'Mensagem': mensagem}, status=200)
 
 def atualizar_exigencia(request):
     if request.method != "POST":
         return js({'Mensagem': 'Método não permitido'}, status=405)
     id = request.POST.get('id')
     nome = request.POST.get('nome', '').strip()
-    categoria_id = request.POST.get('categoria')
+    categoria_id = request.POST.get('categoria')  
+    fase = request.POST.get('fase')               
+    esforco = request.POST.get('esforco')       
+    peso_vivo = request.POST.get('peso_vivo')    
 
     try:
-        pb = Decimal(request.POST.get('pb', 0))
-        ed = Decimal(request.POST.get('ed', 0))
+        pb = Decimal(request.POST.get('pb', 0) or 0)
+        ed = Decimal(request.POST.get('ed', 0) or 0)
     except (TypeError, InvalidOperation):
         return js({'Mensagem': 'PB ou ED inválidos'}, status=400)
 
-    if not id or not nome or not categoria_id:
+    if not id or not nome:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
     exigencia = get_object_or_404(Exigencia, pk=id)
 
-    if Exigencia.objects.exclude(id=id).filter(nome__iexact=nome, categoria_id=categoria_id).exists():
+    categoria = None
+    created_categoria = False
+    updated_categoria = False
+
+    if categoria_id:
+        try:
+            categoria = CategoriaAnimal.objects.get(id=categoria_id)
+            if peso_vivo is not None and peso_vivo != '':
+                try:
+                    peso_vivo_dec = Decimal(str(peso_vivo))
+                    if categoria.peso_vivo != peso_vivo_dec:
+                        categoria.peso_vivo = peso_vivo_dec
+                        categoria.save(update_fields=['peso_vivo'])
+                        updated_categoria = True
+                except (InvalidOperation, TypeError):
+                    return js({'Mensagem': 'Peso vivo inválido'}, status=400)
+        except CategoriaAnimal.DoesNotExist:
+            return js({'Mensagem': 'Categoria inválida'}, status=400)
+    else:
+        if fase is None or esforco is None:
+            return js({'Mensagem': 'Informe categoria (id) ou fase (meses) e esforço'}, status=400)
+        try:
+            categoria, created_categoria, updated_categoria = _get_or_create_or_update_categoria(fase, esforco, peso_vivo)
+        except ValueError as e:
+            return js({'Mensagem': str(e)}, status=400)
+
+    if Exigencia.objects.exclude(id=id).filter(nome__iexact=nome, categoria=categoria).exists():
         return js({'Mensagem': 'Já existe outra exigência com esse nome para essa categoria.'}, status=400)
 
     exigencia.nome = nome
     exigencia.pb = pb
     exigencia.ed = ed
-    exigencia.categoria_id = categoria_id
+    exigencia.categoria = categoria
     exigencia.save()
 
-    return js({'Mensagem': 'Exigência atualizada com sucesso!'}, status=200)
+    mensagem = 'Exigência atualizada com sucesso!'
+    return js({'Mensagem': mensagem}, status=200)
 
 def desativar_exigencia(request):
     if request.method == 'POST':
@@ -279,18 +383,10 @@ def inserir_composicao_exigencia(request):
     return js({'Mensagem': 'Nutriente inserido na composição com sucesso!', 'data': data}, status=201)
 
 def atualizar_composicaoExigencia(request):
-    if request.method == 'POST':
-        id = request.POST.get('id')
-        exigencia_id = request.POST.get('exigencia_id')
-        nutriente_id = request.POST.get('nutriente_id')
-        valor = request.POST.get('valor')
-    else:
-        id = request.GET.get('id')
-        exigencia_id = request.GET.get('exigencia_id')
-        nutriente_id = request.GET.get('nutriente_id')
-        valor = request.GET.get('valor')
+    id = request.POST.get('id') if request.method == 'POST' else request.GET.get('id')
+    valor = request.POST.get('valor') if request.method == 'POST' else request.GET.get('valor')
 
-    if not id or not exigencia_id or not nutriente_id or not valor:
+    if not id or not valor:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)
 
     composicao = get_object_or_404(ComposicaoExigencia, pk=id)
@@ -299,22 +395,15 @@ def atualizar_composicaoExigencia(request):
         valor_dec = Decimal(str(valor))
     except (InvalidOperation, TypeError):
         return js({'Mensagem': 'Valor inválido'}, status=400)
-    if (str(composicao.exigencia_id) == str(exigencia_id) and
-        str(composicao.nutriente_id) == str(nutriente_id) and
-        str(composicao.valor) == str(valor_dec)):
+
+    if str(composicao.valor) == str(valor_dec):
         return js({'Mensagem': 'Nenhuma alteração detectada.'}, status=400)
 
-    if ComposicaoExigencia.objects.filter(
-        exigencia_id=exigencia_id,
-        nutriente_id=nutriente_id
-    ).exclude(id=id).exists():
-        return js({'Mensagem': 'Composição de exigência já existe!'}, status=400)
-
-    composicao.exigencia_id = exigencia_id
-    composicao.nutriente_id = nutriente_id
     composicao.valor = valor_dec
     composicao.save()
-    return js({'Mensagem': 'Composição atualizada com sucesso!'}, status=200)
+
+    return js({'Mensagem': 'Valor atualizado com sucesso!'}, status=200)
+
 
 def ativar_composicaoExigencia(request):
     id = request.POST.get('id') if request.method == 'POST' else request.GET.get('id')
