@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-7v$q9l(8ng02o4p-&5a0iiw$=if@*nn8q^n$998dgvtwjj&+sp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.101', 'localhost', '127.0.0.1', '10.0.2.2']
+ALLOWED_HOSTS = ['192.168.4.106', 'localhost', '127.0.0.1', '10.0.2.2']
 
 
 
@@ -32,7 +32,12 @@ INSTALLED_APPS = [
     'core',
     'resources',
     'exigencias',
+    'animais',
+    'dietas'
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

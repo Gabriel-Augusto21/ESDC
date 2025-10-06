@@ -50,7 +50,7 @@
         <!-- Nome do Alimento -->
         <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
             <label for="txtNome" class="form-label">Nome do alimento</label>
-            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento">
+            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" maxlength="45">
         </div>
 
         <!-- Classificação -->
@@ -64,19 +64,19 @@
         <!-- Matéria Seca -->
         <div class="col-12 col-md-4 mb-3 mb-md-0">
             <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-            <input id="txtMs" class="form-control" type="text" placeholder="Valor" value="0.00">
-        </div>
-
-        <!-- Energia Digestiva -->
-        <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-            <input id="txtEd" class="form-control" type="text" placeholder="Valor" value="0.00">
+            <input id="txtMs" class="form-control" type="text" placeholder="0.00" maxlength="5">
         </div>
 
         <!-- Proteína Bruta -->
         <div class="col-12 col-md-4">
             <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-            <input id="txtPb" class="form-control" type="text" placeholder="Valor" value="0.00">
+            <input id="txtPb" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
+
+        <!-- Energia Digestiva -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+            <input id="txtEd" class="form-control" type="text" placeholder="0.00" maxlength="5">
         </div>
     </div>
 </div>

@@ -1,4 +1,4 @@
-import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao} from './alertas_alimentos.js'
+import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao, desativar_composicao, ativar_composicao} from './alertas_alimentos.js'
 const htmlInsercao = document.getElementById('txtInserir');
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
@@ -55,28 +55,36 @@ document.body.addEventListener('click', function (evento){
                     const optionsHtml = classificacoes.map(n =>
                         `<option value="${n.id}">${n.nome}</option>`).join("");
 
-                    const clone = htmlInsercao; // utilizo o clone pra nao ter perigo de o elemento ser excluido da dom
-                    clone.removeAttribute('hidden'); // tirando o atributo hidden pra exibir no alert
-                    
-                    const select =  clone.querySelector('#idClassificacao') // pegando o select do elemento clone
-                    select.innerHTML = optionsHtml; // // populando o select
-                    
-                    inserir(clone);// chamando o alerta de inserção e inserindo 
+                    const clone = htmlInsercao.cloneNode(true); // Clonar de fato
+                    clone.removeAttribute('hidden');
+
+                    const nomeInput = clone.querySelector('.txtNome'); // Ajuste conforme seletor real
+
+                    clone.querySelectorAll('input').forEach(el => {
+                        if (!clone.querySelectorAll('txtNome')) {
+                            el.value = 0.00;
+                        }
+                    });
+
+                    const select = clone.querySelector('#idClassificacao');
+                    select.innerHTML = optionsHtml;
+
+                    inserir(clone);
+
                 })
                 .catch(error => {
                     console.error('Erro ao carregar classificações:', error);
                     Swal.fire('Erro', 'Não foi possível carregar as classificações.', 'error');
             });
     }else if(botao.classList.contains('composicao-btn')){
-        evento.preventDefault();
         fetch(`/composicao_json/?id=${botao.id}`)
         .then(response => response.json())
         .then(({ alimento, composicao }) => {
             if (composicao && composicao.length > 0) {
-                carregar_composicao(alimento.id, alimento.nome)
+                carregar_composicao(composicao, alimento, botao.id)
             } else {
                 const html = "Esse alimento não possui nutrientes vinculados!";
-                exibir_composicao(alimento, html, '400px');
+                exibir_composicao(composicao, alimento, html, '400px');
             }
 
         });

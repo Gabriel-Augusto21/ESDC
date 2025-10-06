@@ -44,9 +44,9 @@ body, html {
 }
 
 h3 {
-    text-align: left;
+    text-align: justify;
     color: rgb(71, 71, 71);
-    font-size: medium;
+    font-size: large;
 }
 
 h2 {
@@ -111,4 +111,10 @@ footer ul li {
 .item {
     font-weight: 500;
     color: black;   
+}
+
+/* Texto Inicial */
+
+.h5 {
+  color: rgb(153, 153, 153);
 }
