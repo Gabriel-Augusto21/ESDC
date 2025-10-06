@@ -311,96 +311,67 @@ export function inserir(modalHtml){
         }
     });
 }
+
 export function carregar_composicao(composicao, alimento) {
-    let dados_composicao = '';
-    for (let i = 0; i < composicao.length; i += 3) {
-        const bloco = `
-            <div id="dados-composicao" class="row mb-3">
-            <div class="col">
-                <label class="form-label">
-                    ${composicao[i].nutriente_nome}
-                    <span class="d-sm-none"><br></span>
-                    <span class="d-none d-sm-inline"> </span>
-                    (${composicao[i].nutriente_unidade})
-                </label>
-                <div class="d-flex align-items-center">
-                    <input class="form-control me-2" type="text" placeholder="Valor" value="${parseFloat(composicao[i].valor).toFixed(2)}">
-                    ${composicao[i].is_active ? `
-                        <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i].id}">
-                            <img src="${imagemVisibilidade}" width="20">
-                        </button>   
-                    ` : `
-                        <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i].id}">
-                            <img src="${imagemNVisibilidade}" width="20">
-                        </button>
-                    `}
-                </div>
-            </div>
-
-            ${composicao[i + 1] ? `
-            <div class="col">
-                <label class="form-label">
-                    ${composicao[i + 1].nutriente_nome}
-                    <span class="d-sm-none"><br></span>
-                    <span class="d-none d-sm-inline"> </span>
-                    (${composicao[i + 1].nutriente_unidade})
-                </label>
-                <div class="d-flex align-items-center">
-                    <input class="form-control me-2" type="text" placeholder="Valor" value="${parseFloat(composicao[i + 1].valor).toFixed(2)}">
-                    ${composicao[i + 1].is_active ? `
-                        <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i + 1].id}">
-                            <img src="${imagemVisibilidade}" width="20">
-                        </button>   
-                    ` : `
-                        <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i + 1].id}">
-                            <img src="${imagemNVisibilidade}" width="20">
-                        </button>
-                    `}
-                </div>
-            </div>
-            ` : ''}
-
-            ${composicao[i + 2] ? `
-            <div class="col">
-                <label class="form-label">
-                    ${composicao[i + 2].nutriente_nome}
-                    <span class="d-sm-none"><br></span>
-                    <span class="d-none d-sm-inline"> </span>
-                    (${composicao[i + 2].nutriente_unidade})
-                </label>
-                <div class="d-flex align-items-center">
-                    <input class="form-control me-2" type="text" placeholder="Valor" value="${parseFloat(composicao[i + 2].valor).toFixed(2)}">
-                    ${composicao[i + 2].is_active ? `
-                        <button class="btn btn-sm desativar-composicao-btn" alt="Ativar" data-id="${composicao[i + 2].id}">
-                            <img src="${imagemVisibilidade}" width="20">
-                        </button>   
-                    ` : `
-                        <button class="btn btn-sm ativar-composicao-btn" alt="Desativar" data-id="${composicao[i + 2].id}">
-                            <img src="${imagemNVisibilidade}" width="20">
-                        </button>
-                    `}
-                </div>
-            </div>
-            ` : ''}
-        </div>
-
-        `;
-        dados_composicao += bloco;
+    if (!alimento) {
+        console.error('Alimento não definido!', composicao, alimento);
+        return;
     }
+
+    const imagemVisibilidade = '/static/img/visibility.png';
+    const imagemNVisibilidade = '/static/img/not_visibility.png';
+    const imagemEditar = '/static/img/edit.png'; 
+
+    let dados_composicao = '';
+    for (let i = 0; i < composicao.length; i++) {
+        if (i % 3 === 0) {
+            dados_composicao += `<div class="row mb-3">`;
+        }
+
+        const c = composicao[i];
+        dados_composicao += `
+            <div class="col-12 col-md-4">
+                <label class="form-label">
+                    ${c.nutriente_nome} (${c.nutriente_unidade})
+                </label>
+                <div class="d-flex align-items-center">
+                    <input class="form-control me-2" type="text" value="${parseFloat(c.valor).toFixed(2)}">
+
+                    <!-- Botão ativar/desativar -->
+                    ${c.is_active ? `
+                        <button class="btn btn-sm desativar-composicao-btn me-1" data-id="${c.id}">
+                            <img src="${imagemVisibilidade}" width="20">
+                        </button>` : `
+                        <button class="btn btn-sm ativar-composicao-btn me-1" data-id="${c.id}">
+                            <img src="${imagemNVisibilidade}" width="20">
+                        </button>`}
+
+                    <!-- 🔔 Botão atualizar -->
+                    <button class="btn btn-sm atualizar-composicao-btn" data-id="${c.id}">
+                        <img src="${imagemEditar}" width="20">
+                    </button>
+                </div>
+            </div>
+        `;
+
+        if ((i % 3 === 2) || (i === composicao.length - 1)) {
+            dados_composicao += `</div>`;
+        }
+    }
+
     const html = `
         <div class="container my-3" style="text-align: start;">
             <h3 class="text-center fs-3 fw-bold border-bottom pb-2">${alimento.nome}</h3>
             <div class="row justify-content-end py-3">
-                <div class="col-auto">
-                    <button id="btn-terceiro" class="botao-confirma-alerta">Atualizar</button>
-                </div>
+                
             </div>
             ${dados_composicao}
         </div>
     `;
 
-    exibir_composicao(composicao, alimento, html, '700px');
+    exibir_composicao(composicao, alimento, html, '900px');
 }
+
 export function inserir_composicao(composicao, alimento){
     fetch(`/nutrientes_disponiveis_json/?id_composicao=${alimento.id}`)
     .then(response => response.json())
@@ -490,10 +461,13 @@ export function exibir_composicao(composicao, alimento, html, tam) {
                 container.addEventListener('click', (event) => {
                     const botaoDesativar = event.target.closest('.desativar-composicao-btn');
                     const botaoAtivar = event.target.closest('.ativar-composicao-btn');
+                    const botaoAtualizar = event.target.closest('.atualizar-composicao-btn');
                     if (botaoDesativar) {
                         desativar_composicao(composicao, alimento, botaoDesativar.dataset.id);
                     }else if(botaoAtivar){
                         ativar_composicao(composicao, alimento, botaoAtivar.dataset.id);
+                    }else if(botaoAtualizar){
+                        atualizar_composicao(botaoAtualizar, composicao, alimento);
                     }
                     
                 });
@@ -660,3 +634,114 @@ htmx.on("htmx:responseError", (event) => {
         });
     }
 });
+
+export function atualizar_composicao(botao, composicao, alimento) {
+    const id = botao.dataset.id;
+    if (!id) {
+        Swal.fire('Erro', 'ID da composição ausente no botão.', 'error');
+        return;
+    }
+
+    fetch(`/get_composicaoAlimento/?id=${id}`)
+        .then(resp => {
+            if (!resp.ok) throw new Error('Erro ao carregar composição');
+            return resp.json();
+        })
+        .then(comp => {
+            Swal.fire({
+                title: `Editar valor do nutriente`,
+                html: `
+                    <input type="hidden" id="comp_id" value="${comp.id}">
+                    <div class="mb-3">
+                        <label class="form-label">Valor (${comp.nutriente_nome})</label>
+                        <input type="number" step="0.01" id="comp_valor" class="form-control" value="${comp.valor}">
+                    </div>
+                `,
+                confirmButtonText: 'Salvar',
+                cancelButtonText: 'Cancelar',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                preConfirm: () => {
+                    const id = document.getElementById('comp_id').value;
+                    const valor = document.getElementById('comp_valor').value;
+
+                    if (!valor || parseFloat(valor) <= 0) {
+                        Swal.showValidationMessage('Informe um valor válido');
+                        return false;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('id', id);
+                    formData.append('valor', valor);
+                    formData.append('alimento_id', comp.alimento_id);   
+                    formData.append('nutriente_id', comp.nutriente_id); 
+
+                    console.log('Enviando dados para atualizar:', {
+                        id,
+                        valor,
+                        alimento_id: comp.alimento_id,
+                        nutriente_id: comp.nutriente_id
+                    });
+
+                    return fetch('/atualizar_composicaoAlimento/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                        credentials: 'same-origin'
+                    })
+                    .then(r => r.json().then(json => ({ ok: r.ok, json })))
+                    .then(({ ok, json }) => {
+                        if (!ok) throw json;
+                        return json;
+                    })
+                    .catch(err => {
+                        console.error('erro atualizar_composicaoAlimento', err);
+                        Swal.showValidationMessage((err && err.Mensagem) ? err.Mensagem : 'Erro ao comunicar com o servidor.');
+                        return false;
+                    });
+                }
+            }).then(result => {
+                if (result.isConfirmed && result.value) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: result.value.Mensagem,
+                        confirmButtonColor: '#2f453a',
+                        showConfirmButton: true
+                    }).then(() => {
+                        if (result.value.data && result.value.data.composicao) {
+                            carregar_composicao(result.value.data.composicao, result.value.data.alimento);
+                        } else {
+                            fetch(`/composicao_json/?id=${comp.alimento_id}`)
+                                .then(r => r.json())
+                                .then(j => carregar_composicao(j.composicao, j.alimento))
+                                .catch(e => {
+                                    console.error('Erro ao recarregar composição', e);
+                                    carregar_composicao([], alimento);
+                                });
+                        }
+                    });
+                }
+            });
+        })
+        .catch(err => {
+            console.error('Erro ao carregar composição para edição', err);
+            Swal.fire('Erro', 'Falha ao carregar dados da composição.', 'error');
+        });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}

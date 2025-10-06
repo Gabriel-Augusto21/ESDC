@@ -414,10 +414,12 @@ def get_composicaoAlimento(request):
         try:
             composicao = ComposicaoAlimento.objects.get(id=id)
             data = {
-                "id": composicao.id,
-                "alimento": composicao.alimento.nome,
-                "nutriente": composicao.nutriente.nome,
-                "valor": composicao.valor,
+                 "id": composicao.id,
+                 "alimento_id": composicao.alimento.id,
+                 "nutriente_id": composicao.nutriente.id,
+                 "alimento": composicao.alimento.nome,
+                 "nutriente_nome": composicao.nutriente.nome,
+                 "valor": composicao.valor,
             }
             return js(data)
         except ComposicaoAlimento.DoesNotExist:
@@ -471,10 +473,10 @@ def inserir_composicao_alimento(request):
     return js({'Mensagem': 'Informe alimento, nutriente e valor'}, status=400)
 
 def atualizar_composicaoAlimento(request):
-    id = request.GET.get('id')
-    alimento_id = request.GET.get('alimento_id')
-    nutriente_id = request.GET.get('nutriente_id')
-    valor = request.GET.get('valor')
+    id = request.POST.get('id')
+    alimento_id = request.POST.get('alimento_id')
+    nutriente_id = request.POST.get('nutriente_id')
+    valor = request.POST.get('valor')
 
     if not id or not alimento_id or not nutriente_id or not valor:
         return js({'Mensagem': 'Parâmetros incompletos'}, status=400)

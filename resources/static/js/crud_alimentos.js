@@ -1,4 +1,5 @@
-import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao, desativar_composicao, ativar_composicao} from './alertas_alimentos.js'
+import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao, desativar_composicao, ativar_composicao, atualizar_composicao} from './alertas_alimentos.js'
+
 const htmlInsercao = document.getElementById('txtInserir');
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
