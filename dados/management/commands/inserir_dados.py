@@ -1,9 +1,12 @@
 from django.core.management.base import BaseCommand
 from alimentos.models import Classificacao, Alimento, Nutriente, ComposicaoAlimento
+from animais.models import Animal
+from faker import Faker
 import pandas as pd
 import os
 from django.conf import settings
 from decimal import Decimal, InvalidOperation
+import random
 
 def tratar_decimal(valor):
     try:
@@ -86,7 +89,15 @@ class Command(BaseCommand):
                         a += 1
                     except Nutriente.DoesNotExist:
                         print(f"Nutriente com ID={j + 1} não encontrado")
-            
+        
         self.stdout.write(self.style.SUCCESS(f"{contador_classificacao} categorias adicionadas com sucesso!"))
         self.stdout.write(self.style.SUCCESS(f"{i} alimentos adicionados com sucesso!"))
         self.stdout.write(self.style.SUCCESS(f"{a} linhas de composição alimentar adicionadas com sucesso!"))
+        cont_animais = 0
+        fake = Faker('pt_BR')
+        for i in range(20):
+            cont_animais += 1
+            Animal.objects.create(nome=fake.name(), imagem=fake.random_element(elements=('default.jpg', 'default1.png', 'default2.png', 'default3.png', 'default4.png', 'default5.png', 'default6.png', 'default7.png')), proprietario=fake.name(), 
+                    peso_vivo=random.randint(100, 700), data_nasc=fake.date(), genero=fake.random_element(elements=('M', 'F')))
+            
+        self.stdout.write(self.style.SUCCESS(f"{cont_animais} animais adicionados com sucesso!"))
