@@ -1,0 +1,51 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block conteudo %}
+<div class="container mt-3">
+    <h1>Alimentos</h1>
+    <!-- Formulário de busca -->
+    <form method="get" class="form-group my-4 d-flex justify-content-center mx-auto">
+        <div class="col-8 col-lg-4">
+            <div class="input-group">
+                <input class="form-control"
+                    id="txtBuscaNomeAlimento"
+                    name="query"
+                    value="{{ query }}"
+                    type="text"
+                    placeholder="Informe o nome de um animal..."
+                    style="border-radius: 20px 0 0 20px;">
+                <div class="input-group-append">
+                    <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
+                </div>
+            </div>
+        </div>
+    </form>
+     <!-- Botão de inserir -->
+    <div class="form-group row mr-1 justify-content-end">
+        <button type="button" class="botao insert-btn">
+            <img src="{% static 'img/add_circle.png' %}" width="20" style= "margin-right: 3px; filter: brightness(0) invert(1)">
+            Inserir
+        </button>
+    </div>
+
+<div class="container mt-4">
+    <div class="row">
+        {% for animal in animais %}
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <img src="{{ animal.imagem.url }}" class="card-img-top" alt="{{ animal.nome }}" style="height: 180px; object-fit: cover;">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ animal.nome }}</h5>
+                    <p class="card-text text-muted">{{ animal.proprietario }}</p>
+                    <a href="{% url 'detalhe_animal' animal.id %}" class="mt-auto btn btn-outline-success btn-sm">Ver detalhes</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Nenhum animal encontrado.</p>
+        {% endfor %}
+    </div>
+</div>
+</div>
+
+{% endblock %}
