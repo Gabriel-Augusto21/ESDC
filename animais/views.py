@@ -10,3 +10,31 @@ def animais(request):
     paginator = Paginator(animais_lista, 12)
     page_obj = paginator.get_page(request.GET.get('page'))
     return render(request, 'animais.html', {'page_obj': page_obj, 'query': query})
+
+def inserir_animal(request):
+    if request.method != "POST":
+        return js({'Mensagem': 'Método não permitido'}, status=405)
+
+    nome = request.POST.get('nome', '').strip()
+    imagem = request.FILES.get('imagem')
+    proprietario = request.POST.get('proprietario', '').strip()
+    peso_vivo = request.POST.get('peso_vivo')
+    data_nasc = request.POST.get('data_nasc')
+    genero = request.POST.get('genero')
+
+    if not nome:
+        return js({'Mensagem': 'Nome é obrigatório'}, status=400)
+
+    imagem = None
+
+    Animal.objects.create(
+        nome=nome,
+        imagem=imagem,
+        proprietario=proprietario,
+        peso_vivo=peso_vivo,
+        data_nasc=data_nasc,
+        genero=genero
+    )
+
+    mensagem = f'{nome} inserido com sucesso!'
+    return js({'Mensagem': mensagem}, status=200)

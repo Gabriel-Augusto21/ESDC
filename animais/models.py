@@ -10,7 +10,7 @@ class Animal(models.Model):
         validators=[FileExtensionValidator(allowed_extensions=["jpg", "png", "jpeg"])],
         null=True,
         blank=True,
-        default="default.jpg"  # imagem padrão
+        default="default.jpg"  
     )
 
     proprietario = models.CharField(max_length=100)
