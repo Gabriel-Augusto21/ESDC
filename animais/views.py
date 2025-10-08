@@ -1,3 +1,6 @@
 from django.shortcuts import render
+from animais.models import Animal
 
-# Create your views here.
+def animais(request):
+    animais = Animal.objects.all()
+    return render(request, 'animais.html', {'animais': animais})
