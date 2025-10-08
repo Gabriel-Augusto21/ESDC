@@ -57,18 +57,19 @@
     <p class="text-center">Nenhum animal encontrado.</p>
     {% endfor %}
     <!-- Contador de registros -->
-        <legend class="text-center small">
-            {% if page_obj.paginator.count == 0 %}
-            {% elif page_obj.paginator.count == 1 %}
-            1 registro encontrado
-            {% else %}
-            {{ page_obj.paginator.count }} registros encontrados
-            {% endif %}
-        </legend>
-        <!-- Registros -->
-        <!--{% include 'exigencias_table.html' %}-->
-        <!-- Paginador -->
+    <legend class="text-center small mt-2">
+        {% if page_obj.paginator.count == 0 %}
+        {% elif page_obj.paginator.count == 1 %}
+        1 registro encontrado
+        {% else %}
+        {{ page_obj.paginator.count }} registros encontrados
+        {% endif %}
+    </legend>
+
+    <!-- Paginador centralizado -->
+    <div class="col-12 d-flex justify-content-center mt-3 mb-4">
         {% include "paginador.html" %}
+    </div>
 </div>
     
 </div>

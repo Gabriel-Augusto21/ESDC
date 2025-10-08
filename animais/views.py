@@ -7,6 +7,6 @@ def animais(request):
     animais_lista = Animal.objects.filter(
         nome__icontains=query
     ).order_by('-is_active', 'nome', 'peso_vivo')  
-    paginator = Paginator(animais_lista, 10)
+    paginator = Paginator(animais_lista, 12)
     page_obj = paginator.get_page(request.GET.get('page'))
     return render(request, 'animais.html', {'page_obj': page_obj, 'query': query})
