@@ -4,6 +4,7 @@
 
 <div class="container mt-3">
     <h1>Animais</h1>
+
     <!-- Formulário de busca -->
     <form method="get" class="form-group my-4 d-flex justify-content-center mx-auto">
         <div class="col-8 col-lg-4">
@@ -16,29 +17,32 @@
                     placeholder="Informe o nome de um animal..."
                     style="border-radius: 20px 0 0 20px;">
                 <div class="input-group-append">
-                    <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img src="{% static 'img/search.png' %}" width="20" style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
+                    <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;">
+                        <img src="{% static 'img/search.png' %}" width="20" style="margin-right: 3px; filter: brightness(0) invert(1)">
+                    </button>
                 </div>
             </div>
         </div>
     </form>
-     <!-- Botão de inserir -->
+
+    <!-- Botão de inserir -->
     <div class="form-group row mr-1 justify-content-end">
         <button type="button" class="botao insert-btn">
-            <img src="{% static 'img/add_circle.png' %}" width="20" style= "margin-right: 3px; filter: brightness(0) invert(1)">
+            <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px; filter: brightness(0) invert(1)">
             Inserir
         </button>
     </div>
 
-<div class="row">
-    {% for animal in page_obj %}
-    <div class="col-6 col-md-4 col-lg-3 mb-4">
-        <div class="card position-relative h-100 shadow-sm" style="border-radius: 15px; overflow: hidden;">
-            <!-- Imagem -->
-            <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img" style="height: 250px; object-fit: cover;">
+    <div class="row">
+        {% for animal in page_obj %}
+        <div class="col-6 col-md-4 col-lg-3 mb-4">
+            <div class="card position-relative h-100 shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                <!-- Imagem -->
+                <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img" style="height: 250px; object-fit: cover;">
 
-            <!-- Gradiente + Conteúdo -->
-            <div class="card-img-overlay d-flex flex-column justify-content-end" 
-                style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
+                <!-- Gradiente + Conteúdo -->
+                <div class="card-img-overlay d-flex flex-column justify-content-end"
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
 
                 <!-- Ícone de edição -->
                 <img src="{% static 'img/edit.png' %}" 
@@ -57,21 +61,100 @@
     <p class="text-center">Nenhum animal encontrado.</p>
     {% endfor %}
     <!-- Contador de registros -->
-    <legend class="text-center small mt-2">
-        {% if page_obj.paginator.count == 0 %}
-        {% elif page_obj.paginator.count == 1 %}
-        1 registro encontrado
-        {% else %}
-        {{ page_obj.paginator.count }} registros encontrados
-        {% endif %}
-    </legend>
-
-    <!-- Paginador centralizado -->
-    <div class="col-12 d-flex justify-content-center mt-3 mb-4">
+        <legend class="text-center small">
+            {% if page_obj.paginator.count == 0 %}
+            {% elif page_obj.paginator.count == 1 %}
+            1 registro encontrado
+            {% else %}
+            {{ page_obj.paginator.count }} registros encontrados
+            {% endif %}
+        </legend>
+        <!-- Registros -->
+        <!--{% include 'exigencias_table.html' %}-->
+        <!-- Paginador -->
         {% include "paginador.html" %}
     </div>
 </div>
-    
+
+<!-- Modal de Inserção de Animal -->
+<!-- Modal de Inserção de Animal -->
+<div class="modal fade" id="modalInserirAnimal" tabindex="-1" aria-labelledby="modalInserirAnimalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius: 15px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title w-100 text-center fw-semibold" id="modalInserirAnimalLabel">Inserir Animal</h5>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" id="formInserirAnimal">
+        {% csrf_token %}
+        <div class="modal-body pt-3">
+          <div class="container">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nomeAnimal" class="form-label">Nome do animal</label>
+                <input type="text" class="form-control" id="nomeAnimal" name="nome" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="proprietarioAnimal" class="form-label">Proprietário</label>
+                <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="pesoAnimal" class="form-label">Peso</label>
+                <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="imagemAnimal" class="form-label">Foto do animal</label>
+                <input type="file" class="form-control" id="imagemAnimal" name="imagem" accept="image/*">
+              </div>
+
+              <div class="col-md-6">
+                <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
+                <input type="date" class="form-control" id="dataNascAnimal" name="data_nascimento" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="generoAnimal" class="form-label">Gênero</label>
+                <select class="form-select" id="generoAnimal" name="genero" required>
+                  <option value="">Selecione...</option>
+                  <option value="Macho">Macho</option>
+                  <option value="Fêmea">Fêmea</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="submit" class="btn btn-success px-4" style="background-color:#274e37; border:none;">Inserir</button>
+          <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal" style="background-color:#d9534f; border:none;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
+
+<!-- Script para abrir o modal -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const botaoInserir = document.querySelector('.insert-btn');
+        const modalInserirAnimal = new bootstrap.Modal(document.getElementById('modalInserirAnimal'));
+
+        botaoInserir.addEventListener('click', () => {
+            document.getElementById('formInserirAnimal').reset();
+            modalInserirAnimal.show();
+        });
+
+        document.getElementById('formInserirAnimal').addEventListener('submit', (e) => {
+            e.preventDefault();
+            modalInserirAnimal.hide();
+            Swal.fire('Sucesso!', 'Animal inserido com sucesso!', 'success');
+        });
+    });
+</script>
+
 
 {% endblock %}
