@@ -30,7 +30,7 @@
     </div>
 
 <div class="row">
-    {% for animal in animais %}
+    {% for animal in page_obj %}
     <div class="col-6 col-md-4 col-lg-3 mb-4">
         <div class="card position-relative h-100 shadow-sm" style="border-radius: 15px; overflow: hidden;">
             <!-- Imagem -->
@@ -56,7 +56,21 @@
     {% empty %}
     <p class="text-center">Nenhum animal encontrado.</p>
     {% endfor %}
+    <!-- Contador de registros -->
+        <legend class="text-center small">
+            {% if page_obj.paginator.count == 0 %}
+            {% elif page_obj.paginator.count == 1 %}
+            1 registro encontrado
+            {% else %}
+            {{ page_obj.paginator.count }} registros encontrados
+            {% endif %}
+        </legend>
+        <!-- Registros -->
+        <!--{% include 'exigencias_table.html' %}-->
+        <!-- Paginador -->
+        {% include "paginador.html" %}
 </div>
+    
 </div>
 
 {% endblock %}
