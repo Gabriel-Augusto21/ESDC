@@ -44,24 +44,23 @@
                 <div class="card-img-overlay d-flex flex-column justify-content-end"
                     style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
 
-                    <!-- Ícone de edição -->
-                    <img src="{% static 'img/edit.png' %}"
-                         alt="Editar"
-                         style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
-
-                    <!-- Texto -->
-                    <div style="text-align: left;">
-                        <h5 class="mb-1" style="font-size: 2.00rem; font-weight: 400;">{{ animal.nome }}</h5>
-                        <p class="mb-0 text-white-50" style="font-size: 1.75rem;">{{ animal.proprietario }}</p>
-                    </div>
+                <!-- Ícone de edição -->
+                <img src="{% static 'img/edit.png' %}" 
+                     alt="Editar" 
+                     style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
+                
+                <!-- Texto -->
+                <div style="text-align: left;">
+                    <h5 class="mb-1" style="font-size: 2.00rem; font-weight: 400;">{{ animal.nome }}</h5>
+                    <p class="mb-0 text-white-50" style="font-size: 1.75rem;">{{ animal.proprietario }}</p>
                 </div>
             </div>
         </div>
-        {% empty %}
-        <p class="text-center">Nenhum animal encontrado.</p>
-        {% endfor %}
-
-        <!-- Contador de registros -->
+    </div>
+    {% empty %}
+    <p class="text-center">Nenhum animal encontrado.</p>
+    {% endfor %}
+    <!-- Contador de registros -->
         <legend class="text-center small">
             {% if page_obj.paginator.count == 0 %}
             {% elif page_obj.paginator.count == 1 %}
@@ -70,61 +69,73 @@
             {{ page_obj.paginator.count }} registros encontrados
             {% endif %}
         </legend>
-
+        <!-- Registros -->
+        <!--{% include 'exigencias_table.html' %}-->
+        <!-- Paginador -->
         {% include "paginador.html" %}
     </div>
 </div>
 
 <!-- Modal de Inserção de Animal -->
+<!-- Modal de Inserção de Animal -->
 <div class="modal fade" id="modalInserirAnimal" tabindex="-1" aria-labelledby="modalInserirAnimalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 15px;">
-            <div class="modal-header" style="background-color: #2d6a4f; color: white; border-top-left-radius: 15px; border-top-right-radius: 15px;">
-                <h5 class="modal-title" id="modalInserirAnimalLabel">Inserir Novo Animal</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" style="border-radius: 15px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title w-100 text-center fw-semibold" id="modalInserirAnimalLabel">Inserir Animal</h5>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" id="formInserirAnimal">
+        {% csrf_token %}
+        <div class="modal-body pt-3">
+          <div class="container">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nomeAnimal" class="form-label">Nome do animal</label>
+                <input type="text" class="form-control" id="nomeAnimal" name="nome" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="proprietarioAnimal" class="form-label">Proprietário</label>
+                <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="pesoAnimal" class="form-label">Peso</label>
+                <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="imagemAnimal" class="form-label">Foto do animal</label>
+                <input type="file" class="form-control" id="imagemAnimal" name="imagem" accept="image/*">
+              </div>
+
+              <div class="col-md-6">
+                <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
+                <input type="date" class="form-control" id="dataNascAnimal" name="data_nascimento" required>
+              </div>
+
+              <div class="col-md-6">
+                <label for="generoAnimal" class="form-label">Gênero</label>
+                <select class="form-select" id="generoAnimal" name="genero" required>
+                  <option value="">Selecione...</option>
+                  <option value="Macho">Macho</option>
+                  <option value="Fêmea">Fêmea</option>
+                </select>
+              </div>
             </div>
-            <form method="POST" enctype="multipart/form-data" id="formInserirAnimal">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <!-- Nome -->
-                    <div class="mb-3">
-                        <label for="nomeAnimal" class="form-label">Nome do Animal</label>
-                        <input type="text" class="form-control" id="nomeAnimal" name="nome" required>
-                    </div>
-
-                    <!-- Proprietário -->
-                    <div class="mb-3">
-                        <label for="proprietarioAnimal" class="form-label">Proprietário</label>
-                        <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario" required>
-                    </div>
-
-                    <!-- Peso -->
-                    <div class="mb-3">
-                        <label for="pesoAnimal" class="form-label">Peso (kg)</label>
-                        <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso" required>
-                    </div>
-
-                    <!-- Idade -->
-                    <div class="mb-3">
-                        <label for="idadeAnimal" class="form-label">Idade (meses)</label>
-                        <input type="number" class="form-control" id="idadeAnimal" name="idade" required>
-                    </div>
-
-                    <!-- Imagem -->
-                    <div class="mb-3">
-                        <label for="imagemAnimal" class="form-label">Imagem</label>
-                        <input type="file" class="form-control" id="imagemAnimal" name="imagem" accept="image/*">
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="botao" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="botao">Salvar</button>
-                </div>
-            </form>
+          </div>
         </div>
+
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="submit" class="btn btn-success px-4" style="background-color:#274e37; border:none;">Inserir</button>
+          <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal" style="background-color:#d9534f; border:none;">Cancelar</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
+
 
 <!-- Script para abrir o modal -->
 <script>
