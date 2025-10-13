@@ -22,30 +22,31 @@ def inserir_animal(request):
     data_nasc = request.POST.get('data_nasc')
     genero = request.POST.get('genero')
     imagem = request.FILES.get('imagem')
-
+    
     if not nome:
         return JsonResponse({'Mensagem': 'O campo "nome" é obrigatório.'}, status=400)
-
     if not peso_vivo:
         return JsonResponse({'Mensagem': 'O campo "peso vivo" é obrigatório.'}, status=400)
-
     if not data_nasc:
         return JsonResponse({'Mensagem': 'A data de nascimento é obrigatória.'}, status=400)
-
     if not genero:
         return JsonResponse({'Mensagem': 'O gênero é obrigatório.'}, status=400)
 
-    animal = Animal.objects.create(
-        nome=nome,
-        imagem=imagem,
-        proprietario=proprietario,
-        peso_vivo=peso_vivo,
-        data_nasc=data_nasc,
-        genero=genero
-    )
+    animal_data = {
+        'nome': nome,
+        'proprietario': proprietario,
+        'peso_vivo': peso_vivo,
+        'data_nasc': data_nasc,
+        'genero': genero
+    }
 
-    mensagem = f'{animal.nome} inserido com sucesso!'
-    return JsonResponse({'Mensagem': mensagem}, status=200)
+    if imagem:
+        animal_data['imagem'] = imagem
+
+    animal = Animal.objects.create(**animal_data)
+
+    return JsonResponse({'Mensagem': f'{animal.nome} inserido com sucesso!'}, status=200)
+
 
 def editar_animais(request):
     query = request.GET.get('query', '')

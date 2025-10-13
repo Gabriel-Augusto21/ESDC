@@ -33,7 +33,6 @@
     <div class="row">
         {% for animal in page_obj %}
         <div class="col-6 col-md-4 col-lg-3 mb-4">
-            <!-- CARD DO ANIMAL -->
             <div class="card position-relative h-100 shadow-sm card-animal"
                 data-id="{{ animal.id }}"
                 data-nome="{{ animal.nome }}"
@@ -43,13 +42,16 @@
                 data-peso="{{ animal.peso_vivo }}"
                 style="border-radius: 15px; overflow: hidden; cursor:pointer;">
 
-                <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img"
-                    style="height: 250px; object-fit: cover;">
+                {% if animal.imagem %}
+                    <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img"
+                        style="height: 250px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'img/default-animal.png' %}" alt="Imagem não disponível" class="card-img"
+                        style="height: 250px; object-fit: cover;">
+                {% endif %}
 
                 <div class="card-img-overlay d-flex flex-column justify-content-end"
                     style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
-                    
-                    <!-- ÍCONE DE EDIÇÃO -->
                     <img src="{% static 'img/edit.png' %}" alt="Editar"
                         class="editar-btn"
                         data-id="{{ animal.id }}"
@@ -90,7 +92,8 @@
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title w-100 text-center fw-semibold" id="modalInserirAnimalLabel">Inserir Animal</h5>
       </div>
-      <form method="POST" enctype="multipart/form-data" id="formInserirAnimal">
+
+      <form id="formInserirAnimal" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="modal-body pt-3">
           <div class="container">
@@ -101,22 +104,22 @@
               </div>
               <div class="col-md-6">
                 <label for="proprietarioAnimal" class="form-label">Proprietário</label>
-                <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario" required>
+                <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario">
               </div>
               <div class="col-md-6">
-                <label for="pesoAnimal" class="form-label">Peso</label>
-                <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso" required>
+                <label for="pesoAnimal" class="form-label">Peso vivo (kg)</label>
+                <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso_vivo" required>
               </div>
               <div class="col-md-6">
                 <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
-                <input type="date" class="form-control" id="dataNascAnimal" name="data_nascimento" required>
+                <input type="date" class="form-control" id="dataNascAnimal" name="data_nasc" required>
               </div>
               <div class="col-md-6">
                 <label for="generoAnimal" class="form-label">Gênero</label>
                 <select class="form-select" id="generoAnimal" name="genero" required>
                   <option value="">Selecione...</option>
-                  <option value="Macho">Macho</option>
-                  <option value="Fêmea">Fêmea</option>
+                  <option value="M">Macho</option>
+                  <option value="F">Fêmea</option>
                 </select>
               </div>
               <div class="col-md-6">
@@ -126,6 +129,7 @@
             </div>
           </div>
         </div>
+
         <div class="modal-footer border-0 justify-content-center">
           <button type="submit" class="btn btn-success px-4" style="background-color:#274e37; border:none;">Inserir</button>
           <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal" style="background-color:#d9534f; border:none;">Cancelar</button>
@@ -169,8 +173,8 @@
                 <label for="generoAnimalEdit" class="form-label">Gênero</label>
                 <select class="form-select" id="generoAnimalEdit" name="genero" required>
                   <option value="">Selecione...</option>
-                  <option value="Macho">Macho</option>
-                  <option value="Fêmea">Fêmea</option>
+                  <option value="M">Macho</option>
+                  <option value="F">Fêmea</option>
                 </select>
               </div>
               <div class="col-md-6">
@@ -189,13 +193,12 @@
     </div>
   </div>
 </div>
-
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     const modalInserir = new bootstrap.Modal(document.getElementById('modalInserirAnimal'));
     const modalAtualizar = new bootstrap.Modal(document.getElementById('modalAtualizarAnimal'));
 
-    document.querySelector('.insert-btn').addEventListener('click', () => {
+    document.querySelector('.insert-btn').addEventListener('click', function() {
         document.getElementById('formInserirAnimal').reset();
         modalInserir.show();
     });
@@ -210,24 +213,56 @@ document.addEventListener('DOMContentLoaded', () => {
         modalAtualizar.show();
     }
 
-    document.querySelectorAll('.card-animal').forEach(card => {
-        card.addEventListener('click', () => preencherModalAtualizacao(card));
+    document.querySelectorAll('.card-animal').forEach(function(card) {
+        card.addEventListener('click', function() {
+            preencherModalAtualizacao(card);
+        });
     });
 
-    document.querySelectorAll('.editar-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.editar-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
             e.stopPropagation();
             preencherModalAtualizacao(btn);
         });
     });
 
-    document.getElementById('formInserirAnimal').addEventListener('submit', (e) => {
+    document.getElementById('formInserirAnimal').addEventListener('submit', function(e) {
         e.preventDefault();
-        modalInserir.hide();
-        Swal.fire('Sucesso!', 'Animal inserido com sucesso!', 'success');
+
+        var form = document.getElementById('formInserirAnimal');
+        var formData = new FormData(form);
+        var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch("{% url 'animais:inserir_animal' %}", {
+            method: "POST",
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(function(resp) {
+            return resp.json().then(function(data) {
+                if (resp.ok) {
+                    modalInserir.hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: data.Mensagem,
+                        confirmButtonColor: '#274e37'
+                    }).then(function() {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Erro', data.Mensagem, 'error');
+                }
+            });
+        })
+        .catch(function(err) {
+            Swal.fire('Erro', 'Erro ao enviar os dados: ' + err.message, 'error');
+        });
     });
 
-    document.getElementById('formAtualizarAnimal').addEventListener('submit', (e) => {
+    document.getElementById('formAtualizarAnimal').addEventListener('submit', function(e) {
         e.preventDefault();
         modalAtualizar.hide();
         Swal.fire('Sucesso!', 'Animal atualizado com sucesso!', 'success');
