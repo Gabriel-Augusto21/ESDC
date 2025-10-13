@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from animais.models import Animal
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 
 def animais(request):
     query = request.GET.get('query', '')
@@ -13,21 +14,28 @@ def animais(request):
 
 def inserir_animal(request):
     if request.method != "POST":
-        return js({'Mensagem': 'Método não permitido'}, status=405)
+        return JsonResponse({'Mensagem': 'Método não permitido'}, status=405)
 
     nome = request.POST.get('nome', '').strip()
-    imagem = request.FILES.get('imagem')
     proprietario = request.POST.get('proprietario', '').strip()
     peso_vivo = request.POST.get('peso_vivo')
     data_nasc = request.POST.get('data_nasc')
     genero = request.POST.get('genero')
+    imagem = request.FILES.get('imagem')
 
     if not nome:
-        return js({'Mensagem': 'Nome é obrigatório'}, status=400)
+        return JsonResponse({'Mensagem': 'O campo "nome" é obrigatório.'}, status=400)
 
-    imagem = None
+    if not peso_vivo:
+        return JsonResponse({'Mensagem': 'O campo "peso vivo" é obrigatório.'}, status=400)
 
-    Animal.objects.create(
+    if not data_nasc:
+        return JsonResponse({'Mensagem': 'A data de nascimento é obrigatória.'}, status=400)
+
+    if not genero:
+        return JsonResponse({'Mensagem': 'O gênero é obrigatório.'}, status=400)
+
+    animal = Animal.objects.create(
         nome=nome,
         imagem=imagem,
         proprietario=proprietario,
@@ -36,5 +44,16 @@ def inserir_animal(request):
         genero=genero
     )
 
-    mensagem = f'{nome} inserido com sucesso!'
-    return js({'Mensagem': mensagem}, status=200)
+    mensagem = f'{animal.nome} inserido com sucesso!'
+    return JsonResponse({'Mensagem': mensagem}, status=200)
+
+def editar_animais(request):
+    query = request.GET.get('query', '')
+    animais_lista = Animal.objects.filter(
+        nome__icontains=query
+    ).order_by('id', 'nome', 'peso_vivo')  
+    paginator = Paginator(animais_lista, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    print("Passei aqui")
+    return render(request, 'animais.html', {'page_obj': page_obj, 'query': query})
+    
