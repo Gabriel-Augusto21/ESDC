@@ -216,13 +216,13 @@ export function alerta_desativar(btn) {
         text: 'Você poderá desfazer isso mais tarde!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '##2f453a',
+        confirmButtonColor: '#2f453a',
         cancelButtonColor: '#ff0000',
         confirmButtonText: 'Sim, desativar!',
         cancelButtonText: 'Cancelar',
         customClass: {
-            confirmButton: 'botao-confirma-alerta',
             cancelButton: 'botao-cancela-alerta',
+            confirmButton: 'botao-confirma-alerta',
         },
     }).then(result => {
         if (result.isConfirmed) {

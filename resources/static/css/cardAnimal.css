@@ -1,0 +1,64 @@
+body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    .card-animal {
+      background: linear-gradient(to right, #c2bcba, #4b4a49);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .card-animal:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-animal img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+    }
+
+    .card-animal-content {
+      padding: 10px;
+    }
+
+    .card-animal h3 {
+      font-size: 1rem;
+      margin: 5px 0;
+    }
+
+    .card-animal p {
+      font-size: 0.85rem;
+      color: #555;
+      margin: 0;
+    }
+
+    .edit-icon {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 14px;
+      color: #444;
+      background: #eee;
+      border-radius: 50%;
+      padding: 4px 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .edit-icon:hover {
+      background: #ccc;
+    }

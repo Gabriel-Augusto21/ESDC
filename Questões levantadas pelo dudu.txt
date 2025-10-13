@@ -1,0 +1,3 @@
+Questões levantadas pelo dudu
+Verificar se o cliente deseja fazer uma exclusão lógica ou definitiva
+Colocar uma informação em dietas sobre o usuário criar uma dieta genérica ou específica

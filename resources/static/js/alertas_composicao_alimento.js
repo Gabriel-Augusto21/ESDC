@@ -53,60 +53,60 @@ export function alerta_inserir(btn) {
             Swal.fire('Erro', 'Não foi possível carregar alimentos e nutrientes.', 'error');
         });
 }
-// 🔔 Atualizar Nutriente
-export function alerta_update(btn) {
-    const id = btn.dataset.id;
-    Promise.all([
-        fetch('/listar_alimentos_nutrientes/').then(r => r.json()),
-        fetch(`/get_composicaoAlimento/?id=${id}`).then(r => r.json())
-    ])
-    .then(([listas, composicao]) => {
-        const alimentosOptions = listas.alimentos.map(alimento =>
-            `<option value="${alimento.id}" ${composicao.alimento === alimento.nome ? 'selected' : ''}>${alimento.nome}</option>`
-        ).join('');
+// // 🔔 Atualizar Nutriente
+// export function alerta_update(btn) {
+//     const id = btn.dataset.id;
+//     Promise.all([
+//         fetch('/listar_alimentos_nutrientes/').then(r => r.json()),
+//         fetch(`/get_composicaoAlimento/?id=${id}`).then(r => r.json())
+//     ])
+//     .then(([listas, composicao]) => {
+//         const alimentosOptions = listas.alimentos.map(alimento =>
+//             `<option value="${alimento.id}" ${composicao.alimento === alimento.nome ? 'selected' : ''}>${alimento.nome}</option>`
+//         ).join('');
 
-        const nutrientesOptions = listas.nutrientes.map(nutriente =>
-            `<option value="${nutriente.id}" ${composicao.nutriente === nutriente.nome ? 'selected' : ''}>${nutriente.nome}</option>`
-        ).join('');
+//         const nutrientesOptions = listas.nutrientes.map(nutriente =>
+//             `<option value="${nutriente.id}" ${composicao.nutriente === nutriente.nome ? 'selected' : ''}>${nutriente.nome}</option>`
+//         ).join('');
 
-        Swal.fire({
-            title: 'Atualizar Composição de Alimento',
-            html: `
-                <select id="swal-alimento" class="swal2-select">${alimentosOptions}</select>
-                <select id="swal-nutriente" class="swal2-select">${nutrientesOptions}</select>
-                <input id="swal-valor" class="swal2-input" placeholder="Valor" value="${composicao.valor || ''}">
-            `,
-            confirmButtonText: 'Atualizar',
-            showCancelButton: true,
-            focusConfirm: false,
-            preConfirm: () => {
-                const alimentoId = document.getElementById('swal-alimento').value;
-                const nutrienteId = document.getElementById('swal-nutriente').value;
-                const valor = document.getElementById('swal-valor').value.trim();
-                if (!valor) {
-                    Swal.showValidationMessage('Informe o valor');
-                    return false;
-                }
-                return { alimentoId, nutrienteId, valor };
-            }
-        }).then(result => {
-            if (result.isConfirmed) {
-                const { alimentoId, nutrienteId, valor } = result.value;
-                const url = `/atualizar_composicaoAlimento/?id=${id}` +
-                    `&alimento_id=${encodeURIComponent(alimentoId)}` +
-                    `&nutriente_id=${encodeURIComponent(nutrienteId)}` +
-                    `&valor=${encodeURIComponent(valor)}`;
-                htmx.ajax('GET', url, { 
-                    swap: 'none'
-                });
-            }
-        });
-    })
-    .catch(error => {
-        console.error('Erro ao carregar dados:', error);
-        Swal.fire('Erro', 'Não foi possível carregar os dados para edição.', 'error');
-    });
-}
+//         Swal.fire({
+//             title: 'Atualizar Composição de Alimento',
+//             html: `
+//                 <select id="swal-alimento" class="swal2-select">${alimentosOptions}</select>
+//                 <select id="swal-nutriente" class="swal2-select">${nutrientesOptions}</select>
+//                 <input id="swal-valor" class="swal2-input" placeholder="Valor" value="${composicao.valor || ''}">
+//             `,
+//             confirmButtonText: 'Atualizar',
+//             showCancelButton: true,
+//             focusConfirm: false,
+//             preConfirm: () => {
+//                 const alimentoId = document.getElementById('swal-alimento').value;
+//                 const nutrienteId = document.getElementById('swal-nutriente').value;
+//                 const valor = document.getElementById('swal-valor').value.trim();
+//                 if (!valor) {
+//                     Swal.showValidationMessage('Informe o valor');
+//                     return false;
+//                 }
+//                 return { alimentoId, nutrienteId, valor };
+//             }
+//         }).then(result => {
+//             if (result.isConfirmed) {
+//                 const { alimentoId, nutrienteId, valor } = result.value;
+//                 const url = `/atualizar_composicaoAlimento/?id=${id}` +
+//                     `&alimento_id=${encodeURIComponent(alimentoId)}` +
+//                     `&nutriente_id=${encodeURIComponent(nutrienteId)}` +
+//                     `&valor=${encodeURIComponent(valor)}`;
+//                 htmx.ajax('GET', url, { 
+//                     swap: 'none'
+//                 });
+//             }
+//         });
+//     })
+//     .catch(error => {
+//         console.error('Erro ao carregar dados:', error);
+//         Swal.fire('Erro', 'Não foi possível carregar os dados para edição.', 'error');
+//     });
+// }
 // 🔒 Ativar Nutriente
 export function alerta_ativar(btn) {
     const url = btn.dataset.url;
