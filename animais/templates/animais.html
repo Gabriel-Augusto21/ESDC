@@ -77,7 +77,6 @@
 </div>
 
 <!-- Modal de Inserção de Animal -->
-<!-- Modal de Inserção de Animal -->
 <div class="modal fade" id="modalInserirAnimal" tabindex="-1" aria-labelledby="modalInserirAnimalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content" style="border-radius: 15px;">
@@ -88,42 +87,48 @@
       <form method="POST" enctype="multipart/form-data" id="formInserirAnimal">
         {% csrf_token %}
         <div class="modal-body pt-3">
-          <div class="container">
-            <div class="row g-3">
-              <div class="col-md-6">
+          <div class="container my-3" style="text-align: start;">
+            
+            <!-- Linha 1 -->
+            <div class="row mb-3">
+              <div class="col">
                 <label for="nomeAnimal" class="form-label">Nome do animal</label>
                 <input type="text" class="form-control" id="nomeAnimal" name="nome" required>
               </div>
-
-              <div class="col-md-6">
+              <div class="col">
                 <label for="proprietarioAnimal" class="form-label">Proprietário</label>
                 <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario" required>
               </div>
+            </div>
 
-              <div class="col-md-6">
-                <label for="pesoAnimal" class="form-label">Peso</label>
+            <!-- Linha 2 -->
+            <div class="row mb-3">
+              <div class="col">
+                <label for="pesoAnimal" class="form-label">Peso (kg)</label>
                 <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso" required>
               </div>
-
-              <div class="col-md-6">
+              <div class="col">
                 <label for="imagemAnimal" class="form-label">Foto do animal</label>
                 <input type="file" class="form-control" id="imagemAnimal" name="imagem" accept="image/*">
               </div>
+            </div>
 
-              <div class="col-md-6">
+            <!-- Linha 3 -->
+            <div class="row mb-3">
+              <div class="col">
                 <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
                 <input type="date" class="form-control" id="dataNascAnimal" name="data_nascimento" required>
               </div>
-
-              <div class="col-md-6">
+              <div class="col">
                 <label for="generoAnimal" class="form-label">Gênero</label>
-                <select class="form-select" id="generoAnimal" name="genero" required>
+                <select class="form-control" id="generoAnimal" name="genero" required>
                   <option value="">Selecione...</option>
                   <option value="Macho">Macho</option>
                   <option value="Fêmea">Fêmea</option>
                 </select>
               </div>
             </div>
+
           </div>
         </div>
 
@@ -135,6 +140,7 @@
     </div>
   </div>
 </div>
+
 
 
 <!-- Script para abrir o modal -->
