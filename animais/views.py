@@ -47,7 +47,6 @@ def inserir_animal(request):
 
     return JsonResponse({'Mensagem': f'{animal.nome} inserido com sucesso!'}, status=200)
 
-
 def editar_animais(request):
     query = request.GET.get('query', '')
     animais_lista = Animal.objects.filter(
