@@ -2,6 +2,7 @@ from django.shortcuts import render
 from animais.models import Animal
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from datetime import date
 
 def animais(request):
     query = request.GET.get('query', '')
@@ -14,30 +15,45 @@ def animais(request):
 
 def inserir_animal(request):
     if request.method != "POST":
-        return JsonResponse({'Mensagem': 'Método não permitido'}, status=405)
+        return JsonResponse({'Mensagem': 'Método não permitido.'}, status=405)
 
     nome = request.POST.get('nome', '').strip()
     proprietario = request.POST.get('proprietario', '').strip()
-    peso_vivo = request.POST.get('peso_vivo')
-    data_nasc = request.POST.get('data_nasc')
-    genero = request.POST.get('genero')
+    peso_vivo = request.POST.get('peso_vivo', '').strip()
+    data_nasc = request.POST.get('data_nasc', '').strip()
+    genero = request.POST.get('genero', '').strip()
     imagem = request.FILES.get('imagem')
-    
+
     if not nome:
-        return JsonResponse({'Mensagem': 'O campo "nome" é obrigatório.'}, status=400)
-    if not peso_vivo:
-        return JsonResponse({'Mensagem': 'O campo "peso vivo" é obrigatório.'}, status=400)
-    if not data_nasc:
-        return JsonResponse({'Mensagem': 'A data de nascimento é obrigatória.'}, status=400)
-    if not genero:
-        return JsonResponse({'Mensagem': 'O gênero é obrigatório.'}, status=400)
+        return JsonResponse({'Mensagem': 'O campo "Nome" é obrigatório.'}, status=400)
+    if len(nome) < 3:
+        return JsonResponse({'Mensagem': 'O nome do animal deve ter pelo menos 3 caracteres.'}, status=400)
+
+    try:
+        peso_vivo = float(peso_vivo)
+        if peso_vivo <= 0:
+            return JsonResponse({'Mensagem': 'O peso deve ser maior que zero.'}, status=400)
+        if peso_vivo > 2000:
+            return JsonResponse({'Mensagem': 'Peso muito alto para um cavalo. Verifique o valor informado.'}, status=400)
+    except ValueError:
+        return JsonResponse({'Mensagem': 'O campo "Peso vivo" deve ser um número válido.'}, status=400)
+
+    try:
+        data_nasc = date.fromisoformat(data_nasc)
+        if data_nasc > date.today():
+            return JsonResponse({'Mensagem': 'A data de nascimento não pode ser futura.'}, status=400)
+    except ValueError:
+        return JsonResponse({'Mensagem': 'Data de nascimento inválida.'}, status=400)
+
+    if proprietario and len(proprietario) < 3:
+        return JsonResponse({'Mensagem': 'O nome do proprietário deve ter pelo menos 3 caracteres.'}, status=400)
 
     animal_data = {
         'nome': nome,
         'proprietario': proprietario,
         'peso_vivo': peso_vivo,
         'data_nasc': data_nasc,
-        'genero': genero
+        'genero': genero,
     }
 
     if imagem:
