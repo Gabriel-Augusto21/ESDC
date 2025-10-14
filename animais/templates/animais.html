@@ -203,6 +203,10 @@ document.addEventListener('DOMContentLoaded', function() {
         modalInserir.show();
     });
 
+    document.querySelector('#modalInserirAnimal .btn-danger').addEventListener('click', function() {
+        modalInserir.hide();
+    });
+
     function preencherModalAtualizacao(elem) {
         document.getElementById('idAnimal').value = elem.dataset.id;
         document.getElementById('nomeAnimalEdit').value = elem.dataset.nome;
