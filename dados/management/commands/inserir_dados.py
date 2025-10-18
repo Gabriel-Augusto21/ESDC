@@ -93,11 +93,30 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"{contador_classificacao} categorias adicionadas com sucesso!"))
         self.stdout.write(self.style.SUCCESS(f"{i} alimentos adicionados com sucesso!"))
         self.stdout.write(self.style.SUCCESS(f"{a} linhas de composição alimentar adicionadas com sucesso!"))
-        cont_animais = 0
+        
         fake = Faker('pt_BR')
-        for i in range(20):
+        cont_animais = 0
+        nomes_cavalos = [
+            "Trovão", "Ventania", "Relâmpago", "Estrela", "Fumaça", "Pé de Pano",
+            "Valente", "Tempestade", "Esperança", "Soberano", "Dourado", "Espírito",
+            "Falcão", "Príncipe", "Diamante", "Lua Cheia", "Corcel", "Viajante"
+        ]
+        nomes_imagem = [
+            'default1.png', 'default2.png', 'default3.png',
+            'default4.png', 'default5.png', 'default6.png', 'default7.png'
+        ]
+
+        nomes_unicos = random.sample(nomes_cavalos, len(nomes_cavalos))
+
+        for nome in nomes_unicos:
             cont_animais += 1
-            Animal.objects.create(nome=fake.name(), imagem=fake.random_element(elements=('default.jpg', 'default1.png', 'default2.png', 'default3.png', 'default4.png', 'default5.png', 'default6.png', 'default7.png')), proprietario=fake.name(), 
-                    peso_vivo=random.randint(100, 700), data_nasc=fake.date(), genero=fake.random_element(elements=('M', 'F')))
-            
+            Animal.objects.create(
+                nome=nome,
+                imagem=random.choice(nomes_imagem),
+                proprietario=fake.name(),
+                peso_vivo=random.randint(100, 700),
+                data_nasc=fake.date_between(start_date='-10y', end_date='today'),
+                genero=random.choice(['M', 'F'])
+            )
+
         self.stdout.write(self.style.SUCCESS(f"{cont_animais} animais adicionados com sucesso!"))
