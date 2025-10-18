@@ -96,11 +96,34 @@ class Command(BaseCommand):
         
         fake = Faker('pt_BR')
         cont_animais = 0
+        # nomes_cavalos = [
+        #     "Trovão", "Ventania", "Relâmpago", "Estrela", "Fumaça", "Pé de Pano",
+        #     "Valente", "Tempestade", "Esperança", "Soberano", "Dourado", "Espírito",
+        #     "Falcão", "Príncipe", "Diamante", "Lua Cheia", "Corcel", "Viajante"
+        # ]
         nomes_cavalos = [
-            "Trovão", "Ventania", "Relâmpago", "Estrela", "Fumaça", "Pé de Pano",
-            "Valente", "Tempestade", "Esperança", "Soberano", "Dourado", "Espírito",
-            "Falcão", "Príncipe", "Diamante", "Lua Cheia", "Corcel", "Viajante"
+            "Orgulho do Cantagallo",
+            "Selvagem de Mairi",
+            "Luar do Malboro",
+            "Mafioso Marrecas do Cavaleiro",
+            "Noturno da Diesel",
+            "Galante do Expoente",
+            "Dominador da Santa Esmeralda",
+            "Tigre das Minas Gerais",
+            "Ouro Fino da Morada Nova",
+            "Emblema da Figueira",
+            "Maroto da Mandassaia",
+            "Hércules do Rancho Fundo",
+            "Furacão da Santa Esmeralda",
+            "Astuto da Morada Nova",
+            "Supremo da Pedra Verde",
+            "Guardião da Figueira",
+            "Espartano do Itapoã",
+            "Zeus do Barulho",
+            "Fenômeno das Gerais",
+            "Relâmpago da Gameleira"
         ]
+
         nomes_imagem = [
             'default1.png', 'default2.png', 'default3.png',
             'default4.png', 'default5.png', 'default6.png', 'default7.png'
@@ -113,7 +136,7 @@ class Command(BaseCommand):
             Animal.objects.create(
                 nome=nome,
                 imagem=random.choice(nomes_imagem),
-                proprietario=fake.name(),
+                proprietario=f"{fake.first_name()} {fake.last_name()}",
                 peso_vivo=random.randint(100, 700),
                 data_nasc=fake.date_between(start_date='-10y', end_date='today'),
                 genero=random.choice(['M', 'F'])
