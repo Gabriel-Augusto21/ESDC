@@ -60,8 +60,9 @@ class Command(BaseCommand):
             usecols="J:AP",
             engine="openpyxl"
         )
+        # Quantidade de linhas de composição
+        a = 0
         # Percorrendo o dataframe 
-        a=0
         for i, nome in enumerate(dados_excel2.iloc[:,0].dropna()):
             classificacao = str(dados_excel2.iloc[i,1]).strip()
             ms = tratar_decimal(dados_excel2.iloc[i,2])
@@ -96,12 +97,8 @@ class Command(BaseCommand):
         
         fake = Faker('pt_BR')
         cont_animais = 0
-        # nomes_cavalos = [
-        #     "Trovão", "Ventania", "Relâmpago", "Estrela", "Fumaça", "Pé de Pano",
-        #     "Valente", "Tempestade", "Esperança", "Soberano", "Dourado", "Espírito",
-        #     "Falcão", "Príncipe", "Diamante", "Lua Cheia", "Corcel", "Viajante"
-        # ]
-        nomes_cavalos = [
+        
+        nomes_cavalos_machos = [
             "Orgulho do Cantagallo",
             "Selvagem de Mairi",
             "Luar do Malboro",
@@ -111,17 +108,20 @@ class Command(BaseCommand):
             "Dominador da Santa Esmeralda",
             "Tigre das Minas Gerais",
             "Ouro Fino da Morada Nova",
+            "Maroto da Mandassaia"
+        ]
+
+        nomes_cavalos_femeas = [
             "Emblema da Figueira",
-            "Maroto da Mandassaia",
-            "Hércules do Rancho Fundo",
-            "Furacão da Santa Esmeralda",
-            "Astuto da Morada Nova",
-            "Supremo da Pedra Verde",
             "Guardião da Figueira",
-            "Espartano do Itapoã",
-            "Zeus do Barulho",
-            "Fenômeno das Gerais",
-            "Relâmpago da Gameleira"
+            "Estrela do Cantagallo",
+            "Lua da Morada Nova",
+            "Aurora do Expoente",
+            "Flor da Gameleira",
+            "Esperança da Pedra Verde",
+            "Diamante da Santa Esmeralda",
+            "Sereia da Mandassaia",
+            "Fumaça da Serra"
         ]
 
         nomes_imagem = [
@@ -129,9 +129,8 @@ class Command(BaseCommand):
             'default4.png', 'default5.png', 'default6.png', 'default7.png'
         ]
 
-        nomes_unicos = random.sample(nomes_cavalos, len(nomes_cavalos))
-
-        for nome in nomes_unicos:
+        # Cria animais machos
+        for nome in nomes_cavalos_machos:
             cont_animais += 1
             Animal.objects.create(
                 nome=nome,
@@ -139,7 +138,19 @@ class Command(BaseCommand):
                 proprietario=f"{fake.first_name()} {fake.last_name()}",
                 peso_vivo=random.randint(100, 700),
                 data_nasc=fake.date_between(start_date='-10y', end_date='today'),
-                genero=random.choice(['M', 'F'])
+                genero='M'
+            )
+
+        # Cria animais fêmeas
+        for nome in nomes_cavalos_femeas:
+            cont_animais += 1
+            Animal.objects.create(
+                nome=nome,
+                imagem=random.choice(nomes_imagem),
+                proprietario=f"{fake.first_name()} {fake.last_name()}",
+                peso_vivo=random.randint(100, 700),
+                data_nasc=fake.date_between(start_date='-10y', end_date='today'),
+                genero='F'
             )
 
         self.stdout.write(self.style.SUCCESS(f"{cont_animais} animais adicionados com sucesso!"))
