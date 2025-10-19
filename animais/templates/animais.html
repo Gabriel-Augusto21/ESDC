@@ -1,7 +1,23 @@
 {% extends 'master.html' %}
 {% load static %}
 {% block conteudo %}
-
+<style>
+    .desativar-btn,
+    .ativar-btn {
+        position: absolute;
+        bottom: 8px;
+        right: 35px;
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        filter: brightness(0) invert(1);
+        opacity: 0.8;
+        transition: opacity 0.2s;
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+</style>
 <div class="container mt-3">
     <h1>Animais</h1>
 
@@ -31,247 +47,260 @@
     </div>
 
     <div class="row">
-        {% for animal in page_obj %}
-        <div class="col-6 col-md-4 col-lg-3 mb-4">
-            <div class="card position-relative h-100 shadow-sm card-animal"
-                data-id="{{ animal.id }}"
-                data-nome="{{ animal.nome }}"
-                data-proprietario="{{ animal.proprietario }}"
-                data-idade="{{ animal.data_nasc }}"
-                data-genero="{{ animal.genero }}"
-                data-peso="{{ animal.peso_vivo }}"
-                style="border-radius: 15px; overflow: hidden; cursor:pointer;">
-
-                {% if animal.imagem %}
-                    <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img"
-                        style="height: 250px; object-fit: cover;">
-                {% else %}
-                    <img src="{% static 'img/default-animal.png' %}" alt="Imagem não disponível" class="card-img"
-                        style="height: 250px; object-fit: cover;">
-                {% endif %}
-
-                <div class="card-img-overlay d-flex flex-column justify-content-end"
-                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
-                    <img src="{% static 'img/edit.png' %}" alt="Editar"
-                        class="editar-btn"
-                        data-id="{{ animal.id }}"
-                        data-nome="{{ animal.nome }}"
-                        data-proprietario="{{ animal.proprietario }}"
-                        data-idade="{{ animal.data_nasc }}"
-                        data-genero="{{ animal.genero }}"
-                        data-peso="{{ animal.peso_vivo }}"
-                        style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
-                    
-                    <div style="text-align: left;">
-                        <h5 class="mb-1" style="font-size: 2.00rem; font-weight: 400;">{{ animal.nome }}</h5>
-                        <p class="mb-0 text-white-50" style="font-size: 1.75rem;">{{ animal.proprietario }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <p class="text-center">Nenhum animal encontrado.</p>
-        {% endfor %}
         <!-- Contador de registros -->
         <legend class="text-center small">
             {% if page_obj.paginator.count == 0 %}
             {% elif page_obj.paginator.count == 1 %}
             1 registro encontrado
             {% else %}
-            {{ page_obj.paginator.count }} registros encontrados
+            {{ page_obj.paginator.count }} animais registrados
             {% endif %}
         </legend>
+        {% for animal in page_obj %}
+        <div class="col-6 col-md-4 col-lg-3 my-4">
+            <div class="card position-relative h-100 shadow-sm card-animal" data-id="{{ animal.id }}"
+                data-nome="{{ animal.nome }}" data-proprietario="{{ animal.proprietario }}"
+                data-idade="{{ animal.data_nasc }}" data-genero="{{ animal.genero }}" data-peso="{{ animal.peso_vivo }}"
+                style="border-radius: 15px; overflow: hidden; cursor:pointer;">
+
+                {% if animal.imagem %}
+                <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img"
+                    style="height: 300px; object-fit: cover;">
+                {% else %}
+                <img src="{% static 'img/default-animal.png' %}" alt="Imagem não disponível" class="card-img"
+                    style="height: 250px; object-fit: cover;">
+                {% endif %}
+
+                <div class="card-img-overlay d-flex flex-column justify-content-end"
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
+                    <div style="text-align: left; margin-bottom: 14px;">
+                        <h5 class="mb-1" style="font-size: 2.00rem; font-weight: 400;">{{ animal.nome }}</h5>
+                        <p class="mb-0 text-white-50" style="font-size: 1.75rem;">{{ animal.proprietario }}</p>
+                    </div>
+                    {% if animal.is_active %}
+                    <img class="desativar-btn" src="{% static 'img/visibility.png' %}" width="20">
+                    {% else %}
+                    <img class="ativar-btn" src="{% static 'img/not_visibility.png' %}" width="25">
+                    {% endif %}
+                    <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn" data-id="{{ animal.id }}"
+                        data-nome="{{ animal.nome }}" data-proprietario="{{ animal.proprietario }}"
+                        data-idade="{{ animal.data_nasc }}" data-genero="{{ animal.genero }}"
+                        data-peso="{{ animal.peso_vivo }}"
+                        style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
+                    
+                    
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Nenhum animal encontrado.</p>
+        {% endfor %}
         {% include "paginador.html" %}
     </div>
 </div>
 
 <!-- MODAL DE INSERÇÃO -->
-<div class="modal fade" id="modalInserirAnimal" tabindex="-1" aria-labelledby="modalInserirAnimalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="border-radius: 15px;">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title w-100 text-center fw-semibold" id="modalInserirAnimalLabel">Inserir Animal</h5>
-      </div>
-
-      <form id="formInserirAnimal" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="modal-body pt-3">
-          <div class="container">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="nomeAnimal" class="form-label">Nome do animal</label>
-                <input type="text" class="form-control" id="nomeAnimal" name="nome" required>
-              </div>
-              <div class="col-md-6">
-                <label for="proprietarioAnimal" class="form-label">Proprietário</label>
-                <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario">
-              </div>
-              <div class="col-md-6">
-                <label for="pesoAnimal" class="form-label">Peso vivo (kg)</label>
-                <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso_vivo" required>
-              </div>
-              <div class="col-md-6">
-                <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
-                <input type="date" class="form-control" id="dataNascAnimal" name="data_nasc" required>
-              </div>
-              <div class="col-md-6">
-                <label for="generoAnimal" class="form-label">Gênero</label>
-                <select class="form-select" id="generoAnimal" name="genero" required>
-                  <option value="">Selecione...</option>
-                  <option value="M">Macho</option>
-                  <option value="F">Fêmea</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="imagemAnimal" class="form-label">Foto do animal</label>
-                <input type="file" class="form-control" id="imagemAnimal" name="imagem" accept="image/*">
-              </div>
+<div class="modal fade" id="modalInserirAnimal" tabindex="-1" aria-labelledby="modalInserirAnimalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title w-100 text-center fw-semibold" id="modalInserirAnimalLabel">Inserir Animal</h5>
             </div>
-          </div>
-        </div>
 
-        <div class="modal-footer border-0 justify-content-center">
-          <button type="submit" class="btn btn-success px-4" style="background-color:#274e37; border:none;">Inserir</button>
-          <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal" style="background-color:#d9534f; border:none;">Cancelar</button>
+            <form id="formInserirAnimal" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body pt-3">
+                    <div class="container">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nomeAnimal" class="form-label">Nome do animal</label>
+                                <input type="text" class="form-control" id="nomeAnimal" name="nome" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proprietarioAnimal" class="form-label">Proprietário</label>
+                                <input type="text" class="form-control" id="proprietarioAnimal" name="proprietario">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pesoAnimal" class="form-label">Peso vivo (kg)</label>
+                                <input type="number" step="0.01" class="form-control" id="pesoAnimal" name="peso_vivo"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
+                                <input type="date" class="form-control" id="dataNascAnimal" name="data_nasc" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="generoAnimal" class="form-label">Gênero</label>
+                                <select class="form-select" id="generoAnimal" name="genero" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="M">Macho</option>
+                                    <option value="F">Fêmea</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="imagemAnimal" class="form-label">Foto do animal</label>
+                                <input type="file" class="form-control" id="imagemAnimal" name="imagem"
+                                    accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="submit" class="btn btn-success px-4"
+                        style="background-color:#274e37; border:none;">Inserir</button>
+                    <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal"
+                        style="background-color:#d9534f; border:none;">Cancelar</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <!-- MODAL DE ATUALIZAÇÃO -->
-<div class="modal fade" id="modalAtualizarAnimal" tabindex="-1" aria-labelledby="modalAtualizarAnimalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" style="border-radius: 15px;">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title w-100 text-center fw-semibold" id="modalAtualizarAnimalLabel">Atualizar Animal</h5>
-      </div>
-
-      <form method="POST" enctype="multipart/form-data" id="formAtualizarAnimal">
-        {% csrf_token %}
-        <div class="modal-body pt-3">
-          <input type="hidden" id="idAnimal" name="id">
-          <div class="container">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="nomeAnimalEdit" class="form-label">Nome do animal</label>
-                <input type="text" class="form-control" id="nomeAnimalEdit" name="nome" required>
-              </div>
-              <div class="col-md-6">
-                <label for="proprietarioAnimalEdit" class="form-label">Proprietário</label>
-                <input type="text" class="form-control" id="proprietarioAnimalEdit" name="proprietario" required>
-              </div>
-              <div class="col-md-6">
-                <label for="pesoAnimalEdit" class="form-label">Peso</label>
-                <input type="number" step="0.01" class="form-control" id="pesoAnimalEdit" name="peso" required>
-              </div>
-              <div class="col-md-6">
-                <label for="dataNascAnimalEdit" class="form-label">Data de nascimento</label>
-                <input type="date" class="form-control" id="dataNascAnimalEdit" name="data_nascimento" required>
-              </div>
-              <div class="col-md-6">
-                <label for="generoAnimalEdit" class="form-label">Gênero</label>
-                <select class="form-select" id="generoAnimalEdit" name="genero" required>
-                  <option value="">Selecione...</option>
-                  <option value="M">Macho</option>
-                  <option value="F">Fêmea</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="imagemAnimalEdit" class="form-label">Foto do animal</label>
-                <input type="file" class="form-control" id="imagemAnimalEdit" name="imagem" accept="image/*">
-              </div>
+<div class="modal fade" id="modalAtualizarAnimal" tabindex="-1" aria-labelledby="modalAtualizarAnimalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title w-100 text-center fw-semibold" id="modalAtualizarAnimalLabel">Atualizar Animal
+                </h5>
             </div>
-          </div>
-        </div>
 
-        <div class="modal-footer border-0 justify-content-center">
-          <button type="submit" class="btn btn-success px-4" style="background-color:#274e37; border:none;">Atualizar</button>
-          <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal" style="background-color:#d9534f; border:none;">Cancelar</button>
+            <form method="POST" enctype="multipart/form-data" id="formAtualizarAnimal">
+                {% csrf_token %}
+                <div class="modal-body pt-3">
+                    <input type="hidden" id="idAnimal" name="id">
+                    <div class="container">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="nomeAnimalEdit" class="form-label">Nome do animal</label>
+                                <input type="text" class="form-control" id="nomeAnimalEdit" name="nome" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="proprietarioAnimalEdit" class="form-label">Proprietário</label>
+                                <input type="text" class="form-control" id="proprietarioAnimalEdit" name="proprietario"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="pesoAnimalEdit" class="form-label">Peso</label>
+                                <input type="number" step="0.01" class="form-control" id="pesoAnimalEdit" name="peso"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataNascAnimalEdit" class="form-label">Data de nascimento</label>
+                                <input type="date" class="form-control" id="dataNascAnimalEdit" name="data_nascimento"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="generoAnimalEdit" class="form-label">Gênero</label>
+                                <select class="form-select" id="generoAnimalEdit" name="genero" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="M">Macho</option>
+                                    <option value="F">Fêmea</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="imagemAnimalEdit" class="form-label">Foto do animal</label>
+                                <input type="file" class="form-control" id="imagemAnimalEdit" name="imagem"
+                                    accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="submit" class="btn btn-success px-4"
+                        style="background-color:#274e37; border:none;">Atualizar</button>
+                    <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal"
+                        style="background-color:#d9534f; border:none;">Cancelar</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-  </div>
 </div>
+
+<script type="module" src="{% static 'js/atualizar_animais.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const modalInserir = new bootstrap.Modal(document.getElementById('modalInserirAnimal'));
-    const modalAtualizar = new bootstrap.Modal(document.getElementById('modalAtualizarAnimal'));
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalInserir = new bootstrap.Modal(document.getElementById('modalInserirAnimal'));
+        // const modalAtualizar = new bootstrap.Modal(document.getElementById('modalAtualizarAnimal'));
 
-    document.querySelector('.insert-btn').addEventListener('click', function() {
-        document.getElementById('formInserirAnimal').reset();
-        modalInserir.show();
-    });
-
-    document.querySelector('#modalInserirAnimal .btn-danger').addEventListener('click', function() {
-        modalInserir.hide();
-    });
-
-    function preencherModalAtualizacao(elem) {
-        document.getElementById('idAnimal').value = elem.dataset.id;
-        document.getElementById('nomeAnimalEdit').value = elem.dataset.nome;
-        document.getElementById('proprietarioAnimalEdit').value = elem.dataset.proprietario;
-        document.getElementById('pesoAnimalEdit').value = elem.dataset.peso;
-        document.getElementById('dataNascAnimalEdit').value = elem.dataset.idade;
-        document.getElementById('generoAnimalEdit').value = elem.dataset.genero;
-        modalAtualizar.show();
-    }
-
-    document.querySelectorAll('.card-animal').forEach(function(card) {
-        card.addEventListener('click', function() {
-            preencherModalAtualizacao(card);
+        document.querySelector('.insert-btn').addEventListener('click', function () {
+            document.getElementById('formInserirAnimal').reset();
+            modalInserir.show();
         });
-    });
 
-    document.querySelectorAll('.editar-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            preencherModalAtualizacao(btn);
+        document.querySelector('#modalInserirAnimal .btn-danger').addEventListener('click', function () {
+            modalInserir.hide();
         });
-    });
 
-    document.getElementById('formInserirAnimal').addEventListener('submit', function(e) {
-        e.preventDefault();
+        function preencherModalAtualizacao(elem) {
+            document.getElementById('idAnimal').value = elem.dataset.id;
+            document.getElementById('nomeAnimalEdit').value = elem.dataset.nome;
+            document.getElementById('proprietarioAnimalEdit').value = elem.dataset.proprietario;
+            document.getElementById('pesoAnimalEdit').value = elem.dataset.peso;
+            document.getElementById('dataNascAnimalEdit').value = elem.dataset.idade;
+            document.getElementById('generoAnimalEdit').value = elem.dataset.genero;
+            modalAtualizar.show();
+        }
 
-        var form = document.getElementById('formInserirAnimal');
-        var formData = new FormData(form);
-        var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        // document.querySelectorAll('.card-animal').forEach(function (card) {
+        //     card.addEventListener('click', function () {
+        //         preencherModalAtualizacao(card);
+        //     });
+        // });
 
-        fetch("{% url 'animais:inserir_animal' %}", {
-            method: "POST",
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            body: formData
-        })
-        .then(function(resp) {
-            return resp.json().then(function(data) {
-                if (resp.ok) {
-                    modalInserir.hide();
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Sucesso!',
-                        text: data.Mensagem,
-                        confirmButtonColor: '#274e37'
-                    }).then(function() {
-                        location.reload();
+        // document.querySelectorAll('.editar-btn').forEach(function (btn) {
+        //     btn.addEventListener('click', function (e) {
+        //         e.stopPropagation();
+        //         preencherModalAtualizacao(btn);
+        //     });
+        // });
+
+        document.getElementById('formInserirAnimal').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            var form = document.getElementById('formInserirAnimal');
+            var formData = new FormData(form);
+            var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch("{% url 'animais:inserir_animal' %}", {
+                method: "POST",
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            })
+                .then(function (resp) {
+                    return resp.json().then(function (data) {
+                        if (resp.ok) {
+                            modalInserir.hide();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sucesso!',
+                                text: data.Mensagem,
+                                confirmButtonColor: '#274e37'
+                            }).then(function () {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire('Erro', data.Mensagem, 'error');
+                        }
                     });
-                } else {
-                    Swal.fire('Erro', data.Mensagem, 'error');
-                }
-            });
-        })
-        .catch(function(err) {
-            Swal.fire('Erro', 'Erro ao enviar os dados: ' + err.message, 'error');
+                })
+                .catch(function (err) {
+                    Swal.fire('Erro', 'Erro ao enviar os dados: ' + err.message, 'error');
+                });
+        });
+
+        document.getElementById('formAtualizarAnimal').addEventListener('submit', function (e) {
+            e.preventDefault();
+            modalAtualizar.hide();
+            Swal.fire('Sucesso!', 'Animal atualizado com sucesso!', 'success');
         });
     });
-
-    document.getElementById('formAtualizarAnimal').addEventListener('submit', function(e) {
-        e.preventDefault();
-        modalAtualizar.hide();
-        Swal.fire('Sucesso!', 'Animal atualizado com sucesso!', 'success');
-    });
-});
 </script>
 
 {% endblock %}

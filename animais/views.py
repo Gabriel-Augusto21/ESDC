@@ -72,4 +72,17 @@ def editar_animais(request):
     page_obj = paginator.get_page(request.GET.get('page'))
     print("Passei aqui")
     return render(request, 'animais.html', {'page_obj': page_obj, 'query': query})
+
+def desativar_animal(request):
+    id = request.GET.get('id')
+    animal = Animal.objects.get(id=id)
+    animal.is_active = False
+    animal.save()
+    return JsonResponse({'Mensagem': f'{animal.nome} foi desativado'}, status=200)
     
+def ativar_animal(request):
+    id = request.GET.get('id')
+    animal = Animal.objects.get(id=id)
+    animal.is_active = True
+    animal.save()
+    return JsonResponse({'Mensagem': f'{animal.nome} foi ativado'}, status=200)
