@@ -47,15 +47,6 @@
     </div>
 
     <div class="row">
-        <!-- Contador de registros -->
-        <legend class="text-center small">
-            {% if page_obj.paginator.count == 0 %}
-            {% elif page_obj.paginator.count == 1 %}
-            1 registro encontrado
-            {% else %}
-            {{ page_obj.paginator.count }} animais registrados
-            {% endif %}
-        </legend>
         {% for animal in page_obj %}
         <div class="col-6 col-md-4 col-lg-3 my-4">
             <div class="card position-relative h-100 shadow-sm card-animal" data-id="{{ animal.id }}"
@@ -95,7 +86,19 @@
         {% empty %}
         <p class="text-center">Nenhum animal encontrado.</p>
         {% endfor %}
-        {% include "paginador.html" %}
+        <!-- Contador de registros -->
+        <legend class="text-center small">
+            {% if page_obj.paginator.count == 0 %}
+            {% elif page_obj.paginator.count == 1 %}
+            1 registro encontrado
+            {% else %}
+            {{ page_obj.paginator.count }} animais registrados
+            {% endif %}
+        </legend>
+        <div class="container text-center">
+
+            {% include "paginador.html" %}
+        </div>
     </div>
 </div>
 
