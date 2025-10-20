@@ -9,12 +9,12 @@ Id da Exigência:
 
 <h3>Alimentos que compoem a dieta</h3>
 {% for i in alimentos_nutrientes %}
-{{i.alimento}}<br>
-{% for j in i.nutrientes%}
-{{j.nutriente}} - {{j.valor}} |
-{% endfor %}
-<br>
-<br>
+    {{i.alimento}}<br>
+    {% for j in i.nutrientes%}
+        {{j.nutriente}} - {{j.valor}} |
+    {% endfor %}
+    <br>
+    <br>
 {% endfor %}
 <hr>
 
@@ -34,5 +34,5 @@ Id da Exigência:
 <h4>Representa a soma de cada nutriente apos o calculo de quantidade</h4>
 <br>
 {% for i in lista_totais %}
-{{i}} | 
+    {{i}} | 
 {% endfor %}
