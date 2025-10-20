@@ -6,7 +6,7 @@ def dietas(request):
     lista_dieta = Dieta.objects.get(pk=1)
     comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
 
-    # Totais agregados (como você já fez)
+    # Totais agregados 
     totais = lista_dieta.total_nutrientes_vetor()
     lista_totais_fornecidos = []
     for t in totais:
