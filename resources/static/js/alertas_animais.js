@@ -1,12 +1,12 @@
-export function desativar(id, nome) {
+function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
     Swal.fire({
-        title: 'Tem certeza que deseja desativar esse animal?',
-        text: 'Você poderá desfazer isso mais tarde!',
+        title: titulo,
+        text: texto,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#2f453a',
         cancelButtonColor: '#ff0000',
-        confirmButtonText: 'Sim, desativar!',
+        confirmButtonText: `Sim, ${acao}!`,
         cancelButtonText: 'Cancelar',
         customClass: {
             cancelButton: 'botao-cancela-alerta',
@@ -14,43 +14,36 @@ export function desativar(id, nome) {
         },
     }).then(result => {
         if (result.isConfirmed) {
-            const url = '/desativar_animal/';
             htmx.ajax('GET', url, {
-                values: {
-                    id: id,
-                    nome: nome
-                },
+                values: dados,
                 swap: 'none'
             });
         }
+    });
+}
+export function desativar(id, nome) {
+    alertaConfirmacao({
+        titulo: 'Tem certeza que deseja desativar esse animal?',
+        texto: 'Você poderá desfazer isso mais tarde!',
+        acao: 'desativar',
+        url: '/desativar_animal/',
+        dados: { id, nome }
     });
 }
 export function ativar(id, nome) {
-    Swal.fire({
-        title: 'Tem certeza que deseja ativar esse animal?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#2f453a',
-        cancelButtonColor: '#ff0000',
-        confirmButtonText: 'Sim, ativar!',
-        cancelButtonText: 'Cancelar',
-        customClass: {
-            cancelButton: 'botao-cancela-alerta',
-            confirmButton: 'botao-confirma-alerta',
-        },
-    }).then(result => {
-        if (result.isConfirmed) {
-            const url = '/ativar_animal/';
-            htmx.ajax('GET', url, {
-                values: {
-                    id: id,
-                    nome: nome
-                },
-                swap: 'none'
-            });
-        }
+    alertaConfirmacao({
+        titulo: 'Tem certeza que deseja ativar esse animal?',
+        texto: 'Você poderá desfazer isso mais tarde!',
+        acao: 'ativar',
+        url: '/ativar_animal/',
+        dados: { id, nome }
     });
 }
+export function atualizar(id, nome){
+    console.log("Atualizar")
+}
+
+
 // Tratamento das responses
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);

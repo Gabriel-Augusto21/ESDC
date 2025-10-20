@@ -1,4 +1,4 @@
-import {ativar, desativar} from './alertas_animais.js'
+import {ativar, desativar, atualizar} from './alertas_animais.js'
 document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(btn => {
     btn.addEventListener('click', function (event) {
         event.stopPropagation(); // evita acionar outros cliques no card
@@ -15,8 +15,7 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
         } else if (this.classList.contains('ativar-btn')) {
             ativar(id, nome)
         } else if (this.classList.contains('editar-btn')) {
-            console.log("Usuário clicou em editar")
-            return;
+            atualizar(id,nome)
         } else {
             return;
         }
