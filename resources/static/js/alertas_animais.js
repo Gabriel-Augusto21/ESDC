@@ -21,14 +21,24 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
         }
     });
 }
-export function desativar(id, nome) {
-    alertaConfirmacao({
-        titulo: 'Tem certeza que deseja desativar esse animal?',
-        texto: 'Você poderá desfazer isso mais tarde!',
-        acao: 'desativar',
-        url: '/desativar_animal/',
-        dados: { id, nome }
+export function inserir(html) {
+    Swal.fire({
+        width: '800px',
+        title: 'Inserir Animal',
+        html: html,
+        input: "date",
     });
+}
+export function desativar(id, nome) {
+    alertaConfirmacao(
+        {
+            titulo: 'Tem certeza que deseja desativar esse animal?',
+            texto: 'Você poderá desfazer isso mais tarde!',
+            acao: 'desativar',
+            url: '/desativar_animal/',
+            dados: { id, nome }
+        }
+    );
 }
 export function ativar(id, nome) {
     alertaConfirmacao({
@@ -39,7 +49,7 @@ export function ativar(id, nome) {
         dados: { id, nome }
     });
 }
-export function atualizar(id, nome){
+export function atualizar(id, nome) {
     console.log("Atualizar");
 }
 
@@ -48,14 +58,14 @@ export function atualizar(id, nome){
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
     if (event.detail.xhr.status === 201) {
-        if (resp.Mensagem?.includes('inserido')) { 
+        if (resp.Mensagem?.includes('inserido')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
                 confirmButtonText: 'Ok',
                 timer: 3000,
-                timerProgressBar: true,   
+                timerProgressBar: true,
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',
@@ -67,16 +77,16 @@ htmx.on("htmx:afterOnLoad", (event) => {
     }
     if (event.detail.xhr.status === 202) {
         carregar_composicao(resp.data.composicao, resp.data.alimento);
-    }  
+    }
     if (event.detail.xhr.status === 200) {
-        if (resp.Mensagem?.includes('ativado')) {            
+        if (resp.Mensagem?.includes('ativado')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
                 timer: 3000,
                 timerProgressBar: true,
-                confirmButtonText: 'Ok',   
+                confirmButtonText: 'Ok',
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',
@@ -84,44 +94,44 @@ htmx.on("htmx:afterOnLoad", (event) => {
             }).then(() => {
                 window.location.reload();
             });
-        }else if(resp.Mensagem?.includes('desativado')){
+        } else if (resp.Mensagem?.includes('desativado')) {
             Swal.fire({
-            title: 'Sucesso!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonText: 'Ok',
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
-            timer: 3000,
-            timerProgressBar: true
-        }).then(() => {
-            window.location.reload();
-        });
-        }else if(resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')){
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
+        } else if (resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')) {
             Swal.fire({
-            title: 'Sucesso!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonText: 'Ok',
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
-            timer: 3000,
-            timerProgressBar: true
-        }).then(() => {
-            window.location.reload();
-        });
-        }else if (resp.Mensagem?.includes('inserido')) {
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
+        } else if (resp.Mensagem?.includes('inserido')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
                 confirmButtonText: 'Ok',
                 timer: 3000,
-                timerProgressBar: true,   
+                timerProgressBar: true,
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',

@@ -1,4 +1,13 @@
-import {ativar, desativar, atualizar} from './alertas_animais.js'
+import {ativar, desativar, atualizar, inserir} from './alertas_animais.js'
+
+const html = document.getElementById('modalInserir');
+
+document.getElementById('inserir-btn').addEventListener('click', () => {
+    let clone = html
+    clone.removeAttribute('hidden')
+    inserir(clone);
+});
+
 document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(btn => {
     btn.addEventListener('click', function (event) {
         event.stopPropagation(); // evita acionar outros cliques no card
@@ -16,8 +25,6 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
             ativar(id, nome)
         } else if (this.classList.contains('editar-btn')) {
             atualizar(id,nome)
-        } else {
-            return;
         }
     });
 });

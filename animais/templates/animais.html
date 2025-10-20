@@ -39,7 +39,7 @@
 
     <!-- Botão de inserir -->
     <div class="form-group row mr-1 justify-content-end">
-        <button type="button" class="botao insert-btn">
+        <button type="button" class="botao" id="inserir-btn">
             <img src="{% static 'img/add_circle.png' %}" width="20"
                 style="margin-right: 3px; filter: brightness(0) invert(1)">
             Inserir
@@ -224,30 +224,72 @@
     </div>
 </div>
 
+<div hidden class="container my-3" style="text-align: start;" id="modalInserir">
+    <div class="row mb-4">
+        <!-- Nome do Alimento -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+            <label for="txtNome" class="form-label">Nome do animal</label>
+            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" maxlength="45">
+        </div>
+
+        <!-- Classificação -->
+        <div class="col-12 col-md-6">
+            <label for="idClassificacao" class="form-label">Classificação</label>
+            <select class="form-control" id="idClassificacao"></select>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Matéria Seca -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+            <input id="txtMs" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
+
+        <!-- Proteína Bruta -->
+        <div class="col-12 col-md-4">
+            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+            <input id="txtPb" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
+
+        <!-- Energia Digestiva -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+            <input id="txtEd" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
+    </div>
+</div>
+
 <script type="module" src="{% static 'js/atualizar_animais.js' %}"></script>
 <script>
+    const csrf_token = '{{ csrf_token }}';
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = csrf_token;
+    });
+</script>
+<script>
     document.addEventListener('DOMContentLoaded', function () {
-        const modalInserir = new bootstrap.Modal(document.getElementById('modalInserirAnimal'));
-        // const modalAtualizar = new bootstrap.Modal(document.getElementById('modalAtualizarAnimal'));
+        // const modalInserir = new bootstrap.Modal(document.getElementById('modalInserirAnimal'));
+        // // const modalAtualizar = new bootstrap.Modal(document.getElementById('modalAtualizarAnimal'));
 
-        document.querySelector('.insert-btn').addEventListener('click', function () {
-            document.getElementById('formInserirAnimal').reset();
-            modalInserir.show();
-        });
+        // document.querySelector('.insert-btn').addEventListener('click', function () {
+        //     document.getElementById('formInserirAnimal').reset();
+        //     modalInserir.show();
+        // });
 
-        document.querySelector('#modalInserirAnimal .btn-danger').addEventListener('click', function () {
-            modalInserir.hide();
-        });
+        // document.querySelector('#modalInserirAnimal .btn-danger').addEventListener('click', function () {
+        //     modalInserir.hide();
+        // });
 
-        function preencherModalAtualizacao(elem) {
-            document.getElementById('idAnimal').value = elem.dataset.id;
-            document.getElementById('nomeAnimalEdit').value = elem.dataset.nome;
-            document.getElementById('proprietarioAnimalEdit').value = elem.dataset.proprietario;
-            document.getElementById('pesoAnimalEdit').value = elem.dataset.peso;
-            document.getElementById('dataNascAnimalEdit').value = elem.dataset.idade;
-            document.getElementById('generoAnimalEdit').value = elem.dataset.genero;
-            modalAtualizar.show();
-        }
+        // function preencherModalAtualizacao(elem) {
+        //     document.getElementById('idAnimal').value = elem.dataset.id;
+        //     document.getElementById('nomeAnimalEdit').value = elem.dataset.nome;
+        //     document.getElementById('proprietarioAnimalEdit').value = elem.dataset.proprietario;
+        //     document.getElementById('pesoAnimalEdit').value = elem.dataset.peso;
+        //     document.getElementById('dataNascAnimalEdit').value = elem.dataset.idade;
+        //     document.getElementById('generoAnimalEdit').value = elem.dataset.genero;
+        //     modalAtualizar.show();
+        // }
 
         // document.querySelectorAll('.card-animal').forEach(function (card) {
         //     card.addEventListener('click', function () {
@@ -262,47 +304,47 @@
         //     });
         // });
 
-        document.getElementById('formInserirAnimal').addEventListener('submit', function (e) {
-            e.preventDefault();
+        // document.getElementById('formInserirAnimal').addEventListener('submit', function (e) {
+        //     e.preventDefault();
 
-            var form = document.getElementById('formInserirAnimal');
-            var formData = new FormData(form);
-            var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        //     var form = document.getElementById('formInserirAnimal');
+        //     var formData = new FormData(form);
+        //     var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            fetch("{% url 'animais:inserir_animal' %}", {
-                method: "POST",
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                body: formData
-            })
-                .then(function (resp) {
-                    return resp.json().then(function (data) {
-                        if (resp.ok) {
-                            modalInserir.hide();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Sucesso!',
-                                text: data.Mensagem,
-                                confirmButtonColor: '#274e37'
-                            }).then(function () {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire('Erro', data.Mensagem, 'error');
-                        }
-                    });
-                })
-                .catch(function (err) {
-                    Swal.fire('Erro', 'Erro ao enviar os dados: ' + err.message, 'error');
-                });
-        });
+        //     fetch("{% url 'animais:inserir_animal' %}", {
+        //         method: "POST",
+        //         headers: {
+        //             'X-CSRFToken': csrfToken
+        //         },
+        //         body: formData
+        //     })
+        //         .then(function (resp) {
+        //             return resp.json().then(function (data) {
+        //                 if (resp.ok) {
+        //                     modalInserir.hide();
+        //                     Swal.fire({
+        //                         icon: 'success',
+        //                         title: 'Sucesso!',
+        //                         text: data.Mensagem,
+        //                         confirmButtonColor: '#274e37'
+        //                     }).then(function () {
+        //                         location.reload();
+        //                     });
+        //                 } else {
+        //                     Swal.fire('Erro', data.Mensagem, 'error');
+        //                 }
+        //             });
+        //         })
+        //         .catch(function (err) {
+        //             Swal.fire('Erro', 'Erro ao enviar os dados: ' + err.message, 'error');
+        //         });
+        // });
 
-        document.getElementById('formAtualizarAnimal').addEventListener('submit', function (e) {
-            e.preventDefault();
-            modalAtualizar.hide();
-            Swal.fire('Sucesso!', 'Animal atualizado com sucesso!', 'success');
-        });
+        // document.getElementById('formAtualizarAnimal').addEventListener('submit', function (e) {
+        //     e.preventDefault();
+        //     modalAtualizar.hide();
+        //     Swal.fire('Sucesso!', 'Animal atualizado com sucesso!', 'success');
+        // });
     });
 </script>
 
