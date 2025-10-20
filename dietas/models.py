@@ -30,7 +30,7 @@ class Dieta(models.Model):
                     }
                 totais[key]["total"] += Decimal(ca.valor) * Decimal(comp.quantidade)
         
-        # Converte para lista de dicionários
+        # convertendo em lista de dicionários
         return list(totais.values())
 
 class ComposicaoDieta(models.Model):
