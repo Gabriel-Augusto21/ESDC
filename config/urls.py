@@ -10,6 +10,7 @@ urlpatterns = [
     path('', include("alimentos.urls")),
     path('', include("exigencias.urls")),
     path('', include("animais.urls")),
+    path('', include("dietas.urls"))
 ]
 
 if settings.DEBUG:

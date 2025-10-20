@@ -1,0 +1,38 @@
+<h3>Dados da Dieta</h3>
+Nome:
+{{dietas.nome}}<br>
+Descrição:
+{{dietas.descricao}}<br>
+Id da Exigência:
+{{dietas.exigencia_id}}<br>
+<hr>
+
+<h3>Alimentos que compoem a dieta</h3>
+{% for i in alimentos_nutrientes %}
+{{i.alimento}}<br>
+{% for j in i.nutrientes%}
+{{j.nutriente}} - {{j.valor}} |
+{% endfor %}
+<br>
+<br>
+{% endfor %}
+<hr>
+
+<h3>Valor nutricional * quantidade na dieta</h3>
+{% for i in alimentos_nutrientes %}
+    {{i.alimento}} - {{i.quantidade}}kg<br>
+    {% for j in i.nutrientes%}
+        {{j.nutriente}} - {{j.produto}} |
+    {% endfor %}
+    <br>
+    <br>
+{% endfor %}
+<br>
+<hr>
+
+<h3>Total fornecido pela dieta</h3>
+<h4>Representa a soma de cada nutriente apos o calculo de quantidade</h4>
+<br>
+{% for i in lista_totais %}
+{{i}} | 
+{% endfor %}

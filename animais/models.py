@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 import os
+from dietas.models import Dieta
 
 class Animal(models.Model):
     nome = models.CharField(max_length=30)
@@ -18,7 +19,7 @@ class Animal(models.Model):
     data_nasc = models.DateField()
     genero = models.CharField(max_length=1, choices=[('M', 'Macho'), ('F', 'Fêmea')])
     is_active = models.BooleanField(default=True)
-    id_dieta = models.IntegerField(null=True, blank=True)
+    id_dieta = models.ForeignKey('dietas.Dieta', on_delete=models.SET_NULL, null=True, blank=True)
 
     def delete_imagem(self, *args, **kwargs):
         if self.imagem and os.path.isfile(self.imagem.path) and self.imagem.name != "default.jpg":
