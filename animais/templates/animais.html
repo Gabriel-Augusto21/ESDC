@@ -50,8 +50,9 @@
         {% for animal in page_obj %}
         <div class="col-6 col-md-4 col-lg-3 my-4">
             <div class="card position-relative h-100 shadow-sm card-animal" data-id="{{ animal.id }}"
-                data-nome="{{ animal.nome }}" data-proprietario="{{ animal.proprietario }}"
-                data-idade="{{ animal.data_nasc }}" data-genero="{{ animal.genero }}" data-peso="{{ animal.peso_vivo }}"
+                data-nome="{{ animal.nome }}" data-imagem="{{ animal.imagem.url }}"
+                data-proprietario="{{ animal.proprietario }}" data-idade="{{ animal.data_nasc }}"
+                data-genero="{{ animal.genero }}" data-peso="{{ animal.peso_vivo }}"
                 style="border-radius: 15px; overflow: hidden; cursor:pointer;">
 
                 {% if animal.imagem %}
@@ -78,8 +79,8 @@
                         data-idade="{{ animal.data_nasc }}" data-genero="{{ animal.genero }}"
                         data-peso="{{ animal.peso_vivo }}"
                         style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
-                    
-                    
+
+
                 </div>
             </div>
         </div>
@@ -260,11 +261,49 @@
     </div>
 </div>
 
+<div hidden class="container my-3" style="text-align: start;" id="modalAtualizar">
+    <hr>
+    <div class="row my-5">
+        <!-- Imagem do Animal -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0">
+            <div id="infoAnimal" class="card position-relative h-100 shadow-sm card-animal">
+                <img src="" alt="cavalo" id="idVisual" class="card-img" style="height: 270px; object-fit: cover;">
+                <div class="card-img-overlay d-flex flex-column justify-content-end"
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
+                    <div style="text-align: left; margin-bottom: 14px;">
+                        <h5 class="mb-1" style="font-size: 2.00rem; font-weight: 400;">{{ animal.nome }}</h5>
+                        <p class="mb-0 text-white-50" style="font-size: 1.75rem;">{{ animal.proprietario }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nome do Animal -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+            <label for="txtNome" class="form-label">Nome do Animal:</label>
+            <input id="txtNome" class="form-control" type="text" maxlength="45">
+
+            <label for="txtProprietario" class="form-label mt-3">Nome do Propietário:</label>
+            <input id="txtProprietario" class="form-control" type="text" placeholder="tem que puxar do banco..."
+                maxlength="45">
+
+            <label for="idGenero" class="form-label mt-3">Gênero:</label>
+            <select class="form-control" id="txtGenero">
+                <option value="M">Macho</option>
+                <option value="F">Fêmea</option>
+            </select>
+
+            <label for="dataNasc" class="form-label mt-3">Data de Nascimento:</label>
+            <input id="dataNasc" class="form-control" type="date" placeholder="tem que puxar do banco..." maxlength="45">
+        </div>
+    </div>
+</div>
+
 <script type="module" src="{% static 'js/atualizar_animais.js' %}"></script>
 <script>
     const csrf_token = '{{ csrf_token }}';
-        document.body.addEventListener('htmx:configRequest', (event) => {
-            event.detail.headers['X-CSRFToken'] = csrf_token;
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = csrf_token;
     });
 </script>
 <script>

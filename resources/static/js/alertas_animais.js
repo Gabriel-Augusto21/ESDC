@@ -21,14 +21,7 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
         }
     });
 }
-export function inserir(html) {
-    Swal.fire({
-        width: '800px',
-        title: 'Inserir Animal',
-        html: html,
-        input: "date",
-    });
-}
+
 export function desativar(id, nome) {
     alertaConfirmacao(
         {
@@ -49,8 +42,21 @@ export function ativar(id, nome) {
         dados: { id, nome }
     });
 }
-export function atualizar(id, nome) {
-    console.log("Atualizar");
+
+export function inserir(html) {
+    Swal.fire({
+        width: '800px',
+        title: 'Inserir Animal',
+        html: html,
+    });
+}
+
+export function atualizar(id, nome, html) {
+    Swal.fire({
+        width: '1000px',
+        title: 'Atualizar Animal',
+        html: html,
+    });    
 }
 
 
