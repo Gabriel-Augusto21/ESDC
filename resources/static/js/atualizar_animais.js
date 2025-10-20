@@ -29,7 +29,7 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
             let imagem = clone.querySelector('#idVisual');
             imagem.src = card.dataset.imagem;
             let nomeInput = clone.querySelector('#txtNome');
-            nomeInput.value = card.dataset.nome;
+            nomeInput.value = nome;
             let proprietarioInput = clone.querySelector('#txtProprietario');
             proprietarioInput.value = card.dataset.proprietario;
             let generoInput = clone.querySelector('#txtGenero');

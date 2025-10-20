@@ -46,16 +46,36 @@ export function ativar(id, nome) {
 export function inserir(html) {
     Swal.fire({
         width: '800px',
-        title: 'Inserir Animal',
+        title: 'Inserir',
         html: html,
+        confirmButtonText: 'Atualizar',
+        confirmButtonColor: '#2f453a',
+        cancelButtonText: 'Cancelar',
+        cancelButtonColor: '#FF0000',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
+        showCancelButton: true,
+        focusConfirm: false,
     });
 }
 
 export function atualizar(id, nome, html) {
     Swal.fire({
-        width: '1000px',
+        width: '850px',
         title: 'Atualizar Animal',
         html: html,
+        confirmButtonText: 'Atualizar',
+        confirmButtonColor: '#2f453a',
+        cancelButtonText: 'Cancelar',
+        cancelButtonColor: '#FF0000',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
+        showCancelButton: true,
+        focusConfirm: false,
     });    
 }
 
