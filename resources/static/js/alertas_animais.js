@@ -40,7 +40,7 @@ export function ativar(id, nome) {
     });
 }
 export function atualizar(id, nome){
-    console.log("Atualizar")
+    console.log("Atualizar");
 }
 
 
