@@ -34,6 +34,8 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
             proprietarioInput.value = card.dataset.proprietario;
             let generoInput = clone.querySelector('#txtGenero');
             generoInput.value = card.dataset.genero;
+            let pesoInput = clone.querySelector('#txtPeso');
+            pesoInput.value = card.dataset.peso;
             let idadeInput = htmlAtualizar.querySelector('#dataNasc');
             const raw = card.dataset.idade; // ex: "19 de Fevereiro de 2018"
             if (idadeInput) {

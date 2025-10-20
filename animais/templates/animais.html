@@ -74,13 +74,8 @@
                     {% else %}
                     <img class="ativar-btn" src="{% static 'img/not_visibility.png' %}" width="25">
                     {% endif %}
-                    <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn" data-id="{{ animal.id }}"
-                        data-nome="{{ animal.nome }}" data-proprietario="{{ animal.proprietario }}"
-                        data-idade="{{ animal.data_nasc }}" data-genero="{{ animal.genero }}"
-                        data-peso="{{ animal.peso_vivo }}"
+                    <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn"
                         style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
-
-
                 </div>
             </div>
         </div>
@@ -293,8 +288,20 @@
                 <option value="F">Fêmea</option>
             </select>
 
-            <label for="dataNasc" class="form-label mt-3">Data de Nascimento:</label>
-            <input id="dataNasc" class="form-control" type="date" placeholder="tem que puxar do banco..." maxlength="45">
+            <div class="row">
+                <div class="col">
+                    <label for="txtPeso" class="form-label mt-3">Peso:</label>
+                    <input id="txtPeso" class="form-control" type="txt" placeholder="tem que puxar do banco..."
+                        maxlength="45">
+                </div>
+
+                <div class="col">
+                    <label for="dataNasc" class="form-label mt-3">Data de Nascimento:</label>
+                    <input id="dataNasc" class="form-control" type="date" placeholder="tem que puxar do banco..."
+                        maxlength="45">
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
