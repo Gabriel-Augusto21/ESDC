@@ -30,18 +30,18 @@
                 <tr>
                     <th>Alimento</th>
                     <th>Classificação</th>
-                    <th>MS</th>
-                    <th>PB</th>
-                    <th>ED</th>
+                    <th style="white-space: nowrap;">MS <small>(%)</small></th>
+                    <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
+                    <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
                     {% for nutriente in todos_nutrientes %}
-                    <th>{{ nutriente.nome }}</th>
+                    <th  style="white-space: nowrap;">{{ nutriente.nome }}<small>({{ nutriente.unidade }})</small></th>
                     {% endfor %}
                 </tr>
             </thead>
             <tbody>
                 {% for comp in comp_dieta %}
                 <tr>
-                    <td>{{ comp.alimento.nome }}</td>
+                    <td style="white-space: nowrap;">{{ comp.alimento.nome }}</td>
                     <td>{{ comp.alimento.classificacao.nome }}</td>
                     <td>{{ comp.alimento.ms }}</td>
                     <td>{{ comp.alimento.pb }}</td>
@@ -50,7 +50,6 @@
                     {% for nutriente in todos_nutrientes %}
                     <td>
                         {{ nutrientes_por_alimento|dictget:comp.alimento.id|dictget:nutriente.id|default:0 }}
-                        {{ nutriente.unidade }}
                     </td>
                     {% endfor %}
                 </tr>
