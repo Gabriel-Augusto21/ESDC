@@ -74,7 +74,7 @@
 
                 <!-- Linha da Exigência -->
                 <tr class="table-warning fw-bold">
-                    <td colspan="5" class="text-end">Exigência:</td>
+                    <td colspan="5" class="text-end">{{exigencia.nome}}:</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
                         {{ exigencia_por_nutriente|dictget:nutriente.nome|default:"0" }}

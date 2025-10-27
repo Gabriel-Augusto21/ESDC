@@ -18,7 +18,7 @@ class Command(BaseCommand):
         Dieta.objects.create(
             nome = 'Dieta Power Equus',
             descricao = 'Dieta teste 2 criada e vinculada a exigencia com id 2',
-            exigencia = exigencias[1]
+            exigencia = exigencias[15]
         )
         
         # pegando alimentos e exigencias existentes
