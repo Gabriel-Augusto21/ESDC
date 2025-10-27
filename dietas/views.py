@@ -13,7 +13,7 @@ def dieta(request, id):
     lista_totais_fornecidos = []
     for t in totais:
         lista_totais_fornecidos.append(f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}")
-
+    
     # Nutrientes por alimento
     alimentos_nutrientes = []
     for comp in comp_dieta:

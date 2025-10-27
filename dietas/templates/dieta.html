@@ -1,39 +1,98 @@
-<h1>Aqui estão os dados referentes a "{{dietas.nome}}"</h1>
-<a href="{% url 'dietas:dietas' %}">Voltar</a><br>
-<strong>Dados da Dieta:</strong><br>
-    Nome:
-    {{dietas.nome}}<br>
-    Descrição:
-    {{dietas.descricao}}<br>
-    Id da Exigência:
-    {{dietas.exigencia_id}}<br>
-<hr>
+{% extends 'master.html' %}
+{% load static %}
+{% block conteudo %}
 
-<strong>Alimentos que compoem a dieta:</strong><br>
-{% for i in alimentos_nutrientes %}
-    {{i.alimento}}<br>
-    {% for j in i.nutrientes%}
-        {{j.nutriente}} - {{j.valor}} |
-    {% endfor %}
-    <br>
-    <br>
-{% endfor %}
-<hr>
+<div class="container my-5">
+    <div class="card shadow-lg p-4 border-0 rounded-4">
+        <h1 class="text-center mb-4 text-success fw-bold">
+            Dados da Dieta: "{{ dietas.nome }}"
+        </h1>
 
-<strong>Valor nutricional * quantidade na dieta:</strong><br>
-{% for i in alimentos_nutrientes %}
-    {{i.alimento}} - {{i.quantidade}}kg<br>
-    {% for j in i.nutrientes%}
-        {{j.nutriente}} - {{j.produto}} |
-    {% endfor %}
-    <br>
-    <br>
-{% endfor %}
-<br>
-<hr>
+        <div class="text-center mb-3">
+            <a href="{% url 'dietas:dietas' %}" class="btn btn-outline-success">
+                ← Voltar
+            </a>
+        </div>
 
-<strong>Total fornecido pela dieta:</strong><br>
-<br>
-{% for i in lista_totais %}
-    {{i}} |
-{% endfor %}
+        <hr>
+
+        <!-- Dados da dieta -->
+        <div class="mb-4">
+            <h4 class="text-success mb-3">Informações Básicas</h4>
+            <p><strong>Nome:</strong> {{ dietas.nome }}</p>
+            <p><strong>Descrição:</strong> {{ dietas.descricao }}</p>
+            <p><strong>ID da Exigência:</strong> {{ dietas.exigencia_id }}</p>
+        </div>
+
+        <hr>
+
+        <!-- Alimentos e nutrientes -->
+        <div class="mb-4">
+            <h4 class="text-success mb-3">Alimentos que compõem a dieta</h4>
+
+            {% for i in alimentos_nutrientes %}
+                <div class="card mb-3 border-success-subtle shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success fw-bold">{{ i.alimento }}</h5>
+                        <p class="card-text mb-2">
+                            {% for j in i.nutrientes %}
+                                <span class="badge bg-light text-dark border">
+                                    {{ j.nutriente }}: {{ j.valor }}
+                                </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <hr>
+
+        <!-- Valor nutricional * quantidade -->
+        <div class="mb-4">
+            <h4 class="text-success mb-3">Valor nutricional x quantidade</h4>
+
+            {% for i in alimentos_nutrientes %}
+                <div class="card mb-3 border-success-subtle shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success fw-bold">
+                            {{ i.alimento }} - {{ i.quantidade }} kg
+                        </h5>
+                        <p class="card-text">
+                            {% for j in i.nutrientes %}
+                                <span class="badge bg-success-subtle text-dark border">
+                                    {{ j.nutriente }}: {{ j.produto }}
+                                </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <hr>
+
+        <!-- Totais -->
+        <div class="text-center">
+            <h4 class="text-success mb-3">Total fornecido pela dieta</h4>
+            {% for i in lista_totais %}
+                <span class="badge bg-success text-white p-2 mx-1">{{ i }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 1rem;
+    }
+    .badge {
+        font-size: 0.9rem;
+        margin: 0.15rem;
+    }
+    hr {
+        border-top: 2px solid #d4edda;
+    }
+</style>
+
+{% endblock %}
