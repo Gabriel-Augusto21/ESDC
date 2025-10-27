@@ -39,11 +39,9 @@
     <table class="tabela table-responsive-sm">
         <thead>
             <tr>
-                <th>Alimento</th>
-                <th class="d-none d-sm-table-cell">Classificação</th>
-                <th>Matéria Seca</th>
-                <th>Proteína Bruta</th>
-                <th class="d-none d-sm-table-cell">Energia Digestiva</th>
+                <th>Nome</th>
+                <th class="d-none d-sm-table-cell">Exigência</th>
+                <th>Data de Criação</th>
                 <th class="text-end">Ações</th>
             </tr>
         </thead>
@@ -51,10 +49,20 @@
             {% for dieta in dietas %}
             <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}" >
                 <td id="txtNome">{{ dieta.nome }}</td>
-                <td class="text-end">
-                    <button type="button" class="btn-ver-dieta" data-id="{{ dieta.id }}">
-                        Ver a dieta
+                <td id="txtExigencia">{{dieta.exigencia}}</td>
+                <td id="txtData">-</td>
+                <td class="text-end">{% if dieta.is_active %}
+                    <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
+                        <img src="{% static 'img/visibility.png' %}" width="20">
                     </button>
+                    <button class="btn btn-sm btn-ver-dieta">
+                        <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20" data-id="{{ dieta.id }}">
+                    </button>
+                    {% else %}
+                    <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
+                        <img src="{% static 'img/not_visibility.png' %}" width="20">
+                    </button>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -120,7 +128,7 @@
         </div>
     </div>
 </div>
-<script type="module" src="{% static 'js/crud_alimentos.js' %}"></script>
+<script type="module" src="{% static 'js/crud_dietas.js' %}"></script>
 <script>
     const csrf_token = '{{ csrf_token }}';
     document.body.addEventListener('htmx:configRequest', (event) => {
