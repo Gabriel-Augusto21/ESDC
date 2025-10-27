@@ -47,7 +47,7 @@
         </thead>
         <tbody>
             {% for dieta in dietas %}
-            <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}" >
+            <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}">
                 <td id="txtNome">{{ dieta.nome }}</td>
                 <td id="txtExigencia">{{dieta.exigencia}}</td>
                 <td id="txtData">-</td>
@@ -55,8 +55,8 @@
                     <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
                         <img src="{% static 'img/visibility.png' %}" width="20">
                     </button>
-                    <button class="btn btn-sm btn-ver-dieta">
-                        <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20" data-id="{{ dieta.id }}">
+                    <button class="btn btn-sm btn-ver-dieta" data-id="{{ dieta.id }}">
+                        <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
                     </button>
                     {% else %}
                     <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
@@ -137,14 +137,14 @@
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-    const botoes = document.querySelectorAll('.btn-ver-dieta');
-    botoes.forEach(botao => {
-        botao.addEventListener('click', (event) => {
-            const id = event.target.dataset.id;
-            window.location.href = `/gerenciar_dietas/${id}/`;
+        const botoes = document.querySelectorAll('.btn-ver-dieta');
+        botoes.forEach(botao => {
+            botao.addEventListener('click', (event) => {
+                const id = botao.dataset.id;
+                window.location.href = `/gerenciar_dietas/${id}/`;
+            });
         });
     });
-});
 </script>
 
-    {% endblock %}
+{% endblock %}
