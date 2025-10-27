@@ -5,5 +5,5 @@ app_name = 'dietas'
 
 urlpatterns = [
     path("dietas/", views.dietas, name="dietas"),   
-    path("dieta/<int:id>/", views.dieta, name="dieta"),   
+    path("gerenciar_dietas/<int:id>/", views.gerenciar_dietas, name='gerenciar_dietas'),
 ]

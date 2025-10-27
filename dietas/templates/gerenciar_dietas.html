@@ -1,0 +1,171 @@
+{% extends 'master.html' %} {% load static %} {% block conteudo %}
+<div class="container mt-3">
+  <h1>Gerenciamento da Dieta</h1>
+
+  <!-- Cards dos animais -->
+  <div
+    class="d-flex justify-content-center align-items-center gap-3 mb-4 flex-wrap"
+  >
+    <div class="card shadow-sm" style="width: 180px; border-radius: 15px">
+      <img
+        src="{% static 'img/cavalo1.png' %}"
+        class="card-img-top"
+        style="border-radius: 15px 15px 0 0"
+      />
+      <div class="card-body text-center">
+        <h6 class="card-title mb-1">Animal 1</h6>
+        <small class="text-muted">Proprietario</small>
+      </div>
+    </div>
+
+    <div class="card shadow-sm" style="width: 180px; border-radius: 15px">
+      <img
+        src="{% static 'img/cavalo2.png' %}"
+        class="card-img-top"
+        style="border-radius: 15px 15px 0 0"
+      />
+      <div class="card-body text-center">
+        <h6 class="card-title mb-1">Animal 2</h6>
+        <small class="text-muted">Proprietario</small>
+      </div>
+    </div>
+  </div>
+
+  <table class="tabela table-responsive-sm">
+    <thead>
+      <tr>
+        <th>{{alimento}}</th>
+        <th class="d-none d-sm-table-cell">Classificação</th>
+        <th>Matéria Seca</th>
+        <th>Proteína Bruta</th>
+        <th class="d-none d-sm-table-cell">Energia Digestiva</th>
+        <th class="text-end">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for alimento in alimentos_nutrientes %}
+      <tr
+        class="container"
+        data-id="{{ alimentos_nutrientes.id }}"
+        data-nome="{{ alimentos_nutrientes.nome }}"
+        data-id-class="{{ alimentos_nutrientes.classificacao.id }}"
+        {%if
+        alimentos_nutrientes.is_active
+        %}
+        style="background-color: #ffffff"
+        {%
+        else
+        %}
+        style="background-color: rgba(190, 190, 190, 0.31)"
+        {%
+        endif
+        %}
+      >
+        <td id="txtNome">{{ alimentos_nutrientes.nome }}</td>
+        <td class="d-none d-sm-table-cell">
+          {{alimentos_nutrientes.classificacao.nome}}
+        </td>
+        <td>{{alimentos_nutrientes}} %</td>
+        <td class="d-none d-sm-table-cell">{{ alimentos_nutrientes }} %MS</td>
+        <td>{{alimentos_nutrientes}} Mcal</td>
+        <td class="text-end">
+          {% if alimentos_nutrientes.is_active %}
+          <button class="btn btn-sm desativar-btn" alt="Ativar">
+            <img src="{% static 'img/visibility.png' %}" width="20" />
+          </button>
+          <button
+            class="btn btn-sm update-btn"
+            id="{{alimentos_nutrientes.id}}"
+          >
+            <img
+              src="{% static 'img/edit.png' %}"
+              alt="Alterar"
+              width="20"
+              height="20"
+            />
+          </button>
+          <button
+            class="btn btn-sm composicao-btn"
+            id="{{alimentos_nutrientes.id}}"
+          >
+            <img
+              src="{% static 'img/app_registration.png' %}"
+              alt="Composição"
+              width="20"
+              height="20"
+            />
+          </button>
+          {% else %}
+          <button class="btn btn-sm ativar-btn" alt="Desativar">
+            <img src="{% static 'img/not_visibility.png' %}" width="20" />
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% comment %}
+  <!-- Seção Balanceamento -->
+  <h5 class="mb-3">Balanceamento da dieta</h5>
+  <div class="table-responsive">
+    <table class="table text-center align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Nome alimentos_nutrientes</th>
+          <th>Ord. MN</th>
+          <th>MS (kg)</th>
+          <th>ED (Mcal)</th>
+          <th>PB (g)</th>
+          <th>Lis (g)</th>
+          <th>Treon (g)</th>
+          <th>Met (g)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+          <td>-</td>
+        </tr>
+        <tr style="color: white">
+          <td colspan="2" style="background-color: #2f453a">
+            Total fornecido dieta
+          </td>
+          <td colspan="1" style="background-color: #2f453a">aaaaa</td>
+          <td colspan="1" style="background-color: #2f453a"></td>
+        </tr>
+        <tr class="table-success">
+          <td colspan="8">-</td>
+        </tr>
+        <tr class="table-secondary fw-bold">
+          <td colspan="8">Exigência animal</td>
+        </tr>
+        <tr class="table-secondary">
+          <td colspan="8">-</td>
+        </tr>
+        <tr class="table-dark text-white fw-bold">
+          <td colspan="8">Balanceamento</td>
+        </tr>
+        <tr class="table-dark text-white">
+          <td colspan="8">MS | ED | PB | Lis | Treo</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endcomment %}
+
+  <!-- Botões -->
+  <div class="d-flex justify-content-end mt-3">
+    <button class="btn btn-success me-2">
+      <i class="bi bi-sliders"></i> Balancear Dieta
+    </button>
+    <button class="btn btn-primary"><i class="bi bi-save"></i> Salvar</button>
+  </div>
+</div>
+{% endblock %}

@@ -133,7 +133,7 @@
     botoes.forEach(botao => {
         botao.addEventListener('click', (event) => {
             const id = event.target.dataset.id;
-            window.location.href = `/dieta/${id}/`;
+            window.location.href = `/gerenciar_dietas/${id}/`;
         });
     });
 });

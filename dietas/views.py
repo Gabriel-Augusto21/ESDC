@@ -1,42 +1,57 @@
 from django.shortcuts import render
 from .models import Dieta, ComposicaoDieta
+from alimentos.models import ComposicaoAlimento
+
 from decimal import Decimal
 from django.core.paginator import Paginator
 
 
-def dieta(request, id):
-    lista_dieta = Dieta.objects.get(pk=id)
-    comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
+def gerenciar_dietas(request, id):
+    # lista_dieta = Dieta.objects.get(pk=id)
+    # comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
 
-    # Totais agregados 
-    totais = lista_dieta.total_nutrientes_vetor()
-    lista_totais_fornecidos = []
-    for t in totais:
-        lista_totais_fornecidos.append(f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}")
+    # # Totais agregados 
+    # totais = lista_dieta.total_nutrientes_vetor()
+    # lista_totais_fornecidos = []
+    # for t in totais:
+    #     lista_totais_fornecidos.append(f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}")
 
-    # Nutrientes por alimento
-    alimentos_nutrientes = []
-    for comp in comp_dieta:
-        nutriente_alimento = []
-        for ca in comp.alimento.composicaoalimento_set.all():
-            quantidade_nutriente_dieta = round(Decimal(ca.valor) * Decimal(comp.quantidade), 2)
-            nutriente_alimento.append({
-                'nutriente': ca.nutriente.nome,
-                'valor': round(Decimal(ca.valor), 2),
-                'produto': quantidade_nutriente_dieta,
-                'unidade': ca.nutriente.unidade
-            })
-        alimentos_nutrientes.append({
-            'alimento': comp.alimento.nome,
-            'quantidade': round(comp.quantidade, 2),
-            'nutrientes': nutriente_alimento
-        })
+    # # Nutrientes por alimento
+    # alimentos_nutrientes = []
+    # for comp in comp_dieta:
+    #     nutriente_alimento = []
+    #     for ca in comp.alimento.composicaoalimento_set.all():
+    #         quantidade_nutriente_dieta = round(Decimal(ca.valor) * Decimal(comp.quantidade), 2)
+    #         nutriente_alimento.append({
+    #             'nutriente': ca.nutriente.nome,
+    #             'valor': round(Decimal(ca.valor), 2),
+    #             'produto': quantidade_nutriente_dieta,
+    #             'unidade': ca.nutriente.unidade
+    #         })
+    #     alimentos_nutrientes.append({
+    #         'alimento': comp.alimento.nome,
+    #         'quantidade': round(comp.quantidade, 2),
+    #         'nutrientes': nutriente_alimento
+    #     })
+    # print(alimentos_nutrientes)
 
-    return render(request, 'dieta.html', {
-        'dietas': lista_dieta,
-        'compdieta': comp_dieta,
-        'lista_totais': lista_totais_fornecidos,
-        'alimentos_nutrientes': alimentos_nutrientes
+    # return render(request, 'gerenciar_dietas.html', {
+    #     'dietas': lista_dieta,
+    #     'compdieta': comp_dieta,
+    #     'lista_totais': lista_totais_fornecidos,
+    #     'alimentos_nutrientes': alimentos_nutrientes
+    # })
+    dieta = ComposicaoDieta.objects.all()
+    for i in dieta:
+        print(i.alimento_id)
+        print(ComposicaoAlimento.objects.get(alimento_id=i.alimento_id))
+        # for j in i:
+        #     print(j)
+
+        # for alimento in i.alimento_id:
+        #     print(alimento)
+    return render(request, 'gerenciar_dietas.html', {
+        'aaa': dieta
     })
 
 def dietas(request):
