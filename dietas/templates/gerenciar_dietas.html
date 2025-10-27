@@ -29,7 +29,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Alimento</th>
-                    <th>Classificação</th>
+                    <th>Quantidade</th>
                     <th style="white-space: nowrap;">MS <small>(%)</small></th>
                     <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
                     <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
@@ -72,13 +72,27 @@
                     {% endfor %}
                 </tr>
 
-                <!-- Linha de balanceamento (placeholder) -->
+                <!-- Linha da Exigência -->
+                <tr class="table-warning fw-bold">
+                    <td colspan="5" class="text-end">Exigência:</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td>
+                        {{ exigencia_por_nutriente|dictget:nutriente.nome|default:"0" }}
+                    </td>
+                    {% endfor %}
+                </tr>
+
+                <!-- Linha de balanceamento -->
                 <tr class="table-secondary">
                     <td colspan="5" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
                     {% for nutriente in todos_nutrientes %}
-                    <td>-</td>
+                    <td>
+                        {{ balanceamento|dictget:nutriente.nome|default:"0" }}
+                    </td>
                     {% endfor %}
                 </tr>
+
+
             </tbody>
 
         </table>

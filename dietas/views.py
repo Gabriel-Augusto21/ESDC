@@ -1,23 +1,31 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from dietas.models import Dieta, ComposicaoDieta
-from alimentos.models import ComposicaoAlimento
+from alimentos.models import ComposicaoAlimento, Nutriente
+from exigencias.models import Exigencia, ComposicaoExigencia
 
 from decimal import Decimal
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 
 def gerenciar_dietas(request, id):
-    dieta = Dieta.objects.get(pk=id)
+    dieta = get_object_or_404(Dieta, pk=id)
     comp_dieta = (
         ComposicaoDieta.objects.filter(dieta=dieta)
         .select_related('alimento', 'alimento__classificacao')
         .prefetch_related('alimento__composicaoalimento_set__nutriente')
     )
 
-    # --- Totais agregados ---
-    totais = dieta.total_nutrientes_vetor()
+    # --- Exigência vinculada ---
+    exigencia = dieta.exigencia
+    composicoes_exigencia = ComposicaoExigencia.objects.filter(exigencia=exigencia).select_related('nutriente')
 
-    # 🔧 Converter para dicionário por nome do nutriente
+    # Criar um dicionário com os valores exigidos por nutriente
+    exigencia_por_nutriente = {
+        ce.nutriente.nome: round(ce.valor, 2) for ce in composicoes_exigencia
+    }
+
+    # --- Totais fornecidos pela dieta ---
+    totais = dieta.total_nutrientes_vetor()
     total_fornecido = {t['nutriente']: round(t['total'], 2) for t in totais}
     unidade_por_nutriente = {t['nutriente']: t['unidade'] for t in totais}
 
@@ -35,6 +43,13 @@ def gerenciar_dietas(request, id):
         for ca in comp.alimento.composicaoalimento_set.all():
             nutrientes_por_alimento[comp.alimento.id][ca.nutriente.id] = round(ca.valor, 2)
 
+    # --- Balanceamento: diferença entre fornecido e exigido ---
+    balanceamento = {}
+    for nutriente_nome in total_fornecido.keys():
+        valor_fornecido = total_fornecido.get(nutriente_nome, 0)
+        valor_exigido = exigencia_por_nutriente.get(nutriente_nome, 0)
+        balanceamento[nutriente_nome] = round(valor_fornecido - valor_exigido, 2)
+
     context = {
         'dieta': dieta,
         'comp_dieta': comp_dieta,
@@ -42,86 +57,12 @@ def gerenciar_dietas(request, id):
         'nutrientes_por_alimento': nutrientes_por_alimento,
         'total_fornecido': total_fornecido,
         'unidade_por_nutriente': unidade_por_nutriente,
+        'exigencia': exigencia,
+        'exigencia_por_nutriente': exigencia_por_nutriente,
+        'balanceamento': balanceamento,
     }
     return render(request, 'gerenciar_dietas.html', context)
 
-    lista_dieta = Dieta.objects.get(pk=id)
-    # comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
-
-    # # Totais agregados 
-    totais = lista_dieta.total_nutrientes_vetor()
-    lista_totais_fornecidos = [
-        f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}" for t in totais
-    ]
-
-    # alimentos_nutrientes = []
-    # todos_nutrientes = set()
-
-    # # 🔹 Coleta todos os nutrientes usados na dieta
-    # for comp in comp_dieta:
-    #     for ca in comp.alimento.composicaoalimento_set.all():
-    #         todos_nutrientes.add(ca.nutriente.nome)
-
-    # # 🔹 Converte pra lista e aplica substituição de espaços
-    # todos_nutrientes = sorted([n.replace(' ', '_') for n in todos_nutrientes])
-
-    # # 🔹 Monta a tabela com os valores de nutrientes
-    # for comp in comp_dieta:
-    #     dados_nutrientes = {n: {'produto': 0, 'unidade': ''} for n in todos_nutrientes}
-
-    #     for ca in comp.alimento.composicaoalimento_set.all():
-    #         nome_normalizado = ca.nutriente.nome.replace(' ', '_')
-    #         quantidade_nutriente_dieta = round(Decimal(ca.valor) * Decimal(comp.quantidade), 2)
-
-    #         dados_nutrientes[nome_normalizado] = {
-    #             'produto': quantidade_nutriente_dieta,
-    #             'unidade': ca.nutriente.unidade
-    #         }
-
-    #     alimentos_nutrientes.append({
-    #         'alimento': comp.alimento.nome,
-    #         'quantidade': round(comp.quantidade, 2),
-    #         'nutrientes': dados_nutrientes
-    #     })
-
-    # return render(request, 'gerenciar_dietas.html', {
-    #     'dietas': lista_dieta,
-    #     'compdieta': comp_dieta,
-    #     'lista_totais': lista_totais_fornecidos,
-    #     'alimentos_nutrientes': alimentos_nutrientes,
-    #     'todos_nutrientes': todos_nutrientes,
-    # })
-    dieta = Dieta.objects.get(pk=id)
-    comp_dieta = ComposicaoDieta.objects.filter(dieta=dieta).select_related('alimento', 'alimento__classificacao').prefetch_related('alimento__composicaoalimento_set__nutriente')
-    lista_dieta = Dieta.objects.get(pk=id)
-    # comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
-
-    # # Totais agregados 
-    totais = lista_dieta.total_nutrientes_vetor()
-    lista_totais_fornecidos = [
-        f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}" for t in totais
-    ]
-    # Coletar todos os nutrientes extras de todos os alimentos da dieta
-    todos_nutrientes = set()
-    for comp in comp_dieta:
-        for ca in comp.alimento.composicaoalimento_set.all():
-            todos_nutrientes.add(ca.nutriente)
-    todos_nutrientes = sorted(list(todos_nutrientes), key=lambda n: n.nome)
-
-    # Montar um dicionário de valores de nutrientes por alimento
-    nutrientes_por_alimento = {}
-    for comp in comp_dieta:
-        nutrientes_por_alimento[comp.alimento.id] = {n.id: 0 for n in todos_nutrientes}  # 0 por padrão
-        for ca in comp.alimento.composicaoalimento_set.all():
-            nutrientes_por_alimento[comp.alimento.id][ca.nutriente.id] = round(ca.valor, 2)
-
-    return render(request, 'gerenciar_dietas.html', {
-        'dieta': dieta,
-        'comp_dieta': comp_dieta,
-        'todos_nutrientes': todos_nutrientes,
-        'nutrientes_por_alimento': nutrientes_por_alimento,
-        'total_fornecido': lista_totais_fornecidos
-    })
 def dietas(request):
     query = request.GET.get('query', '')
     nutrientes_lista = Dieta.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
