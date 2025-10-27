@@ -48,7 +48,7 @@
 
     <div class="row">
         {% for animal in page_obj %}
-        <div class="col-6 col-md-4 col-lg-3 my-4">
+        <div class="col-6 col-md-4 col-lg-3 my-3 hover-card">
             <div class="card position-relative h-100 shadow-sm card-animal" data-id="{{ animal.id }}"
                 data-nome="{{ animal.nome }}" data-imagem="{{ animal.imagem.url }}"
                 data-proprietario="{{ animal.proprietario }}" data-idade="{{ animal.data_nasc }}"
@@ -60,7 +60,7 @@
                     style="height: 300px; object-fit: cover;">
                 {% else %}
                 <img src="{% static 'img/default-animal.png' %}" alt="Imagem não disponível" class="card-img"
-                    style="height: 250px; object-fit: cover;">
+                    style="height: 300px; object-fit: cover;">
                 {% endif %}
 
                 <div class="card-img-overlay d-flex flex-column justify-content-end"
@@ -260,21 +260,17 @@
     <hr>
     <div class="row my-5">
         <!-- Imagem do Animal -->
-        <div class="col-12 col-md-6 mb-3 mb-md-0">
-            <div id="infoAnimal" class="card position-relative h-100 shadow-sm card-animal">
-                <img src="" alt="cavalo" id="idVisual" class="card-img" style="height: 270px; object-fit: cover;">
+        <div class="col-12 col-md-5 mb-3 mb-md-0 d-flex justify-content-center">
+            <div id="infoAnimal" class="card position-relative h-100 shadow-lg" style="border:none; width: 280px; border-radius: 15px;">
+                <img src="" alt="cavalo" id="idVisual" class="card-img" style="height: 250px; object-fit: cover; border-radius: 15px;">
                 <div class="card-img-overlay d-flex flex-column justify-content-end"
-                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
-                    <div style="text-align: left; margin-bottom: 14px;">
-                        <h5 class="mb-1" style="font-size: 2.00rem; font-weight: 400;">{{ animal.nome }}</h5>
-                        <p class="mb-0 text-white-50" style="font-size: 1.75rem;">{{ animal.proprietario }}</p>
-                    </div>
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px; border-radius: 15px;">
                 </div>
             </div>
         </div>
 
         <!-- Nome do Animal -->
-        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+        <div class="col-12 col-md-7 mb-3 mb-md-0" style="text-align: start;">
             <label for="txtNome" class="form-label">Nome do Animal:</label>
             <input id="txtNome" class="form-control" type="text" maxlength="45">
 

@@ -1,37 +1,142 @@
-<h3>Dados da Dieta</h3>
-Nome:
-{{dietas.nome}}<br>
-Descrição:
-{{dietas.descricao}}<br>
-Id da Exigência:
-{{dietas.exigencia_id}}<br>
-<hr>
+{% extends 'master.html' %}
+{% load static %}
+{% block conteudo %}
+<div class="container mt-3">
+    <h1>Lista de Dietas</h1>
+    <!-- Formulário de busca -->
+    <form method="get" class="form-group my-4 d-flex justify-content-center mx-auto">
+        <div class="col-8 col-lg-4">
+            <div class="input-group">
+                <input class="form-control" id="txtBuscaNomeAlimento" name="query" value="{{ query }}" type="text"
+                    placeholder="Informe o nome de um alimento..." style="border-radius: 20px 0 0 20px;">
+                <div class="input-group-append">
+                    <button type="submit" class="botao" style="border-radius: 0 20px 20px 0;"><img
+                            src="{% static 'img/search.png' %}" width="20"
+                            style=" margin-right: 3px; filter: brightness(0) invert(1)"></button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Botão de inserir -->
+    <div class="form-group row mr-1 justify-content-end">
+        <button type="button" class="botao insert-btn">
+            <img src="{% static 'img/add_circle.png' %}" width="20"
+                style="margin-right: 3px; filter: brightness(0) invert(1)">
+            Inserir
+        </button>
+    </div>
+    <!-- Contador de registros -->
+    <legend class="text-center small">
+        {% if page_obj.paginator.count == 0 %}
+        Nenhum registro cadastrado
+        {% elif page_obj.paginator.count == 1 %}
+        1 registro encontrado
+        {% else %}
+        {{ page_obj.paginator.count }} registros encontrados
+        {% endif %}
+    </legend>
+    {% load custom_filters %}
+    <table class="tabela table-responsive-sm">
+        <thead>
+            <tr>
+                <th>Alimento</th>
+                <th class="d-none d-sm-table-cell">Classificação</th>
+                <th>Matéria Seca</th>
+                <th>Proteína Bruta</th>
+                <th class="d-none d-sm-table-cell">Energia Digestiva</th>
+                <th class="text-end">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dieta in dietas %}
+            <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}" >
+                <td id="txtNome">{{ dieta.nome }}</td>
+                <td class="text-end">
+                    <button type="button" class="btn-ver-dieta" data-id="{{ dieta.id }}">
+                        Ver a dieta
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        const imagemVisibilidade = "{% static 'img/visibility.png' %}";
+        const imagemNVisibilidade = "{% static 'img/not_visibility.png' %}";
+    </script>
+    <!-- Paginador -->
+    {% include "paginador.html" %}
+    <br>
+</div>
+<!-- Conteudo do modal galeraaa 
+ modal de inserção -->
+<div hidden class="container my-3" style="text-align: start;" id="txtInserir">
+    <div class="row mb-4">
+        <!-- Nome do Alimento -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+            <label for="txtNome" class="form-label">Nome do alimento</label>
+            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" maxlength="45">
+        </div>
 
-<h3>Alimentos que compoem a dieta</h3>
-{% for i in alimentos_nutrientes %}
-    {{i.alimento}}<br>
-    {% for j in i.nutrientes%}
-        {{j.nutriente}} - {{j.valor}} |
-    {% endfor %}
-    <br>
-    <br>
-{% endfor %}
-<hr>
+        <!-- Classificação -->
+        <div class="col-12 col-md-6">
+            <label for="idClassificacao" class="form-label">Classificação</label>
+            <select class="form-control" id="idClassificacao"></select>
+        </div>
+    </div>
 
-<h3>Valor nutricional * quantidade na dieta</h3>
-{% for i in alimentos_nutrientes %}
-    {{i.alimento}} - {{i.quantidade}}kg<br>
-    {% for j in i.nutrientes%}
-        {{j.nutriente}} - {{j.produto}} |
-    {% endfor %}
-    <br>
-    <br>
-{% endfor %}
-<br>
-<hr>
+    <div class="row">
+        <!-- Matéria Seca -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
+            <input id="txtMs" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
 
-<h3>Total fornecido pela dieta</h3>
-<br>
-{% for i in lista_totais %}
-    {{i}} | 
-{% endfor %}
+        <!-- Proteína Bruta -->
+        <div class="col-12 col-md-4">
+            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
+            <input id="txtPb" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
+
+        <!-- Energia Digestiva -->
+        <div class="col-12 col-md-4 mb-3 mb-md-0">
+            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
+            <input id="txtEd" class="form-control" type="text" placeholder="0.00" maxlength="5">
+        </div>
+    </div>
+</div>
+<!-- modal inserir composicao -->
+<div hidden class="container my-3" style="text-align: start;" id="txtInserirComposicao">
+    <div class="row mb-4">
+        <!-- Nutriente -->
+        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
+            <label for="idNutriente" class="form-label">Nome do nutriente</label>
+            <select class="form-control" id="idNutriente"></select>
+        </div>
+        <!-- Quantidade -->
+        <div class="col-12 col-md-6">
+            <label for="txtQuantidade" class="form-label">Quantidade</label>
+            <input id="txtQuantidade" class="form-control" type="text" placeholder="00.00">
+        </div>
+    </div>
+</div>
+<script type="module" src="{% static 'js/crud_alimentos.js' %}"></script>
+<script>
+    const csrf_token = '{{ csrf_token }}';
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        event.detail.headers['X-CSRFToken'] = csrf_token;
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const botoes = document.querySelectorAll('.btn-ver-dieta');
+    botoes.forEach(botao => {
+        botao.addEventListener('click', (event) => {
+            const id = event.target.dataset.id;
+            window.location.href = `/dieta/${id}/`;
+        });
+    });
+});
+</script>
+
+    {% endblock %}

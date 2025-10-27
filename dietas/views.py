@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from .models import Dieta, ComposicaoDieta
 from decimal import Decimal
+from django.core.paginator import Paginator
 
-def dietas(request):
-    lista_dieta = Dieta.objects.get(pk=1)
+
+def dieta(request, id):
+    lista_dieta = Dieta.objects.get(pk=id)
     comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
 
     # Totais agregados 
@@ -30,12 +32,25 @@ def dietas(request):
             'nutrientes': nutriente_alimento
         })
 
-    return render(request, 'dietas.html', {
+    return render(request, 'dieta.html', {
         'dietas': lista_dieta,
         'compdieta': comp_dieta,
         'lista_totais': lista_totais_fornecidos,
         'alimentos_nutrientes': alimentos_nutrientes
     })
+
+def dietas(request):
+    query = request.GET.get('query', '')
+    nutrientes_lista = Dieta.objects.filter(nome__icontains=query).order_by('-is_active', 'nome')
+    paginator = Paginator(nutrientes_lista, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'dietas.html', {
+        'dietas': page_obj,
+        'page_obj': page_obj,
+        'query': query
+    })
+
 
 # def dietas(request):
 #     todas_dietas = Dieta.objects.all()
