@@ -7,14 +7,52 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 
 def gerenciar_dietas(request, id):
-    # lista_dieta = Dieta.objects.get(pk=id)
+    dieta = Dieta.objects.get(pk=id)
+    comp_dieta = (
+        ComposicaoDieta.objects.filter(dieta=dieta)
+        .select_related('alimento', 'alimento__classificacao')
+        .prefetch_related('alimento__composicaoalimento_set__nutriente')
+    )
+
+    # --- Totais agregados ---
+    totais = dieta.total_nutrientes_vetor()
+
+    # 🔧 Converter para dicionário por nome do nutriente
+    total_fornecido = {t['nutriente']: round(t['total'], 2) for t in totais}
+    unidade_por_nutriente = {t['nutriente']: t['unidade'] for t in totais}
+
+    # --- Nutrientes usados na tabela ---
+    todos_nutrientes = set()
+    for comp in comp_dieta:
+        for ca in comp.alimento.composicaoalimento_set.all():
+            todos_nutrientes.add(ca.nutriente)
+    todos_nutrientes = sorted(list(todos_nutrientes), key=lambda n: n.nome)
+
+    # --- Nutrientes por alimento ---
+    nutrientes_por_alimento = {}
+    for comp in comp_dieta:
+        nutrientes_por_alimento[comp.alimento.id] = {n.id: 0 for n in todos_nutrientes}
+        for ca in comp.alimento.composicaoalimento_set.all():
+            nutrientes_por_alimento[comp.alimento.id][ca.nutriente.id] = round(ca.valor, 2)
+
+    context = {
+        'dieta': dieta,
+        'comp_dieta': comp_dieta,
+        'todos_nutrientes': todos_nutrientes,
+        'nutrientes_por_alimento': nutrientes_por_alimento,
+        'total_fornecido': total_fornecido,
+        'unidade_por_nutriente': unidade_por_nutriente,
+    }
+    return render(request, 'gerenciar_dietas.html', context)
+
+    lista_dieta = Dieta.objects.get(pk=id)
     # comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
 
     # # Totais agregados 
-    # totais = lista_dieta.total_nutrientes_vetor()
-    # lista_totais_fornecidos = [
-    #     f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}" for t in totais
-    # ]
+    totais = lista_dieta.total_nutrientes_vetor()
+    lista_totais_fornecidos = [
+        f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}" for t in totais
+    ]
 
     # alimentos_nutrientes = []
     # todos_nutrientes = set()
@@ -55,7 +93,14 @@ def gerenciar_dietas(request, id):
     # })
     dieta = Dieta.objects.get(pk=id)
     comp_dieta = ComposicaoDieta.objects.filter(dieta=dieta).select_related('alimento', 'alimento__classificacao').prefetch_related('alimento__composicaoalimento_set__nutriente')
+    lista_dieta = Dieta.objects.get(pk=id)
+    # comp_dieta = ComposicaoDieta.objects.filter(dieta=lista_dieta)
 
+    # # Totais agregados 
+    totais = lista_dieta.total_nutrientes_vetor()
+    lista_totais_fornecidos = [
+        f"{t['nutriente']} - {round(t['total'], 2)} {t['unidade']}" for t in totais
+    ]
     # Coletar todos os nutrientes extras de todos os alimentos da dieta
     todos_nutrientes = set()
     for comp in comp_dieta:
@@ -75,6 +120,7 @@ def gerenciar_dietas(request, id):
         'comp_dieta': comp_dieta,
         'todos_nutrientes': todos_nutrientes,
         'nutrientes_por_alimento': nutrientes_por_alimento,
+        'total_fornecido': lista_totais_fornecidos
     })
 def dietas(request):
     query = request.GET.get('query', '')

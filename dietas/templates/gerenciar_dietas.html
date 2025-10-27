@@ -34,15 +34,18 @@
                     <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
                     <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
                     {% for nutriente in todos_nutrientes %}
-                    <th  style="white-space: nowrap;">{{ nutriente.nome }}<small>({{ nutriente.unidade }})</small></th>
+                    <th style="white-space: nowrap;">
+                        {{ nutriente.nome }} <small>({{ nutriente.unidade }})</small>
+                    </th>
                     {% endfor %}
                 </tr>
             </thead>
+
             <tbody>
                 {% for comp in comp_dieta %}
                 <tr>
                     <td style="white-space: nowrap;">{{ comp.alimento.nome }}</td>
-                    <td>{{ comp.alimento.classificacao.nome }}</td>
+                    <td>{{ comp.quantidade|truncar:2 }} <small>(kg)</small></td>
                     <td>{{ comp.alimento.ms }}</td>
                     <td>{{ comp.alimento.pb }}</td>
                     <td>{{ comp.alimento.ed }}</td>
@@ -58,10 +61,29 @@
                     <td colspan="{{ 5|add:todos_nutrientes|length }}">Nenhum alimento nesta dieta.</td>
                 </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
 
+                <!-- Linha de total fornecido -->
+                <tr class="table-info fw-bold">
+                    <td colspan="5" class="text-end">Total Fornecido:</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td>
+                        {{ total_fornecido|dictget:nutriente.nome|default:"0" }}
+                    </td>
+                    {% endfor %}
+                </tr>
+
+                <!-- Linha de balanceamento (placeholder) -->
+                <tr class="table-secondary">
+                    <td colspan="5" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td>-</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
 
 
     {% comment %}
