@@ -658,7 +658,9 @@ export function atualizar_composicao(botao, composicao, alimento) {
                     </div>
                 `,
                 confirmButtonText: 'Salvar',
+                confirmButtonColor: '#2f453a',
                 cancelButtonText: 'Cancelar',
+                cancelButtonColor: '#FF0000',
                 showCancelButton: true,
                 showLoaderOnConfirm: true,
                 allowOutsideClick: () => !Swal.isLoading(),
@@ -722,6 +724,8 @@ export function atualizar_composicao(botao, composicao, alimento) {
                                 });
                         }
                     });
+                } else {
+                     carregar_composicao(composicao, alimento)
                 }
             });
         })
