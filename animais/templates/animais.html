@@ -181,14 +181,14 @@
         <!-- Nome do Animal -->
         <div class="col-12 col-md-7 mb-3 mb-md-0" style="text-align: start;">
             <label for="txtNome" class="form-label">Nome do Animal:</label>
-            <input id="txtNome" class="form-control" type="text" maxlength="45">
+            <input id="txtNome" class="form-control" type="text" maxlength="45" required>
 
             <label for="txtProprietario" class="form-label mt-3">Nome do Propietário:</label>
             <input id="txtProprietario" class="form-control" type="text" placeholder="tem que puxar do banco..."
                 maxlength="45">
 
             <label for="idGenero" class="form-label mt-3">Gênero:</label>
-            <select class="form-control" id="txtGenero">
+            <select class="form-control" id="txtGenero" required>
                 <option value="M">Macho</option>
                 <option value="F">Fêmea</option>
             </select>
@@ -197,13 +197,13 @@
                 <div class="col">
                     <label for="txtPeso" class="form-label mt-3">Peso:</label>
                     <input id="txtPeso" class="form-control" type="txt" placeholder="tem que puxar do banco..."
-                        maxlength="45">
+                        maxlength="45" required>
                 </div>
 
                 <div class="col">
                     <label for="dataNasc" class="form-label mt-3">Data de Nascimento:</label>
                     <input id="dataNasc" class="form-control" type="date" placeholder="tem que puxar do banco..."
-                        maxlength="45">
+                        maxlength="45" required>
                 </div>
             </div>
         </div>
