@@ -584,7 +584,9 @@ export function alerta_update(botao) {
                     </div>
                 `,
                 confirmButtonText: 'Salvar',
+                confirmButtonColor: '#2f453a',
                 cancelButtonText: 'Cancelar',
+                cancelButtonColor: '#FF0000',
                 showCancelButton: true,
                 showLoaderOnConfirm: true,
                 allowOutsideClick: () => !Swal.isLoading(),
