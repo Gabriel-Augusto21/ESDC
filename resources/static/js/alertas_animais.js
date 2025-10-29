@@ -48,7 +48,7 @@ export function inserir(html) {
         width: '800px',
         title: 'Inserir',
         html: html,
-        confirmButtonText: 'Atualizar',
+        confirmButtonText: 'Inserir',
         confirmButtonColor: '#2f453a',
         cancelButtonText: 'Cancelar',
         cancelButtonColor: '#FF0000',

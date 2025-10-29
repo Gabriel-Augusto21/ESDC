@@ -88,3 +88,34 @@ def ativar_dieta(request):
     dieta.is_active = True
     dieta.save()
     return JsonResponse({'Mensagem': f'{dieta.nome} foi ativado'}, status=200)
+
+def inserir_dieta(request):
+    if request.method == 'GET':
+        exigencias = Exigencia.objects.all().order_by('nome')
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        descricao = request.POST.get('descricao')
+        especifica = request.POST.get('especifica') == 'on'
+        exigencia_id = request.POST.get('exigencia')
+
+        if not nome or not descricao or not exigencia_id:
+            return JsonResponse({'erro': 'Preencha todos os campos obrigatórios!'}, status=400)
+        
+        if Dieta.objects.filter(nome__iexact=nome).exists():
+            return JsonResponse({'erro': 'Já existe uma dieta com esse nome.'}, status=400)
+        
+        try:
+            exigencia = Exigencia.objects.get(id=exigencia_id)
+        except Exigencia.DoesNotExist:
+            return JsonResponse({'erro': 'Exigência inválida!'}, status=400)
+
+        dieta = Dieta.objects.create(
+            nome=nome,
+            descricao=descricao,
+            especifica=especifica,
+            exigencia=exigencia,
+            is_active=True
+        )
+
+        return JsonResponse({'mensagem': f'Dieta "{dieta.nome}" criada com sucesso!'}, status=201)

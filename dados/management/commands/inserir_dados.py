@@ -126,7 +126,8 @@ class Command(BaseCommand):
 
         nomes_imagem = [
             'default1.png', 'default2.png', 'default3.png',
-            'default4.png', 'default5.png', 'default6.png', 'default7.png'
+            'default4.png', 'default5.png', 'default6.png', 'default7.png',
+            'default.png', 
         ]
 
         # Cria animais machos

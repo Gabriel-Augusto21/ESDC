@@ -8,4 +8,5 @@ urlpatterns = [
     path("gerenciar_dietas/<int:id>/", views.gerenciar_dietas, name='gerenciar_dietas'),
     path("desativar_dieta/", views.desativar_dieta, name="desativar_dieta"),   
     path("ativar_dieta/", views.ativar_dieta, name="ativar_dieta"),   
+    path("inserir_dieta/", views.inserir_dieta, name="inserir_dieta"),
 ]
