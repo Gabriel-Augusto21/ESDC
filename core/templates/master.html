@@ -86,63 +86,45 @@
         {% endblock %}
     </div>
 
-    <footer class="footer text-light pt-5 pb-3">
-    <div class="container">
-        <div class="row">
+        <footer class="text-light pt-5 pb-2 footer">
+            <div class="container-fluid p-5">
+                <div class="row">
 
-            <!-- Logo e descrição -->
-            <div class="col-md-3 mb-4">
-                <img src="{% static 'img/logo.png' %}" alt="Logo" style="width: 120px; filter: brightness(0) invert(1); margin-bottom: 1rem;">
-                <p style="font-family: 'Roboto', sans-serif; font-size: 0.85rem; color: #cccccc;">
-                    Escola de Saúde Digestiva do Cavalo - excelência em educação e pesquisa.
-                </p>
+                    <!-- Logo e nome -->
+                    <div class="col-md-3 mb-4">
+                        <img src="{% static 'img/logo.png' %}" alt="Logo"
+                            style="width: 100px; filter: brightness(0) invert(1)">
+                    </div>
+
+                    <!-- Contato -->
+                    <div class="col-md-5 mb-4">
+                        <h6 class="mb-3">Nosso Contato</h6>
+                        <ul class="list-unstyled">
+                            <li>&#45; gomides.augustog@gmail.com</li>
+                            <li>&#45; joaodirceuconstantinocarvalho@gmail.com</li>
+                            <li>&#45; luancarlos1201@gmail.com</li>
+                            <li>&#45; nicolecarolinesantos07@gmail.com</li>
+                        </ul>
+                    </div>
+
+                    <!-- Membros da equipe -->
+                    <div class="col-md-3 mb-4">
+                        <h6 class="mb-3">Membros da Equipe</h6>
+                        <ul class="list-unstyled">
+                            <li>&#45; Prof. Orientador: Eduardo Cardoso Melo</li>
+                            <li>&#45; Gabriel</li>
+                            <li>&#45; João</li>
+                            <li>&#45; Luan</li>
+                            <li>&#45; Nicole</li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="bg-light">
+                <div class="text-center small">
+                    &copy; 2025 Escola de Saúde Digestiva do Cavalo. Todos os direitos reservados.
+                </div>
             </div>
-
-            <!-- Contato -->
-            <div class="col-md-3 mb-4">
-                <h6 class="text-uppercase fw-bold mb-3" style="letter-spacing: 1px; font-size: 0.85rem;">Contato</h6>
-                <ul class="list-unstyled" style="font-size: 0.85rem; line-height: 1.8;">
-                    <li><a href="mailto:gomides.augustog@gmail.com" class="text-light text-decoration-none">gomides.augustog@gmail.com</a></li>
-                    <li><a href="mailto:joaodirceuconstantinocarvalho@gmail.com" class="text-light text-decoration-none">joaodirceuconstantinocarvalho@gmail.com</a></li>
-                    <li><a href="mailto:luancarlos1201@gmail.com" class="text-light text-decoration-none">luancarlos1201@gmail.com</a></li>
-                    <li><a href="mailto:nicolecarolinesantos07@gmail.com" class="text-light text-decoration-none">nicolecarolinesantos07@gmail.com</a></li>
-                </ul>
-            </div>
-
-            <!-- Equipe -->
-            <div class="col-md-3 mb-4">
-                <h6 class="text-uppercase fw-bold mb-3" style="letter-spacing: 1px; font-size: 0.85rem;">Equipe</h6>
-                <ul class="list-unstyled" style="font-size: 0.85rem; line-height: 1.8;">
-                    <li>Prof. Orientador: Eduardo Cardoso Melo</li>
-                    <li>Gabriel</li>
-                    <li>João</li>
-                    <li>Luan</li>
-                    <li>Nicole</li>
-                </ul>
-            </div>
-
-            <!-- Links extras ou informações -->
-            <div class="col-md-3 mb-4">
-                <h6 class="text-uppercase fw-bold mb-3" style="letter-spacing: 1px; font-size: 0.85rem;">Mais informações</h6>
-                <ul class="list-unstyled" style="font-size: 0.85rem; line-height: 1.8;">
-                    <li><a href="#" class="text-light text-decoration-none">Política de Privacidade</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Termos de Uso</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Suporte</a></li>
-                </ul>
-            </div>
-
-        </div>
-
-        <hr class="bg-light mt-0">
-
-        <div class="row">
-            <div class="col text-center" style="font-family: 'Roboto', sans-serif; font-size: 0.75rem; color: #cccccc;">
-                &copy; 2025 Escola de Saúde Digestiva do Cavalo. Todos os direitos reservados.
-            </div>
-        </div>
-    </div>
-</footer>
-
+        </footer>
 </body>
 <script>
     //exibir modal sobre
