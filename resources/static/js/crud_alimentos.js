@@ -1,5 +1,6 @@
 import {ativar, desativar, atualizar, inserir, exibir_composicao, carregar_composicao, desativar_composicao, ativar_composicao, atualizar_composicao} from './alertas_alimentos.js'
 
+const htmlAtualizacao = document.getElementById('txtAtualizar');
 const htmlInsercao = document.getElementById('txtInserir');
 document.body.addEventListener('click', function (evento){ 
     const botao = evento.target.closest('button');
@@ -29,7 +30,7 @@ document.body.addEventListener('click', function (evento){
             ).join('');
             
             // pegando o html que esta escondido na alimentos.html
-            const clone = htmlInsercao;
+            const clone = htmlAtualizacao;
             clone.removeAttribute('hidden');
 
             // pegando os elementos clonados
