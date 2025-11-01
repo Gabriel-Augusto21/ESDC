@@ -7,7 +7,7 @@ class Animal(models.Model):
     nome = models.CharField(max_length=30)
 
     imagem = models.ImageField(
-        upload_to="fotos_perfil/",
+        upload_to="fotos_animais/",
         validators=[FileExtensionValidator(allowed_extensions=["jpg", "png", "jpeg"])],
         null=True,
         blank=True,
