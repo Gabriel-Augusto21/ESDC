@@ -1,5 +1,5 @@
 {% load static %}
-<table class="table table-borderless tabela table-hover">
+<table class="table table-borderless tabela table-hover" style="font-size: 1.2em;">
     <thead>
         <tr>
             <th>Nutriente</th>
@@ -12,7 +12,7 @@
         {% for nutriente in nutrientes %}
         <tr class="container" data-id="{{ nutriente.id }}"
         {% if nutriente.is_active %}
-            style="background-color: #ffffff"
+            style="background-color: #ffffff3d"
         {% else %}
             style="background-color:rgba(190, 190, 190, 0.31)"
         {% endif %}>

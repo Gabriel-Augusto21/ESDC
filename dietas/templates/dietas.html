@@ -28,105 +28,23 @@
     <!-- Contador de registros -->
     <legend class="text-center small">
         {% if page_obj.paginator.count == 0 %}
-        Nenhum registro cadastrado
-        {% elif page_obj.paginator.count == 1 %}
-        1 registro encontrado
-        {% else %}
-        {{ page_obj.paginator.count }} registros encontrados
-        {% endif %}
+        <p class="text-center">Nenhuma dieta encontrada.</p>
     </legend>
-    {% load custom_filters %}
-    <table class="tabela table-responsive-sm">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th class="d-none d-sm-table-cell">Exigência</th>
-                <th>Data de Criação</th>
-                <th class="text-end">Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for dieta in dietas %}
-            <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}">
-                <td id="txtNome">{{ dieta.nome }}</td>
-                <td id="txtExigencia">{{dieta.exigencia}}</td>
-                <td id="txtData">-</td>
-                <td class="text-end">{% if dieta.is_active %}
-                    <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
-                        <img src="{% static 'img/visibility.png' %}" width="20">
-                    </button>
-                    <button class="btn btn-sm btn-ver-dieta" data-id="{{ dieta.id }}">
-                        <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
-                    </button>
-                    {% else %}
-                    <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
-                        <img src="{% static 'img/not_visibility.png' %}" width="20">
-                    </button>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <script>
-        const imagemVisibilidade = "{% static 'img/visibility.png' %}";
-        const imagemNVisibilidade = "{% static 'img/not_visibility.png' %}";
-    </script>
-    <!-- Paginador -->
-    {% include "paginador.html" %}
-    <br>
-</div>
-<!-- Conteudo do modal galeraaa 
- modal de inserção -->
-<div hidden class="container my-3" style="text-align: start;" id="txtInserir">
-    <div class="row mb-4">
-        <!-- Nome do Alimento -->
-        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
-            <label for="txtNome" class="form-label">Nome do alimento</label>
-            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" maxlength="45">
-        </div>
-
-        <!-- Classificação -->
-        <div class="col-12 col-md-6">
-            <label for="idClassificacao" class="form-label">Classificação</label>
-            <select class="form-control" id="idClassificacao"></select>
-        </div>
+    {% elif page_obj.paginator.count == 1 %}
+    1 dieta encontrada
+    <div class="container text-center">
+        {% include 'dietas_table.html' %}
+        {% include "paginador.html" %}
     </div>
-
-    <div class="row">
-        <!-- Matéria Seca -->
-        <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-            <input id="txtMs" class="form-control" type="text" placeholder="0.00" maxlength="5">
-        </div>
-
-        <!-- Proteína Bruta -->
-        <div class="col-12 col-md-4">
-            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-            <input id="txtPb" class="form-control" type="text" placeholder="0.00" maxlength="5">
-        </div>
-
-        <!-- Energia Digestiva -->
-        <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-            <input id="txtEd" class="form-control" type="text" placeholder="0.00" maxlength="5">
-        </div>
+    </legend>
+    {% else %}
+    {{ page_obj.paginator.count }} dietas registradas
+    <div class="container text-center">
+        {% include 'dietas_table.html' %}
+        {% include "paginador.html" %}
     </div>
-</div>
-<!-- modal inserir composicao -->
-<div hidden class="container my-3" style="text-align: start;" id="txtInserirComposicao">
-    <div class="row mb-4">
-        <!-- Nutriente -->
-        <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
-            <label for="idNutriente" class="form-label">Nome do nutriente</label>
-            <select class="form-control" id="idNutriente"></select>
-        </div>
-        <!-- Quantidade -->
-        <div class="col-12 col-md-6">
-            <label for="txtQuantidade" class="form-label">Quantidade</label>
-            <input id="txtQuantidade" class="form-control" type="text" placeholder="00.00">
-        </div>
-    </div>
+    </legend>
+    {% endif %}
 </div>
 <script type="module" src="{% static 'js/crud_dietas.js' %}"></script>
 <script>

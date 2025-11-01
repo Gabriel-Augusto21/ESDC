@@ -27,20 +27,26 @@
          Inserir
       </button>
    </div>
-   <legend class="text-center small">
-         {% if page_obj.paginator.count == 0 %}
-            Nenhum registro cadastrado
-         {% elif page_obj.paginator.count == 1 %}
-            1 registro encontrado
-         {% else %}
-            {{ page_obj.paginator.count }} registros encontrados
-         {% endif %}
-      </legend>
-    <!-- Registros -->
-    {% include 'nutrientes_table.html' %}
-    <!-- Paginador -->
-    {% include "paginador.html" %}
-    <br>
+   <!-- Contador de registros -->
+    <legend class="text-center small">
+    {% if page_obj.paginator.count == 0 %}
+        <p class="text-center">Nenhum nutriente encontrado.</p>
+    </legend>
+    {% elif page_obj.paginator.count == 1 %}
+        1 registro encontrado
+        <div class="container text-center">
+            {% include 'nutrientes_table.html' %}
+            {% include "paginador.html" %}
+        </div>
+    </legend>
+    {% else %}
+    {{ page_obj.paginator.count }} animais registrados
+        <div class="container text-center">
+            {% include 'nutrientes_table.html' %}
+            {% include "paginador.html" %}
+        </div>
+    </legend>
+    {% endif %}
 </div>
 <script>
     const csrf_token = '{{ csrf_token }}';

@@ -1,6 +1,6 @@
 {% load custom_filters %}
 {% load static %}
-<table class="tabela table-responsive-sm">
+<table class="tabela table-responsive-sm" style="font-size: 1.2em;">
     <thead>
         <tr>
             <th>Alimento</th>
@@ -15,7 +15,7 @@
         {% for alimento in alimentos %}
         <tr class="container" data-id="{{ alimento.id }}" data-nome="{{ alimento.nome }}" data-id-class="{{ alimento.classificacao.id }}"
         {% if alimento.is_active %}
-            style="background-color: #ffffff"
+            style="background-color: #ffffff3d"
         {% else %}
             style="background-color:rgba(190, 190, 190, 0.31)"
         {% endif %}>

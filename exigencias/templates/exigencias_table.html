@@ -1,5 +1,5 @@
 {% load static %}
-<table class="table-responsive-sm tabela">
+<table class="table-responsive-sm tabela" style="font-size: 1.2em;">
     <thead>
         <tr>
             <th>Exigência</th>
@@ -21,7 +21,7 @@
             data-ed="{{ exigencia.ed }}"
             data-categoria="{{ exigencia.categoria.id }}"
             {% if exigencia.is_active %}
-                style="background-color: #ffffff"
+                style="background-color: #ffffff3d"
             {% else %}
                 style="background-color:rgba(190, 190, 190, 0.31)"
             {% endif %}>

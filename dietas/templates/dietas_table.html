@@ -1,0 +1,38 @@
+{% load static %}
+{% load custom_filters %}
+<table class="tabela table-responsive-sm" style="font-size: 1.2em;">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th class="d-none d-sm-table-cell">Exigência</th>
+            <th>Data de Criação</th>
+            <th class="text-end">Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dieta in dietas %}
+        <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}">
+            <td id="txtNome">{{ dieta.nome }}</td>
+            <td id="txtExigencia">{{dieta.exigencia}}</td>
+            <td id="txtData">-</td>
+            <td class="text-end">{% if dieta.is_active %}
+                <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
+                    <img src="{% static 'img/visibility.png' %}" width="20">
+                </button>
+                <button class="btn btn-sm btn-ver-dieta" data-id="{{ dieta.id }}">
+                    <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
+                </button>
+                {% else %}
+                <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
+                    <img src="{% static 'img/not_visibility.png' %}" width="20">
+                </button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+    const imagemVisibilidade = "{% static 'img/visibility.png' %}";
+    const imagemNVisibilidade = "{% static 'img/not_visibility.png' %}";
+</script>
