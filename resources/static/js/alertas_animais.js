@@ -46,20 +46,73 @@ export function ativar(id, nome) {
 export function inserir(html) {
     Swal.fire({
         width: '800px',
-        title: 'Inserir',
+        title: 'Inserir Animal',
         html: html,
         confirmButtonText: 'Inserir',
         confirmButtonColor: '#2f453a',
         cancelButtonText: 'Cancelar',
         cancelButtonColor: '#FF0000',
+        showCancelButton: true,
+        focusConfirm: false,
         customClass: {
             confirmButton: 'botao-confirma-alerta',
             cancelButton: 'botao-cancela-alerta',
         },
-        showCancelButton: true,
-        focusConfirm: false,
+        preConfirm: () => {
+            const popup = Swal.getPopup();
+            const nome = popup.querySelector('#nomeAnimal')?.value.trim();
+            const proprietario = popup.querySelector('#proprietarioAnimal')?.value.trim();
+            const peso_vivo = popup.querySelector('#pesoAnimal')?.value.trim();
+            const data_nasc = popup.querySelector('#dataNascAnimal')?.value.trim();
+            const genero = popup.querySelector('#generoAnimal')?.value.trim();
+            const imagem = popup.querySelector('#imagemAnimal')?.files[0];
+
+            if (!nome || !peso_vivo || !data_nasc || !genero) {
+                Swal.showValidationMessage('Preencha todos os campos obrigatórios!');
+                return false;
+            }
+
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('proprietario', proprietario);
+            formData.append('peso_vivo', peso_vivo);
+            formData.append('data_nasc', data_nasc);
+            formData.append('genero', genero);
+            if (imagem) formData.append('imagem', imagem);
+
+            return fetch('/inserir_animal/', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': window.csrf_token },
+            })
+                .then(response => response.json().then(data => ({ status: response.status, data })))
+                .then(result => {
+                    if (result.status === 200) {
+                        return result.data;
+                    } else {
+                        Swal.showValidationMessage(result.data.Mensagem || 'Erro ao inserir o animal.');
+                    }
+                })
+                .catch(() => {
+                    Swal.showValidationMessage('Erro de conexão com o servidor.');
+                });
+        }
+    }).then(result => {
+        if (result.isConfirmed && result.value) {
+            Swal.fire({
+                title: 'Sucesso!',
+                text: result.value.Mensagem,
+                icon: 'success',
+                confirmButtonColor: '#2f453a',
+                timer: 2500,
+                timerProgressBar: true,
+            }).then(() => {
+                window.location.reload();
+            });
+        }
     });
 }
+
 
 export function atualizar(id, nome, html) {
     Swal.fire({

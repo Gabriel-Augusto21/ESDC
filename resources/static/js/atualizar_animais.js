@@ -3,9 +3,12 @@ import { ativar, desativar, atualizar, inserir } from './alertas_animais.js'
 const html = document.getElementById('modalInserir');
 const htmlAtualizar = document.getElementById('modalAtualizar');
 document.getElementById('inserir-btn').addEventListener('click', () => {
-    let clone = html
-    clone.removeAttribute('hidden')
-    inserir(clone);
+    const clone = html.cloneNode(true);
+    clone.removeAttribute('hidden');
+    const wrapper = document.createElement('div');
+    wrapper.appendChild(clone);
+    inserir(wrapper.innerHTML);
+
 });
 
 document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(btn => {

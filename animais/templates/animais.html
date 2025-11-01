@@ -101,69 +101,37 @@
 <!-- modal inserir -->
 <div hidden class="container my-3" style="text-align: start;" id="modalInserir">
     <div class="row mb-4">
-            <div class="col-md-6">
-                <label for="nomeAnimal" class="form-label">Nome do animal</label>
-                <input type="text" class="form-control custom-input" id="nomeAnimal" name="nome" required>
-            </div>
-            <div class="col-md-6">
-                <label for="proprietarioAnimal" class="form-label">Proprietário</label>
-                <input type="text" class="form-control custom-input" id="proprietarioAnimal" name="proprietario" required>
-            </div>
-            <div class="col-md-6">
-                <label for="pesoAnimal" class="form-label">Peso</label>
-                <input type="number" step="0.01" class="form-control custom-input" id="pesoAnimal" name="peso" required>
-            </div>
-            <div class="col-md-6">
-                <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
-                <input type="date" class="form-control custom-input" id="dataNascAnimal" name="data_nascimento" required>
-            </div>
-            <div class="col-md-6">
-                <label for="generoAnimal" class="form-label">Gênero</label>
-                <select class="form-select custom-select" id="generoAnimal" name="genero" required>
-                    <option value="">Selecione o gênero</option>
-                    <option value="Macho">Macho</option>
-                    <option value="Fêmea">Fêmea</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label for="imagemAnimal" class="form-label">Foto do animal</label>
-                <div class="custom-file-upload">
-                    <input type="file" id="imagemAnimal" name="imagem" accept="image/*">
-                </div>
-            </div>
-    </div>
-        <!-- Nome do Alimento -->
-        {% comment %} <div class="col-12 col-md-6 mb-3 mb-md-0" style="text-align: start;">
-            <label for="txtNome" class="form-label">Nome do animal</label>
-            <input id="txtNome" class="form-control" type="text" placeholder="Nome do alimento" maxlength="45">
+        <div class="col-md-6">
+            <label for="nomeAnimal" class="form-label">Nome do animal</label>
+            <input type="text" class="form-control custom-input" id="nomeAnimal" name="nome" required>
         </div>
-
-        <!-- Classificação -->
-        <div class="col-12 col-md-6">
-            <label for="idClassificacao" class="form-label">Classificação</label>
-            <select class="form-control" id="idClassificacao"></select>
+        <div class="col-md-6">
+            <label for="proprietarioAnimal" class="form-label">Proprietário</label>
+            <input type="text" class="form-control custom-input" id="proprietarioAnimal" name="proprietario">
+        </div>
+        <div class="col-md-6">
+            <label for="pesoAnimal" class="form-label">Peso</label>
+            <input type="number" step="0.01" class="form-control custom-input" id="pesoAnimal" name="peso_vivo" required>
+        </div>
+        <div class="col-md-6">
+            <label for="dataNascAnimal" class="form-label">Data de nascimento</label>
+            <input type="date" class="form-control custom-input" id="dataNascAnimal" name="data_nasc" required>
+        </div>
+        <div class="col-md-6">
+            <label for="generoAnimal" class="form-label">Gênero</label>
+            <select class="form-select custom-select" id="generoAnimal" name="genero" required>
+                <option value="">Selecione o gênero</option>
+                <option value="M">Macho</option>
+                <option value="F">Fêmea</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="imagemAnimal" class="form-label">Foto do animal</label>
+            <input type="file" id="imagemAnimal" name="imagem" accept="image/*">
         </div>
     </div>
-
-    <div class="row">
-        <!-- Matéria Seca -->
-        <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <label for="txtMs" class="form-label">Matéria Seca (%)</label>
-            <input id="txtMs" class="form-control" type="text" placeholder="0.00" maxlength="5">
-        </div>
-
-        <!-- Proteína Bruta -->
-        <div class="col-12 col-md-4">
-            <label for="txtPb" class="form-label">Proteína Bruta (% M.S)</label>
-            <input id="txtPb" class="form-control" type="text" placeholder="0.00" maxlength="5">
-        </div>
-
-        <!-- Energia Digestiva -->
-        <div class="col-12 col-md-4 mb-3 mb-md-0">
-            <label for="txtEd" class="form-label">Energia Digestiva (Mcal)</label>
-            <input id="txtEd" class="form-control" type="text" placeholder="0.00" maxlength="5">
-        </div> {% endcomment %}
 </div>
+
 
 <div hidden class="container my-3" style="text-align: start;" id="modalAtualizar">
     <hr>
@@ -216,5 +184,6 @@
     document.body.addEventListener('htmx:configRequest', (event) => {
         event.detail.headers['X-CSRFToken'] = csrf_token;
     });
+    window.csrf_token = '{{ csrf_token }}';
 </script>
 {% endblock %}
