@@ -86,3 +86,28 @@ def ativar_animal(request):
     animal.is_active = True
     animal.save()
     return JsonResponse({'Mensagem': f'{animal.nome} foi ativado'}, status=200)
+
+def atualizar_animal(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nome = request.POST.get('nome')
+        dono = request.POST.get('dono')
+        peso = request.POST.get('peso')
+        genero = request.POST.get('genero')
+        data_nasc = request.POST.get('data_nasc')
+        imagem = request.FILES.get('imagem')  # pode ser None se o usuário não trocou
+        try:
+            animal = Animal.objects.get(id=id)
+            animal.nome = nome
+            animal.dono = dono
+            animal.peso = peso
+            animal.genero = genero
+            animal.data_nasc = data_nasc
+            if imagem:
+                animal.imagem = imagem  # substitui a imagem existente
+            animal.save()
+            return JsonResponse({'Mensagem': 'Animal atualizado com sucesso!'}, status=200)
+        except Animal.DoesNotExist:
+            return JsonResponse({'erro': 'Animal não encontrado'}, status=404)
+
+    return JsonResponse({'erro': 'Método não permitido'}, status=405)

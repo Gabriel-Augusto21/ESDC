@@ -145,25 +145,25 @@ export function atualizar(clone, alimento) {
                     });
 
                     input.addEventListener('blur', () => {
-                    const normalizeNumber = (str) => str.replace(',', '.');
-                    const val = normalizeNumber(input.value.trim());
-                    const num = parseFloat(val);
+                        const normalizeNumber = (str) => str.replace(',', '.');
+                        const val = normalizeNumber(input.value.trim());
+                        const num = parseFloat(val);
 
-                    // Regras de validação
-                    const isEd = selector === '#txtEd';
-                    const limite = isEd ? 20 : 100;
+                        // Regras de validação
+                        const isEd = selector === '#txtEd';
+                        const limite = isEd ? 20 : 100;
 
-                    if (val === '' || isNaN(num) || num > limite) {
-                        // Valor inválido: restaura o original
-                        input.value = input.dataset.valorOriginal;
-                        Swal.showValidationMessage('Por favor, insira valores numéricos válidos, respeitando os limites.');
-                        return false;
-                    } else {
-                        // Valor válido: atualiza o valor original
-                        input.dataset.valorOriginal = val;
-                        input.value = val;
-                    }
-                });
+                        if (val === '' || isNaN(num) || num > limite) {
+                            // Valor inválido: restaura o original
+                            input.value = input.dataset.valorOriginal;
+                            Swal.showValidationMessage('Por favor, insira valores numéricos válidos, respeitando os limites.');
+                            return false;
+                        } else {
+                            // Valor válido: atualiza o valor original
+                            input.dataset.valorOriginal = val;
+                            input.value = val;
+                        }
+                    });
                 }
             });
         },

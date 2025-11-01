@@ -35,7 +35,7 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
             nomeInput.value = nome;
             let proprietarioInput = clone.querySelector('#txtProprietario');
             proprietarioInput.value = card.dataset.proprietario;
-            let generoInput = clone.querySelector('#txtGenero');
+            let generoInput = clone.querySelector('#idGenero');
             generoInput.value = card.dataset.genero;
             let pesoInput = clone.querySelector('#txtPeso');
             pesoInput.value = card.dataset.peso;

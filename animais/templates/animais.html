@@ -138,11 +138,14 @@
     <div class="row my-5">
         <!-- Imagem do Animal -->
         <div class="col-12 col-md-5 mb-3 mb-md-0 d-flex justify-content-center">
-            <div id="infoAnimal" class="card position-relative h-100 shadow-lg" style="border:none; width: 280px; border-radius: 15px;">
-                <img src="" alt="cavalo" id="idVisual" class="card-img" style="height: 250px; object-fit: cover; border-radius: 15px;">
+            <div id="infoAnimal" class="card position-relative h-100 shadow-lg" style="border:none; width: 300px; border-radius: 15px;">
+                <img src="" alt="cavalo" id="idVisual" class="card-img" style="height: 280px; object-fit: cover; border-radius: 15px;">
                 <div class="card-img-overlay d-flex flex-column justify-content-end"
-                    style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px; border-radius: 15px;">
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.69), rgba(0,0,0,0)); height: 280px; color: white; border-radius: 15px; pointer-events: none;">
                 </div>
+                <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn"
+                        style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s; pointer-events:none">
+                
             </div>
         </div>
 
@@ -156,7 +159,7 @@
                 maxlength="45">
 
             <label for="idGenero" class="form-label mt-3">Gênero:</label>
-            <select class="form-control" id="txtGenero" required>
+            <select class="form-control" id="idGenero" required>
                 <option value="M">Macho</option>
                 <option value="F">Fêmea</option>
             </select>
@@ -180,6 +183,7 @@
 
 <script type="module" src="{% static 'js/atualizar_animais.js' %}"></script>
 <script>
+    window.urlAtualizarAnimal = "{% url 'animais:atualizar_animal' %}";
     const csrf_token = '{{ csrf_token }}';
     document.body.addEventListener('htmx:configRequest', (event) => {
         event.detail.headers['X-CSRFToken'] = csrf_token;
