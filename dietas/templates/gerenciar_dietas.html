@@ -1,28 +1,23 @@
-{% extends 'master.html' %} {% load static %} {% block conteudo %}{% load custom_tags %}
+{% extends 'master.html' %}
+{% load static %}
+{% block conteudo %}
+{% load custom_tags %}
 
 <div class="container mt-3">
     <h1>Gerenciamento da Dieta</h1>
 
     <!-- Cards dos animais -->
-    <div class="d-flex justify-content-center align-items-center gap-3 mb-4 flex-wrap">
+    <div class="d-flex justify-content-center align-items-center gap-3  flex-wrap">
         <div class="card shadow-sm" style="width: 180px; border-radius: 15px">
-            <img src="{% static 'img/cavalo1.png' %}" class="card-img-top" style="border-radius: 15px 15px 0 0" />
+            <img src="{% static 'img/default.jpg' %}" class="card-img-top" style="border-radius: 15px 15px 0 0" />
             <div class="card-body text-center">
                 <h6 class="card-title mb-1">Animal 1</h6>
                 <small class="text-muted">Proprietario</small>
             </div>
         </div>
-
-        <div class="card shadow-sm" style="width: 180px; border-radius: 15px">
-            <img src="{% static 'img/cavalo2.png' %}" class="card-img-top" style="border-radius: 15px 15px 0 0" />
-            <div class="card-body text-center">
-                <h6 class="card-title mb-1">Animal 2</h6>
-                <small class="text-muted">Proprietario</small>
-            </div>
-        </div>
     </div>
 
-    <h1>Dieta: {{ dieta.nome }}</h1>
+    <h2>{{ dieta.nome }}</h2>
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered">

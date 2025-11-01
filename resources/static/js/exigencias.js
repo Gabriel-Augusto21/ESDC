@@ -1,16 +1,16 @@
-import { 
-    ativar, 
-    desativar, 
-    atualizar, 
-    inserir, 
-    exibir_composicao_exigencia, 
-    carregar_composicao_exigencia, 
-    desativar_composicao_exigencia, 
+import {
+    ativar,
+    desativar,
+    atualizar,
+    inserir,
+    exibir_composicao_exigencia,
+    carregar_composicao_exigencia,
+    desativar_composicao_exigencia,
     ativar_composicao_exigencia,
     alerta_update
 } from './alertas_exigencias.js';
 
-document.body.addEventListener('click', function (evento) { 
+document.body.addEventListener('click', function (evento) {
     const el = evento.target.closest('button, a');
     if (!el) return;
     const linha = el.closest('tr');
@@ -48,22 +48,28 @@ document.body.addEventListener('click', function (evento) {
 
                         const html = `
                             <div class="container my-3" style="text-align: start;">
+
+                                <!-- Linha 1: Nome da Exigência ocupa a linha inteira -->
                                 <div class="row mb-3">
-                                    <div class="col">
+                                    <div class="col-12">
                                         <label>Nome da Exigência</label>
                                         <input id="txtNome" class="form-control" type="text" value="${exigencia.nome}">
                                     </div>
+                                </div>
 
-                                    <div class="col">
-                                        <label>Meses</label>
-                                        <input id="txtMeses" class="form-control" type="number" min="0" step="1" value="${exigencia.categoria_fase}">
-                                    </div>
-
+                                <!-- Linha 2: Meses e Esforço na mesma linha -->
+                                <div class="row mb-3">
                                     <div class="col">
                                         <label>Esforço</label>
                                         <select class="form-control" id="selectEsforco">${esforcoOptions}</select>
                                     </div>
+                                    <div class="col">
+                                        <label>Meses</label>
+                                        <input id="txtMeses" class="form-control" type="number" min="0" step="1" value="${exigencia.categoria_fase}">
+                                    </div>
                                 </div>
+
+                                <!-- Linha 3: PB, ED e Peso Vivo continuam na mesma linha -->
                                 <div class="row">
                                     <div class="col">
                                         <label>PB (%)</label>
@@ -78,7 +84,9 @@ document.body.addEventListener('click', function (evento) {
                                         <input id="txtPesoVivo" class="form-control" type="text" value="${exigencia.categoria_peso_vivo || ''}">
                                     </div>
                                 </div>
+
                             </div>
+
                         `;
 
                         atualizar(html, exigencia);
@@ -94,15 +102,15 @@ document.body.addEventListener('click', function (evento) {
     }
 
     if (el.classList.contains('insert-btn')) {
-    evento.preventDefault();
-    fetch('/get_categorias/')
-        .then(resp => resp.json())
-        .then(categorias => {
-            const options = categorias.map(c =>
-                `<option value="${c.id}">${c.descricao}</option>`
-            ).join('');
+        evento.preventDefault();
+        fetch('/get_categorias/')
+            .then(resp => resp.json())
+            .then(categorias => {
+                const options = categorias.map(c =>
+                    `<option value="${c.id}">${c.descricao}</option>`
+                ).join('');
 
-            const html = `
+                const html = `
                 <div class="container my-3" style="text-align: start;">
                     <div class="row mb-3">
                         <div class="col">
@@ -143,13 +151,13 @@ document.body.addEventListener('click', function (evento) {
                 </div>
             `;
 
-            inserir(html);
-        })
-        .catch(err => {
-            console.error("Erro ao buscar categorias", err);
-        });
-    return;
-}
+                inserir(html);
+            })
+            .catch(err => {
+                console.error("Erro ao buscar categorias", err);
+            });
+        return;
+    }
 
     const href = el.tagName === 'A' ? (el.getAttribute('href') || '') : '';
     if (el.classList.contains('composicao-btn') || href.includes('composicao')) {
