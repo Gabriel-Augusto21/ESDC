@@ -142,7 +142,25 @@ export function atualizar(id, nome, html) {
         didOpen: () => {
             const popup = Swal.getHtmlContainer();
             const img = popup.querySelector('#idVisual');
+            const dieta = popup.querySelector('#gerenciar-dieta')
+            const desativar = popup.querySelector('#desativar-btn')
 
+            desativar.addEventListener('click', () => {
+                alertaConfirmacao(
+                    {
+                        titulo: 'Tem certeza que deseja desativar esse animal?',
+                        texto: 'Você poderá desfazer isso mais tarde!',
+                        acao: 'desativar',
+                        url: '/desativar_animal/',
+                        dados: { id, nome }
+                    }
+                );
+            })
+            dieta.addEventListener('click', () => {
+                // window.location.href = `/gerenciar_dietas/${id}`
+                alert('Estamos trabalhando nessa funcionalidade de Dietas ainda! :)')
+            })
+            
             if (img) {
                 img.style.cursor = 'pointer';
 
