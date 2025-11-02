@@ -14,7 +14,6 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
         },
     }).then(result => {
         if (result.isConfirmed) {
-            console.log(dados)
             htmx.ajax('GET', url, {
                 values: dados,
                 swap: 'none'
@@ -24,16 +23,15 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
 }
 
 export function desativar(id, nome) {
-    alertaConfirmacao(
-        {
-            titulo: 'Tem certeza que deseja desativar esse dieta?',
-            texto: 'Você poderá desfazer isso mais tarde!',
-            acao: 'desativar',
-            url: '/desativar_dieta/',
-            dados: { id, nome }
-        }
-    );
+    alertaConfirmacao({
+        titulo: 'Tem certeza que deseja desativar essa dieta?',
+        texto: 'Você poderá desfazer isso mais tarde!',
+        acao: 'desativar',
+        url: '/desativar_dieta/',
+        dados: { id, nome }
+    });
 }
+
 export function ativar(id, nome) {
     alertaConfirmacao({
         titulo: 'Tem certeza que deseja ativar essa dieta?',
@@ -44,11 +42,12 @@ export function ativar(id, nome) {
     });
 }
 
+// Feedback após ativar/desativar via HTMX
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
 
     if (event.detail.xhr.status === 200) {
-        if (resp.Mensagem?.includes('ativado')) {
+        if (resp.Mensagem?.includes('ativado') || resp.Mensagem?.includes('desativado')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
@@ -63,21 +62,62 @@ htmx.on("htmx:afterOnLoad", (event) => {
             }).then(() => {
                 window.location.reload();
             });
-        } else if (resp.Mensagem?.includes('desativado')) {
-            Swal.fire({
-                title: 'Sucesso!',
-                text: resp.Mensagem,
-                icon: 'success',
-                confirmButtonText: 'Ok',
-                confirmButtonColor: '#2f453a',
-                customClass: {
-                    confirmButton: 'botao-confirma-alerta',
-                },
-                timer: 3000,
-                timerProgressBar: true
-            }).then(() => {
-                window.location.reload();
-            });
-        } 
+        }
     }
 });
+
+export function inserirAlimentoSwal(alimentos, callbackConfirmar) {
+    const opcoes = alimentos.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+
+    Swal.fire({
+        width: '600px',
+        title: 'Adicionar Alimento',
+        html: `
+            <div class="text-start">
+                <label class="form-label">Alimento:</label>
+                <select id="selAlimentoSwal" class="form-select mb-3">
+                    <option value="">Selecione um alimento</option>
+                    ${opcoes}
+                </select>
+                <label class="form-label">Quantidade (kg):</label>
+                <input type="number" id="qtdAlimentoSwal" class="form-control" min="0.01" step="0.01" placeholder="Informe a quantidade">
+            </div>
+        `,
+        confirmButtonText: 'Adicionar',
+        cancelButtonText: 'Cancelar',
+        showCancelButton: true,
+        confirmButtonColor: '#2f453a',
+        cancelButtonColor: '#ff0000',
+        customClass: {
+            confirmButton: 'botao-confirma-alerta',
+            cancelButton: 'botao-cancela-alerta',
+        },
+        focusConfirm: false,
+        preConfirm: () => {
+            const alimento = document.getElementById("selAlimentoSwal").value;
+            const qtd = parseFloat(document.getElementById("qtdAlimentoSwal").value);
+
+            if (!alimento) {
+                Swal.showValidationMessage("Selecione um alimento.");
+                return false;
+            }
+            if (isNaN(qtd) || qtd <= 0) {
+                Swal.showValidationMessage("Informe uma quantidade válida (maior que zero).");
+                return false;
+            }
+
+            const jaExiste = Array.from(document.querySelectorAll('input[name="alimentos[]"]'))
+                .some(input => input.value === alimento);
+            if (jaExiste) {
+                Swal.showValidationMessage("Este alimento já foi adicionado à dieta.");
+                return false;
+            }
+
+            return { alimento, qtd };
+        }
+    }).then(res => {
+        if (res.isConfirmed && res.value) {
+            callbackConfirmar(res.value.alimento, res.value.qtd);
+        }
+    });
+}
