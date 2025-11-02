@@ -27,7 +27,7 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
         } else if (this.classList.contains('ativar-btn')) {
             ativar(id, nome)
         } else if (this.classList.contains('editar-btn')) {
-            let clone = htmlAtualizar;
+            let clone = htmlAtualizar.cloneNode(true);
             clone.removeAttribute('hidden')
             let imagem = clone.querySelector('#idVisual');
             imagem.src = card.dataset.imagem;
@@ -39,12 +39,11 @@ document.querySelectorAll('.ativar-btn, .desativar-btn, .editar-btn').forEach(bt
             generoInput.value = card.dataset.genero;
             let pesoInput = clone.querySelector('#txtPeso');
             pesoInput.value = card.dataset.peso;
-            let idadeInput = htmlAtualizar.querySelector('#dataNasc');
+            let idadeInput = clone.querySelector('#dataNasc');
             const raw = card.dataset.idade; // ex: "19 de Fevereiro de 2018"
             if (idadeInput) {
                 idadeInput.value = textoParaIsoDate(raw); // agora funciona no input[type=date]
             }
-
             atualizar(id, nome, clone)
         }
     });
