@@ -1,8 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from dietas.models import Dieta, ComposicaoDieta
-from alimentos.models import ComposicaoAlimento, Nutriente
+from alimentos.models import ComposicaoAlimento, Nutriente, Alimento
 from exigencias.models import Exigencia, ComposicaoExigencia
-
 from decimal import Decimal
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -88,34 +87,108 @@ def ativar_dieta(request):
     dieta.is_active = True
     dieta.save()
     return JsonResponse({'Mensagem': f'{dieta.nome} foi ativado'}, status=200)
-
-def inserir_dieta(request):
-    if request.method == 'GET':
-        exigencias = Exigencia.objects.all().order_by('nome')
     
-    if request.method == 'POST':
-        nome = request.POST.get('nome')
-        descricao = request.POST.get('descricao')
-        especifica = request.POST.get('especifica') == 'on'
-        exigencia_id = request.POST.get('exigencia')
+def inserir_dieta(request):
+    exigencias = Exigencia.objects.all()
+    alimentos = Alimento.objects.all()
 
-        if not nome or not descricao or not exigencia_id:
-            return JsonResponse({'erro': 'Preencha todos os campos obrigatórios!'}, status=400)
-        
-        if Dieta.objects.filter(nome__iexact=nome).exists():
-            return JsonResponse({'erro': 'Já existe uma dieta com esse nome.'}, status=400)
-        
-        try:
-            exigencia = Exigencia.objects.get(id=exigencia_id)
-        except Exigencia.DoesNotExist:
-            return JsonResponse({'erro': 'Exigência inválida!'}, status=400)
+    if request.method == 'GET':
+        return render(request, 'inserir_dietas.html', {
+            "exigencias": exigencias,
+            "alimentos": alimentos,
+            "itens": []
+        })
 
-        dieta = Dieta.objects.create(
-            nome=nome,
-            descricao=descricao,
-            especifica=especifica,
-            exigencia=exigencia,
-            is_active=True
+    nome = request.POST.get("nome")
+    desc = request.POST.get("descricao", "")
+    esp = request.POST.get("especifica") == "on"
+    ex_id = request.POST.get("exigencia")
+
+    alimentos_ids = request.POST.getlist("alimentos[]")
+    quantidades = request.POST.getlist("quantidades[]")
+
+    dieta = Dieta.objects.create(
+        nome=nome,
+        descricao=desc,
+        especifica=esp,
+        exigencia_id=ex_id
+    )
+
+    for ali_id, qtd in zip(alimentos_ids, quantidades):
+        ComposicaoDieta.objects.create(
+            dieta=dieta,
+            alimento_id=ali_id,
+            quantidade=Decimal(qtd)
         )
 
-        return JsonResponse({'mensagem': f'Dieta "{dieta.nome}" criada com sucesso!'}, status=201)
+    return redirect("dietas:dietas")
+
+
+def add_item_dieta_temp(request):
+    alim_id = request.POST.get("alimento")
+    qtd = Decimal(request.POST.get("quantidade"))
+
+    dieta_temp = request.session.get("dieta_temp", [])
+
+    existente = next((i for i in dieta_temp if i["id"] == int(alim_id)), None)
+
+    ali = Alimento.objects.get(id=alim_id)
+
+    if existente:
+        existente["quantidade"] += float(qtd)
+    else:
+        dieta_temp.append({
+            "id": ali.id,
+            "nome": ali.nome,
+            "quantidade": float(qtd)
+        })
+
+    request.session["dieta_temp"] = dieta_temp
+
+    return JsonResponse({"ok": True, "itens": dieta_temp})
+
+
+def remover_item_dieta_temp(request):
+    alim_id = request.POST.get("id")
+
+    dieta_temp = request.session.get("dieta_temp", [])
+    dieta_temp = [i for i in dieta_temp if str(i["id"]) != str(alim_id)]
+    request.session['dieta_temp'] = dieta_temp
+
+    return JsonResponse({"ok": True, "itens": dieta_temp})
+
+def calcular_balanceamento_dinamico(request):
+    from decimal import Decimal
+    from alimentos.models import Alimento, ComposicaoAlimento
+    from exigencias.models import Exigencia, ComposicaoExigencia
+
+    ex_id = request.POST.get("exigencia")
+    alimentos_ids = request.POST.getlist("alimentos[]")
+    quantidades = request.POST.getlist("quantidades[]")
+
+    if not ex_id or not alimentos_ids:
+        return JsonResponse({"erro": "Dados incompletos"}, status=400)
+
+    exigencia = Exigencia.objects.get(id=ex_id)
+    exig = {
+        e.nutriente.nome: float(e.valor)
+        for e in ComposicaoExigencia.objects.filter(exigencia=exigencia)
+    }
+
+    totais = {}
+    for ali_id, qtd in zip(alimentos_ids, quantidades):
+        ali = Alimento.objects.get(id=ali_id)
+        for comp in ali.composicaoalimento_set.all():
+            nome = comp.nutriente.nome
+            totais[nome] = totais.get(nome, 0) + float(comp.valor) * float(qtd)
+
+    balanceamento = {
+        n: round(totais.get(n, 0) - exig.get(n, 0), 2)
+        for n in set(list(totais.keys()) + list(exig.keys()))
+    }
+
+    return JsonResponse({
+        "totais": {k: round(v, 2) for k, v in totais.items()},
+        "exigencia": exig,
+        "balanceamento": balanceamento,
+    })
