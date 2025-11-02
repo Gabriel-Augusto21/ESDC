@@ -19,6 +19,7 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
                 swap: 'none'
             });
         }
+
     });
 }
 
@@ -131,60 +132,70 @@ export function atualizar(id, nome, html) {
         focusConfirm: false,
         didOpen: () => {
             const popup = Swal.getHtmlContainer();
-
-            const img = popup.querySelector('idVisual');
-
-            img.addEventListener('click', () => {
-                console.log('Imagem clicada!');
-                // aqui você pode abrir input file ou fazer qualquer outra ação
-            });
-        },
-        didOpen: () => {
-            const popup = Swal.getHtmlContainer();
             const img = popup.querySelector('#idVisual');
             const dieta = popup.querySelector('#gerenciar-dieta')
             const desativar = popup.querySelector('#desativar-btn')
 
             desativar.addEventListener('click', () => {
-                alertaConfirmacao(
-                    {
-                        titulo: 'Tem certeza que deseja desativar esse animal?',
-                        texto: 'Você poderá desfazer isso mais tarde!',
-                        acao: 'desativar',
-                        url: '/desativar_animal/',
-                        dados: { id, nome }
+                Swal.fire({
+                    title: 'Tem certeza que deseja desativar esse animal?',
+                    text: 'Você poderá desfazer isso mais tarde!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2f453a',
+                    cancelButtonColor: '#ff0000',
+                    confirmButtonText: `Sim, desativar!`,
+                    cancelButtonText: 'Cancelar',
+                    customClass: {
+                        cancelButton: 'botao-cancela-alerta',
+                        confirmButton: 'botao-confirma-alerta',
+                    },
+                    allowOutsideClick: false, // impede de fechar clicando fora
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        // desativa normalmente
+                        htmx.ajax('GET', '/desativar_animal/', {
+                            values: { id, nome },
+                            swap: 'none'
+                        });
+                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                        // <- usuário clicou em cancelar, então reabre o modal anterior
+                        setTimeout(() => {
+                            atualizar(id, nome, html);
+                        }, 100); // pequeno delay pra suavizar a transição
                     }
-                );
-            })
+                });
+            });
+
             dieta.addEventListener('click', () => {
                 // window.location.href = `/gerenciar_dietas/${id}`
                 alert('Estamos trabalhando nessa funcionalidade de Dietas ainda! :)')
             })
-            
+
             if (img) {
                 img.style.cursor = 'pointer';
 
-                // cria input file invisível
                 const fileInput = document.createElement('input');
                 fileInput.type = 'file';
                 fileInput.accept = 'image/*';
                 fileInput.style.display = 'none';
-                fileInput.id = 'inputNovaImagem'; // <-- importante
+                fileInput.id = 'inputNovaImagem';
                 popup.appendChild(fileInput);
 
-                img.addEventListener('click', () => fileInput.click());
+                img.onclick = () => fileInput.click();
 
-                fileInput.addEventListener('change', (event) => {
+                fileInput.onchange = (event) => {
                     const file = event.target.files[0];
                     if (file) {
                         const reader = new FileReader();
                         reader.onload = (e) => {
-                            img.src = e.target.result; // preview
+                            img.src = e.target.result;
                         };
                         reader.readAsDataURL(file);
                     }
-                });
+                };
             }
+
         },
         preConfirm: () => {
             const popup = Swal.getHtmlContainer();
