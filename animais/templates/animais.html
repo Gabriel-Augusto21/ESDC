@@ -103,12 +103,54 @@
                 <option value="F">Fêmea</option>
             </select>
         </div>
+        <!-- substitua apenas este bloco no modal inserir -->
         <div class="col-md-6">
-            <label for="imagemAnimal" class="form-label">Foto do animal</label>
-            <input type="file" id="imagemAnimal" name="imagem" accept="image/*">
+            <label for="fileUploadInserir" class="form-label">Foto do animal</label>
+
+            <div style="display: flex; align-items: center; margin-top: 4px;">
+                <label 
+                for="fileUploadInserir"
+                style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    background-color: #2f453a;
+                    color: white;
+                    font-family: Arial, sans-serif;
+                    font-size: 15px;
+                    border: none;
+                    border-radius: 40px;
+                    padding: 5px 10px;
+                    cursor: pointer;
+                    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                    transition: background-color 0.3s, transform 0.2s;
+                "
+                onmouseover="this.style.backgroundColor='#3b5b4a'; this.style.transform='scale(1.03)';"
+                onmouseout="this.style.backgroundColor='#2f453a'; this.style.transform='scale(1)';"
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                    <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+                    <polyline points="16 6 12 2 8 6"/>
+                    <line x1="12" y1="2" x2="12" y2="16"/>
+                </svg>
+                Upload
+                </label>
+
+                <input 
+                id="fileUploadInserir" 
+                type="file" 
+                name="foto_animal"
+                accept="image/*"
+                style="display: none;" 
+                >
+
+                <span id="fileNameInserir" style="margin-left: 10px; font-size: 14px; color: #333;">Nenhum arquivo</span>
+            </div>
         </div>
     </div>
 </div>
+
 
 
 <div hidden class="container my-3" style="text-align: start;" id="modalAtualizar">
@@ -170,4 +212,23 @@
     });
     window.csrf_token = '{{ csrf_token }}';
 </script>
+
+<script>
+document.addEventListener("change", function (e) {
+    // Verifica se o evento veio do input correto
+    if (e.target && e.target.id === "fileUploadInserir") {
+        const input = e.target;
+        const span = document.getElementById("fileNameInserir");
+
+        if (input.files && input.files.length > 0) {
+            span.textContent = input.files[0].name;
+        } else {
+            span.textContent = "Nenhum arquivo";
+        }
+    }
+});
+</script>
+
+
+
 {% endblock %}
