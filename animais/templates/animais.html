@@ -73,8 +73,9 @@
     <div class="row">
         <!-- Contador de registros -->
         <legend class="text-center small">
-            {% if page_obj.paginator.count == 0 %}
-            <p class="text-center">Nenhum animal encontrado.</p>
+        {% if page_obj.paginator.count == 0 %}
+            <img src="{% static 'img/sadhorse.png' %}" width="250" height="200" style="padding-bottom: 7px" />
+            <h3 class="text-center">Nenhum animal encontrado.</h3>
         </legend>
         {% elif page_obj.paginator.count == 1 %}
         1 animal encontrado
