@@ -1,4 +1,4 @@
-export function ativar(elemento){
+export function ativar(elemento) {
     Swal.fire({
         title: 'Tem certeza que deseja ativar esse alimento?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -18,14 +18,14 @@ export function ativar(elemento){
             htmx.ajax('POST', url, {
                 values: {
                     id: elemento.dataset.id,
-                    nome: elemento.dataset.nome 
+                    nome: elemento.dataset.nome
                 },
                 swap: 'none'
             });
         }
     });
 }
-export function ativar_composicao(composicao, alimento, id_composicao){
+export function ativar_composicao(composicao, alimento, id_composicao) {
     Swal.fire({
         title: 'Tem certeza que deseja ativar esse nutriente da composição?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -40,23 +40,23 @@ export function ativar_composicao(composicao, alimento, id_composicao){
         },
         showCancelButton: true,
     }).then(resp => {
-        if (resp.isConfirmed){
-            const url = `/ativar_composicaoAlimento/`;   
-            htmx.ajax('POST', url,{
+        if (resp.isConfirmed) {
+            const url = `/ativar_composicaoAlimento/`;
+            htmx.ajax('POST', url, {
                 values: {
                     id: id_composicao,
                     idAlimento: alimento.id
                 },
-                swap:'none'
+                swap: 'none'
             });
             // carregar_composicao(composicao, alimento)
 
-        }else{
+        } else {
             carregar_composicao(composicao, alimento)
         }
     });
 }
-export function desativar(elemento){
+export function desativar(elemento) {
     Swal.fire({
         title: 'Tem certeza que deseja desativar esse alimento?',
         html: `<p>Você poderá desfazer isso mais tarde!</p>`,
@@ -85,7 +85,7 @@ export function desativar(elemento){
 }
 
 
-export function desativar_composicao(composicao, alimento, id_composicao){
+export function desativar_composicao(composicao, alimento, id_composicao) {
     Swal.fire({
         title: 'Tem certeza que deseja desativar esse nutriente da composição?',
         text: "Você poderá desfazer isso mais tarde!",
@@ -100,18 +100,18 @@ export function desativar_composicao(composicao, alimento, id_composicao){
         },
         showCancelButton: true,
     }).then(resp => {
-        if (resp.isConfirmed){
-            const url = `/desativar_composicaoAlimento/`;   
-            htmx.ajax('POST', url,{
+        if (resp.isConfirmed) {
+            const url = `/desativar_composicaoAlimento/`;
+            htmx.ajax('POST', url, {
                 values: {
                     id: id_composicao,
                     idAlimento: alimento.id
                 },
-                swap:'none'
+                swap: 'none'
             });
             // carregar_composicao(composicao, alimento)
 
-        }else{
+        } else {
             carregar_composicao(composicao, alimento)
         }
 
@@ -211,7 +211,7 @@ export function atualizar(clone, alimento) {
                     pb: resp.value.pb
                 },
                 swap: 'none',
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error('Erro ao atualizar alimento:', xhr.status, xhr.responseText);
                     alert('Erro: ' + xhr.responseText);
                 }
@@ -220,7 +220,7 @@ export function atualizar(clone, alimento) {
     });
 }
 
-export function inserir(modalHtml){
+export function inserir(modalHtml) {
     swal.fire({
         width: '800px',
         title: "Inserir Alimento",
@@ -234,7 +234,7 @@ export function inserir(modalHtml){
         },
         cancelButtonColor: '#FF0000',
         confirmButtonText: 'Inserir',
-        
+
         didOpen: () => {
             const popup = Swal.getPopup();
             ['#txtMs', '#txtPb', '#txtEd'].forEach(selector => {
@@ -247,23 +247,23 @@ export function inserir(modalHtml){
                     });
 
                     input.addEventListener('blur', () => {
-                    const normalizeNumber = (str) => str.replace(',', '.');
-                    const val = normalizeNumber(input.value.trim());
-                    const num = parseFloat(val);
+                        const normalizeNumber = (str) => str.replace(',', '.');
+                        const val = normalizeNumber(input.value.trim());
+                        const num = parseFloat(val);
 
-                    // Regras de validação
-                    const isEd = selector === '#txtEd';
-                    const limite = isEd ? 20 : 100;
+                        // Regras de validação
+                        const isEd = selector === '#txtEd';
+                        const limite = isEd ? 20 : 100;
 
-                    if (val === '' || isNaN(num) || num > limite) {
-                        // Valor inválido: restaura o original
-                        input.value = input.dataset.valorOriginal;
-                    } else {
-                        // Valor válido: atualiza o valor original
-                        input.dataset.valorOriginal = val;
-                        input.value = val;
-                    }
-                });
+                        if (val === '' || isNaN(num) || num > limite) {
+                            // Valor inválido: restaura o original
+                            input.value = input.dataset.valorOriginal;
+                        } else {
+                            // Valor válido: atualiza o valor original
+                            input.dataset.valorOriginal = val;
+                            input.value = val;
+                        }
+                    });
                 }
             });
         },
@@ -283,7 +283,7 @@ export function inserir(modalHtml){
                 Swal.showValidationMessage('O nome do alimento é obrigatório!');
                 return false;
             }
-            
+
             // Se algum for NaN, atribui 0
             ms = isNaN(ms) ? 0 : ms;
             ed = isNaN(ed) ? 0 : ed;
@@ -291,7 +291,7 @@ export function inserir(modalHtml){
 
             if (ms > 100 || ed > 20 || pb > 100) {
                 Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
-                return false;                
+                return false;
             }
 
             return { nome, idClass, ms, ed, pb };
@@ -320,7 +320,7 @@ export function carregar_composicao(composicao, alimento) {
 
     const imagemVisibilidade = '/static/img/visibility.png';
     const imagemNVisibilidade = '/static/img/not_visibility.png';
-    const imagemEditar = '/static/img/edit.png'; 
+    const imagemEditar = '/static/img/edit.png';
 
     let dados_composicao = '';
     for (let i = 0; i < composicao.length; i++) {
@@ -372,14 +372,14 @@ export function carregar_composicao(composicao, alimento) {
     exibir_composicao(composicao, alimento, html, '900px');
 }
 
-export function inserir_composicao(composicao, alimento){
+export function inserir_composicao(composicao, alimento) {
     fetch(`/nutrientes_disponiveis_json/?id_composicao=${alimento.id}`)
-    .then(response => response.json())
-    .then(nutrientes => {
-        const optionsHtml = `<option value="-1" selected>Não selecionado</option>` +
-        nutrientes.response.map(n =>
-            `<option value="${n.id}">${n.nome}</option>`).join("");
-        const htmlInserir = `
+        .then(response => response.json())
+        .then(nutrientes => {
+            const optionsHtml = `<option value="-1" selected>Não selecionado</option>` +
+                nutrientes.response.map(n =>
+                    `<option value="${n.id}">${n.nome}</option>`).join("");
+            const htmlInserir = `
             <div class="container my-3" style="text-align: start;">
                 <div class="row mb-4">
                     <!-- Nutriente -->
@@ -397,49 +397,51 @@ export function inserir_composicao(composicao, alimento){
                 </div>
             </div>
         `;
-        Swal.fire({
-            width: '600px',
-            title: `Adicionar nutriente à composição`,
-            html: htmlInserir,
-            confirmButtonColor: '#2f453a',
-            cancelButtonColor: '#FF0000',
-            confirmButtonText: 'Inserir',
-            cancelButtonText: 'Cancelar',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-                cancelButton: 'botao-cancela-alerta',
-            },
-            showCancelButton: true,
-            preConfirm: () => {
-                const modal = Swal.getPopup();
-                const id = modal.querySelector('#idNutriente').value.trim();
-                const normalizeNumber = (str) => str.replace(',', '.');
-                const qtd = normalizeNumber(modal.querySelector('#txtQuantidade').value.trim());
-                if (isNaN(qtd)||qtd <= 0) {
-                    Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
-                    return false;
-                
-                }else if (id < 0) {
-                    Swal.showValidationMessage('Por favor, escolha um nutriente.');
-                    return false;
+            Swal.fire({
+                width: '600px',
+                title: `Adicionar nutriente à composição`,
+                html: htmlInserir,
+                confirmButtonColor: '#2f453a',
+                cancelButtonColor: '#FF0000',
+                confirmButtonText: 'Inserir',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                    cancelButton: 'botao-cancela-alerta',
+                },
+                showCancelButton: true,
+                preConfirm: () => {
+                    const modal = Swal.getPopup();
+                    const id = modal.querySelector('#idNutriente').value.trim();
+                    const normalizeNumber = (str) => str.replace(',', '.');
+                    const qtd = normalizeNumber(modal.querySelector('#txtQuantidade').value.trim());
+                    if (isNaN(qtd) || qtd <= 0) {
+                        Swal.showValidationMessage('Por favor, insira valores numéricos válidos.');
+                        return false;
+
+                    } else if (id < 0) {
+                        Swal.showValidationMessage('Por favor, escolha um nutriente.');
+                        return false;
+                    }
+                    return { qtd, id, alimento };
                 }
-                return {qtd, id, alimento};
-            }
-        }).then(resp => {
-            if (resp.isConfirmed) {
-                const { qtd, id, alimento } = resp.value;
-                htmx.ajax('POST', '/inserir_composicao_alimento/', {
-                    values: {
-                        quantidade: qtd,
-                        id_nutriente: id,
-                        id_alimento: alimento.id
-                    },
-                    swap: 'none'
-                });
-            }
+            }).then(resp => {
+                if (resp.isConfirmed) {
+                    const { qtd, id, alimento } = resp.value;
+                    htmx.ajax('POST', '/inserir_composicao_alimento/', {
+                        values: {
+                            quantidade: qtd,
+                            id_nutriente: id,
+                            id_alimento: alimento.id
+                        },
+                        swap: 'none'
+                    });
+                } else {
+                    carregar_composicao(composicao, alimento)
+                }
+            });
         });
-    });
-    
+
 }
 export function exibir_composicao(composicao, alimento, html, tam) {
     Swal.fire({
@@ -464,12 +466,12 @@ export function exibir_composicao(composicao, alimento, html, tam) {
                     const botaoAtualizar = event.target.closest('.atualizar-composicao-btn');
                     if (botaoDesativar) {
                         desativar_composicao(composicao, alimento, botaoDesativar.dataset.id);
-                    }else if(botaoAtivar){
+                    } else if (botaoAtivar) {
                         ativar_composicao(composicao, alimento, botaoAtivar.dataset.id);
-                    }else if(botaoAtualizar){
+                    } else if (botaoAtualizar) {
                         atualizar_composicao(botaoAtualizar, composicao, alimento);
                     }
-                    
+
                 });
             }
         }
@@ -484,14 +486,14 @@ export function exibir_composicao(composicao, alimento, html, tam) {
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
     if (event.detail.xhr.status === 201) {
-        if (resp.Mensagem?.includes('inserido')) { 
+        if (resp.Mensagem?.includes('inserido')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
                 confirmButtonText: 'Ok',
                 timer: 3000,
-                timerProgressBar: true,   
+                timerProgressBar: true,
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',
@@ -503,16 +505,16 @@ htmx.on("htmx:afterOnLoad", (event) => {
     }
     if (event.detail.xhr.status === 202) {
         carregar_composicao(resp.data.composicao, resp.data.alimento);
-    }  
+    }
     if (event.detail.xhr.status === 200) {
-        if (resp.Mensagem?.includes('ativado')) {            
+        if (resp.Mensagem?.includes('ativado')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
                 timer: 3000,
                 timerProgressBar: true,
-                confirmButtonText: 'Ok',   
+                confirmButtonText: 'Ok',
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',
@@ -520,44 +522,44 @@ htmx.on("htmx:afterOnLoad", (event) => {
             }).then(() => {
                 window.location.reload();
             });
-        }else if(resp.Mensagem?.includes('desativado')){
+        } else if (resp.Mensagem?.includes('desativado')) {
             Swal.fire({
-            title: 'Sucesso!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonText: 'Ok',
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
-            timer: 3000,
-            timerProgressBar: true
-        }).then(() => {
-            window.location.reload();
-        });
-        }else if(resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')){
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
+        } else if (resp.Mensagem?.includes('atualizado') || resp.Mensagem?.includes('atualizada') || resp.Mensagem?.includes('atualizados')) {
             Swal.fire({
-            title: 'Sucesso!',
-            text: resp.Mensagem,
-            icon: 'success',
-            confirmButtonText: 'Ok',
-            confirmButtonColor: '#2f453a',
-            customClass: {
-                confirmButton: 'botao-confirma-alerta',
-            },
-            timer: 3000,
-            timerProgressBar: true
-        }).then(() => {
-            window.location.reload();
-        });
-        }else if (resp.Mensagem?.includes('inserido')) {
+                title: 'Sucesso!',
+                text: resp.Mensagem,
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                confirmButtonColor: '#2f453a',
+                customClass: {
+                    confirmButton: 'botao-confirma-alerta',
+                },
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                window.location.reload();
+            });
+        } else if (resp.Mensagem?.includes('inserido')) {
             Swal.fire({
                 title: 'Sucesso!',
                 text: resp.Mensagem,
                 icon: 'success',
                 confirmButtonText: 'Ok',
                 timer: 3000,
-                timerProgressBar: true,   
+                timerProgressBar: true,
                 confirmButtonColor: '#2f453a',
                 customClass: {
                     confirmButton: 'botao-confirma-alerta',
@@ -584,7 +586,7 @@ htmx.on("htmx:responseError", (event) => {
                 confirmButton: 'botao-confirma-alerta',
             },
         });
-    }else if (status === 400 && resp.Mensagem?.includes("alterado")) {
+    } else if (status === 400 && resp.Mensagem?.includes("alterado")) {
         Swal.fire({
             title: 'Erro!',
             text: resp.Mensagem,
@@ -598,18 +600,18 @@ htmx.on("htmx:responseError", (event) => {
     }
     //Status 401 para icones de informação
     else if (status === 401 && resp.Mensagem?.includes("alterado")) {
-    Swal.fire({
-        title: 'Informação',
-        text: resp.Mensagem,
-        icon: 'info',
-        confirmButtonText: 'Ok',
-        confirmButtonColor: '#2f453a',
-        customClass: {
-            confirmButton: 'botao-confirma-alerta',
-        },
-    }).then(() => {
-        window.location.reload();
-    });
+        Swal.fire({
+            title: 'Informação',
+            text: resp.Mensagem,
+            icon: 'info',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#2f453a',
+            customClass: {
+                confirmButton: 'botao-confirma-alerta',
+            },
+        }).then(() => {
+            window.location.reload();
+        });
     } else if (status === 401 && resp.Mensagem?.includes("já existe")) {
         Swal.fire({
             title: 'Informação!',
@@ -621,7 +623,7 @@ htmx.on("htmx:responseError", (event) => {
                 confirmButton: 'botao-confirma-alerta',
             },
         });
-    }  else {
+    } else {
         Swal.fire({
             title: 'Erro inesperado',
             text: 'Algo deu errado. Tente novamente mais tarde.',
@@ -676,8 +678,8 @@ export function atualizar_composicao(botao, composicao, alimento) {
                     const formData = new FormData();
                     formData.append('id', id);
                     formData.append('valor', valor);
-                    formData.append('alimento_id', comp.alimento_id);   
-                    formData.append('nutriente_id', comp.nutriente_id); 
+                    formData.append('alimento_id', comp.alimento_id);
+                    formData.append('nutriente_id', comp.nutriente_id);
 
                     console.log('Enviando dados para atualizar:', {
                         id,
@@ -692,16 +694,16 @@ export function atualizar_composicao(botao, composicao, alimento) {
                         headers: { 'X-CSRFToken': getCookie('csrftoken') },
                         credentials: 'same-origin'
                     })
-                    .then(r => r.json().then(json => ({ ok: r.ok, json })))
-                    .then(({ ok, json }) => {
-                        if (!ok) throw json;
-                        return json;
-                    })
-                    .catch(err => {
-                        console.error('erro atualizar_composicaoAlimento', err);
-                        Swal.showValidationMessage((err && err.Mensagem) ? err.Mensagem : 'Erro ao comunicar com o servidor.');
-                        return false;
-                    });
+                        .then(r => r.json().then(json => ({ ok: r.ok, json })))
+                        .then(({ ok, json }) => {
+                            if (!ok) throw json;
+                            return json;
+                        })
+                        .catch(err => {
+                            console.error('erro atualizar_composicaoAlimento', err);
+                            Swal.showValidationMessage((err && err.Mensagem) ? err.Mensagem : 'Erro ao comunicar com o servidor.');
+                            return false;
+                        });
                 }
             }).then(result => {
                 if (result.isConfirmed && result.value) {
@@ -725,7 +727,7 @@ export function atualizar_composicao(botao, composicao, alimento) {
                         }
                     });
                 } else {
-                     carregar_composicao(composicao, alimento)
+                    carregar_composicao(composicao, alimento)
                 }
             });
         })

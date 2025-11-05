@@ -29,7 +29,7 @@ document.body.addEventListener('click', function (evento){
             ).join('');
             
             // pegando o html que esta escondido na alimentos.html
-            const clone = htmlInsercao.cloneNode(True);
+            const clone = htmlInsercao;
             clone.removeAttribute('hidden');
 
             // pegando os elementos clonados

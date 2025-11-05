@@ -1,0 +1,110 @@
+{% extends 'master.html' %}
+{% load static %}
+{% block conteudo %}
+
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style-sobre.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+ <div class="container-sobre">
+    <div class="row">
+
+       <!-- ROGER -->
+       <div class="card">
+        <div class="imgBx">
+          <img src="{% static 'img/luan.jpg' %}" width="220" height="300">
+        </div>
+        <div class="content">
+          <div class="contentBx">
+            <h3>Luan<br><span>O PATRÃO da Égua</span></h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Igu -->
+      <div class="card">
+        <div class="imgBx">
+          <img src="{% static 'img/nicole.jpg' %}"  width="220" height="300">
+        </div>
+        <div class="content">
+          <div class="contentBx">
+            <h3>Nicole cole<br><span>A Égua</span></h3>
+          </div>
+          <ul class="sci">
+            <li style="--i:1"><a href="https://github.com/igorjsm"><i class="fab fa-github"></i></a></li>
+            <li style="--i:2"><a href="https://www.linkedin.com/in/igor-jos%C3%A9-silveira-martins-822b79183/"><i class="fab fa-linkedin"></i></a></li>
+            <li style="--i:3"><a href="https://www.instagram.com/igorsillveira_/"><i class="fab fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+      </div>
+
+      <!-- Gabriel -->
+      <div class="card">
+        <div class="imgBx">
+          <img src="{% static 'img/gabriel.jpg' %}"  width="220" height="300">
+        </div>
+        <div class="content">
+          <div class="contentBx">
+            <h3>Gabriel Augusto Gomides<br><span>A traseira (back) da égua</span></h3>
+          </div>
+
+          <ul class="sci">
+            <li style="--i:1"><a href="https://github.com/Gabriel-Augusto21"><i class="fab fa-github"></i></a></li>
+            <li style="--i:2"><a href="#"><i class="fab fa-linkedin"></i></a></li>
+            <li style="--i:3"><a href="https://www.instagram.com/gabriel_augusto21/"><i class="fab fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+      </div>
+
+      <!-- Vitu -->
+      <div class="card">
+        <div class="imgBx">
+          <img src="{% static 'img/joao.jpg' %}"  width="220" height="300">
+        </div>
+        <div class="content">
+          <div class="contentBx">
+            <h3>Jão<br><span>a frente (front) da égua</span></h3>
+          </div>
+
+          <ul class="sci">
+            <li style="--i:1"><a href="https://github.com/VictorRamos13"><i class="fab fa-github"></i></a></li>
+            <li style="--i:2"><a href="https://www.linkedin.com/in/victor-hordones-ramos-a5057722b/"><i class="fab fa-linkedin"></i></a></li>
+            <li style="--i:3"><a href="#"><i class="fab fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+      </div>
+
+      <!-- Dudu -->
+      <div class="card">
+        <div class="imgBx">
+          <img src="{% static 'img/dudu.jpg' %}"  width="220" height="300">
+        </div>
+        <div class="content">
+          <div class="contentBx">
+            <h3>Dudu<br><span>O unicórnio soviético</span></h3>
+          </div>
+
+          <ul class="sci">
+            <li style="--i:1"><a href="https://github.com/VictorRamos13"><i class="fab fa-github"></i></a></li>
+            <li style="--i:2"><a href="https://www.linkedin.com/in/victor-hordones-ramos-a5057722b/"><i class="fab fa-linkedin"></i></a></li>
+            <li style="--i:3"><a href="#"><i class="fab fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

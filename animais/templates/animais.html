@@ -3,10 +3,11 @@
 {% block conteudo %}
 <style>
     .desativar-btn,
-    .ativar-btn {
+    .ativar-btn,
+    .desativar,
+    .editar-dieta-btn,
+    .editar-imagem-btn{
         position: absolute;
-        bottom: 8px;
-        right: 35px;
         width: 22px;
         height: 22px;
         cursor: pointer;
@@ -16,6 +17,29 @@
         background: transparent;
         border: none;
         padding: 0;
+    }
+    .desativar-btn{
+        bottom: 8px;
+        right: 35px;
+    }
+    .ativar-btn {
+        bottom: 10px;
+        right: 10px;
+    }
+    .desativar{
+        bottom: 10px;
+        right: 70px;
+        border: none;
+        z-index: 10;
+    }
+    .editar-imagem-btn{
+        bottom: 10px;
+        right: 40px;
+        z-index: 10;
+    }
+    .editar-dieta-btn{
+        bottom: 10px;
+        right: 10px;
     }
 </style>
 <div class="container mt-3">
@@ -49,8 +73,9 @@
     <div class="row">
         <!-- Contador de registros -->
         <legend class="text-center small">
-            {% if page_obj.paginator.count == 0 %}
-            <p class="text-center">Nenhum animal encontrado.</p>
+        {% if page_obj.paginator.count == 0 %}
+            <img src="{% static 'img/sadhorse.png' %}" width="250" height="200" style="padding-bottom: 7px" />
+            <h3 class="text-center">Nenhum animal encontrado.</h3>
         </legend>
         {% elif page_obj.paginator.count == 1 %}
         1 animal encontrado
@@ -165,8 +190,10 @@
                 <div class="card-img-overlay d-flex flex-column justify-content-end"
                     style="background: linear-gradient(to top, rgba(0,0,0,0.69), rgba(0,0,0,0)); height: 280px; color: white; border-radius: 15px; pointer-events: none;">
                 </div>
-                <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn"
-                    style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s; pointer-events:none">
+                <img class="desativar" id="desativar-btn" src="{% static 'img/visibility.png' %}" width="20">
+                <img src="{% static 'img/image-up.png' %}" alt="Editar" class="editar-imagem-btn"
+                    style="pointer-events:none">
+                <img src="{% static 'img/wheat-off.png' %}" alt="Editar" class="editar-dieta-btn"  id="gerenciar-dieta">
 
             </div>
         </div>
