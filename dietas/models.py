@@ -10,7 +10,7 @@ class Dieta(models.Model):
     exigencia = models.ForeignKey('exigencias.Exigencia', on_delete=models.CASCADE)
     animal = models.ForeignKey('animais.Animal', on_delete=models.CASCADE, null=True, blank=True)
     atual = models.BooleanField(default=False)
-    data_criacao = models.DateTimeField(default=timezone.now)
+    data_criacao = models.DateField(default=timezone.localdate)
 
     def total_nutrientes_vetor(self):
         """

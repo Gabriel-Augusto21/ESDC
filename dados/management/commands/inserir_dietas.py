@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from dietas.models import Dieta, ComposicaoDieta
 from exigencias.models import Exigencia
 from alimentos.models import Alimento
+from animais.models import Animal
 import random
 
 class Command(BaseCommand):
@@ -39,13 +40,15 @@ class Command(BaseCommand):
 
         dietas_criadas = []
 
+        animais = Animal.objects.all()
         # cria 15 dietas
         for i, (nome, descricao) in enumerate(nomes_dietas.items()):
             exigencia_escolhida = random.choice(exigencias)
             dieta = Dieta.objects.create(
                 nome=nome,
                 descricao=descricao,
-                exigencia=exigencia_escolhida
+                exigencia=exigencia_escolhida,
+                animal=animais[i]
             )
             dietas_criadas.append(dieta)
 

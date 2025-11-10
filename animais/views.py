@@ -99,8 +99,8 @@ def atualizar_animal(request):
         try:
             animal = Animal.objects.get(id=id)
             animal.nome = nome
-            animal.dono = dono
-            animal.peso = peso
+            animal.proprietario = dono
+            animal.peso_vivo = peso
             animal.genero = genero
             animal.data_nasc = data_nasc
             if imagem:
