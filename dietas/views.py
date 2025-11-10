@@ -101,7 +101,6 @@ def inserir_dieta(request):
 
     nome = request.POST.get("nome")
     desc = request.POST.get("descricao", "")
-    esp = request.POST.get("especifica") == "on"
     ex_id = request.POST.get("exigencia")
 
     alimentos_ids = request.POST.getlist("alimentos[]")
