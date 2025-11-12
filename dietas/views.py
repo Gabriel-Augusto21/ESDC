@@ -79,6 +79,8 @@ def desativar_dieta(request):
     dieta = Dieta.objects.get(id=id)
     dieta.is_active = False
     dieta.save()
+    print(dieta.data_criacao)
+    print(dieta.animal.nome)
     return JsonResponse({'Mensagem': f'{dieta.nome} foi desativado'}, status=200)
     
 def ativar_dieta(request):
@@ -101,7 +103,6 @@ def inserir_dieta(request):
 
     nome = request.POST.get("nome")
     desc = request.POST.get("descricao", "")
-    esp = request.POST.get("especifica") == "on"
     ex_id = request.POST.get("exigencia")
 
     alimentos_ids = request.POST.getlist("alimentos[]")
