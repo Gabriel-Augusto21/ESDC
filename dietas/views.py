@@ -16,7 +16,6 @@ def gerenciar_dietas(request, id):
 
     # --- Exigência vinculada ---
     exigencia = dieta.exigencia
-    print(exigencia)
     composicoes_exigencia = ComposicaoExigencia.objects.filter(exigencia=exigencia).select_related('nutriente')
 
     # Criar um dicionário com os valores exigidos por nutriente
