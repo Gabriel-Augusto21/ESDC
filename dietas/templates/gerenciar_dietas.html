@@ -1,32 +1,47 @@
-{% extends 'master.html' %} {% load static %} {% block conteudo %}{% load custom_tags %}
+{% extends 'master.html' %}
+{% load static %} 
+{% load custom_tags %}
+{% block conteudo %}
 
 <div class="container mt-3">
+    
     <h1>Gerenciamento da Dieta</h1>
 
-    <!-- Cards dos animais -->
-    <div class="d-flex justify-content-center align-items-center gap-3 mb-4 flex-wrap">
-        <div class="card shadow-sm" style="width: 180px; border-radius: 15px">
-            <img src="{% static 'img/cavalo1.png' %}" class="card-img-top" style="border-radius: 15px 15px 0 0" />
-            <div class="card-body text-center">
-                <h6 class="card-title mb-1">Animal 1</h6>
-                <small class="text-muted">Proprietario</small>
-            </div>
-        </div>
 
-        <div class="card shadow-sm" style="width: 180px; border-radius: 15px">
-            <img src="{% static 'img/cavalo2.png' %}" class="card-img-top" style="border-radius: 15px 15px 0 0" />
-            <div class="card-body text-center">
-                <h6 class="card-title mb-1">Animal 2</h6>
-                <small class="text-muted">Proprietario</small>
-            </div>
+    <div class='row'>
+        <div class="col position-relative p-3">
+            <label for="txtNome"
+                class="form-label position-absolute" 
+                style="top: -10px; left: 10px; padding: 0 4px; font-size: 0.9rem;">
+                Nome
+            </label>
+            <input class="form-control form-control-md" type="text" id="txtNome" placeholder="Nome...">
+        </div>
+        <div class="col position-relative p-3">
+            <label for="txtExigencia" 
+                class="form-label position-absolute" 
+                style="top: -10px; left: 10px; padding: 0 4px; font-size: 0.9rem;">
+                Exigência
+            </label>
+            <input class="form-control form-control-md" type="text" id="txtExigencia" class="form-control" placeholder="Exigência...">
         </div>
     </div>
 
-    <h1>Dieta: {{ dieta.nome }}</h1>
+    <div class="row">
+        <div class="col position-relative p-3">
+            <label for="txtDescricao" 
+                class="form-label position-absolute" 
+                style="top: -10px; left: 10px; padding: 0 4px; font-size: 0.9rem;">
+                Descrição
+            </label>
+            <textarea class="form-control form-control-md" id="txtDescricao"></textarea>
+        </div>
+    </div>
+    <hr>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered">
-            <thead class="table-light">
+    <div class="table-responsive" style="border-radius: 10px; ">
+        <table class="table">
+            <thead class="fw-bold" style="background-color:#2f453a; color:white">
                 <tr>
                     <th>Alimento</th>
                     <th>Quantidade</th>
@@ -63,7 +78,7 @@
                 {% endfor %}
 
                 <!-- Linha de total fornecido -->
-                <tr class="table-info fw-bold">
+                <tr class="fw-bold" style="background-color:#2f453a; color:white">
                     <td colspan="5" class="text-end">Total Fornecido:</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
@@ -73,7 +88,7 @@
                 </tr>
 
                 <!-- Linha da Exigência -->
-                <tr class="table-warning fw-bold">
+                <tr class="fw-bold" style="background-color:#2f453a; color:white">
                     <td colspan="5" class="text-end">{{exigencia.nome}}:</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
@@ -83,7 +98,7 @@
                 </tr>
 
                 <!-- Linha de balanceamento -->
-                <tr class="table-secondary">
+                <tr class="fw-bold" style="background-color:#2f453a; color:white">
                     <td colspan="5" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
@@ -91,76 +106,39 @@
                     </td>
                     {% endfor %}
                 </tr>
-
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-    {% comment %}
-    <!-- Seção Balanceamento -->
-    <h5 class="mb-3">Balanceamento da dieta</h5>
-    <div class="table-responsive">
-        <table class="table text-center align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nome alimentos_nutrientes</th>
-                    <th>Ord. MN</th>
-                    <th>MS (kg)</th>
-                    <th>ED (Mcal)</th>
-                    <th>PB (g)</th>
-                    <th>Lis (g)</th>
-                    <th>Treon (g)</th>
-                    <th>Met (g)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-                <tr style="color: white">
-                    <td colspan="2" style="background-color: #2f453a">
-                        Total fornecido dieta
-                    </td>
-                    <td colspan="1" style="background-color: #2f453a">aaaaa</td>
-                    <td colspan="1" style="background-color: #2f453a"></td>
-                </tr>
-                <tr class="table-success">
-                    <td colspan="8">-</td>
-                </tr>
-                <tr class="table-secondary fw-bold">
-                    <td colspan="8">Exigência animal</td>
-                </tr>
-                <tr class="table-secondary">
-                    <td colspan="8">-</td>
-                </tr>
-                <tr class="table-dark text-white fw-bold">
-                    <td colspan="8">Balanceamento</td>
-                </tr>
-                <tr class="table-dark text-white">
-                    <td colspan="8">MS | ED | PB | Lis | Treo</td>
-                </tr>
             </tbody>
         </table>
     </div>
-    {% endcomment %}
 
-    <!-- Botões -->
-    <div class="d-flex justify-content-end mt-3">
-        <button class="btn btn-success me-2">
-            <i class="bi bi-sliders"></i> Balancear Dieta
+    <div class="row d-flex justify-content-end mx-1 my-3">
+        <button 
+            style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px;"
+        >
+            <img src="{% static 'img/add_circle.png' %}" width="20"
+                style="margin-right: 3px;">
+            Adicionar Alimento
         </button>
-        <button class="btn btn-primary"><i class="bi bi-save"></i> Salvar</button>
-    </div>
+        <button class="botao" style="margin: 0px 0px 0px 10px;">
+            Salvar
+        </button>
 </div>
-{% endblock %}
+
+</div>
+{% comment %}
+<div class="row mt-4">
+  <div class="col-md-6 mb-3">
+    <label class="form-label">Nome da Dieta</label>
+    <input class="form-control" name="nome" required />
+  </div>
+
+  <div class="col-md-6 mb-3">
+    <label class="form-label">Exigência</label>
+    <select class="form-control" name="exigencia" required>
+      <option value="" disabled selected>Selecione</option>
+      {% for ex in exigencias %}
+      <option value="{{ ex.id }}">{{ ex.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endcomment %} {% endblock %}
+</div>
