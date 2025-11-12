@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from dietas.models import Dieta, ComposicaoDieta
 from alimentos.models import ComposicaoAlimento, Nutriente, Alimento
 from exigencias.models import Exigencia, ComposicaoExigencia
+from animais.models import Animal
 from decimal import Decimal
 from django.core.paginator import Paginator
 from django.http import JsonResponse
@@ -91,17 +92,20 @@ def ativar_dieta(request):
 def inserir_dieta(request):
     exigencias = Exigencia.objects.all()
     alimentos = Alimento.objects.all()
+    animais = Animal.objects.filter(is_active=True) 
 
     if request.method == 'GET':
         return render(request, 'inserir_dietas.html', {
             "exigencias": exigencias,
             "alimentos": alimentos,
+            "animais": animais,  
             "itens": []
         })
 
     nome = request.POST.get("nome")
     desc = request.POST.get("descricao", "")
     ex_id = request.POST.get("exigencia")
+    an_id = request.POST.get("animal") 
 
     alimentos_ids = request.POST.getlist("alimentos[]")
     quantidades = request.POST.getlist("quantidades[]")
@@ -109,8 +113,9 @@ def inserir_dieta(request):
     dieta = Dieta.objects.create(
         nome=nome,
         descricao=desc,
-        especifica=esp,
-        exigencia_id=ex_id
+        exigencia_id=ex_id,
+        animal_id=an_id,  
+        atual=False  
     )
 
     for ali_id, qtd in zip(alimentos_ids, quantidades):
