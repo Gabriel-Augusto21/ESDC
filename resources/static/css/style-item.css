@@ -1,0 +1,89 @@
+.step-wizard-list {
+    display: flex;
+    justify-content: flex-start; /* Alinha os itens à esquerda */
+    align-items: flex-start; /* Alinha os itens ao topo */
+    padding: 20px 0;
+    list-style: none;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.step-wizard-item {
+    flex: none; /* Remove o comportamento de expansão automática */
+    text-align: left; /* Alinha o texto à esquerda */
+    margin-right: 170px; /* Adiciona espaçamento entre os itens */
+    position: relative;
+}
+
+.progress-icon {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+background-color: #f8f9fa; /* Fundo do ícone inativo */
+color: #adb5bd; /* Cor do ícone inativo */
+margin: 0 auto 10px;
+font-size: 1.5rem;
+position: relative;
+z-index: 2;
+}
+
+.progress-label {
+color: #adb5bd; /* Cor do texto inativo */
+}
+
+
+.step-wizard-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 30%; /* Alinha a barra verticalmente ao centro do ícone */
+    left: 70%; /* Posiciona a barra à direita do item */
+    height: 2px; /* Espessura da barra */
+    width: 200px; /* Define o comprimento da barra */
+    background-color: #dee2e6; /* Cor da barra */
+    transform: translateY(-50%); /* Ajusta o alinhamento vertical */
+    z-index: 1;
+}
+
+/* --- Estado Ativo (Verde, como no mockup) --- */
+.step-wizard-item.active .progress-icon {
+background-color: #e6f7ec; /* Fundo do ícone ativo (verde claro) */
+color: #3f8863b0; /* Cor do ícone ativo (verde) */
+}
+.step-wizard-item.active .progress-label {
+color: #3f8863; /* Cor do texto ativo (escuro) */
+}
+/* Linha verde após o passo ativo */
+.step-wizard-item.active:not(:last-child)::after {
+background-color: #3f886386; /* Verde */
+}
+
+/* --- Estado Concluído (para passos anteriores) --- */
+.step-wizard-item.completed .progress-icon {
+background-color: #e6f7ec;
+color: #3f8863ec;
+}
+.step-wizard-item.completed .progress-label {
+color: #3f886386;
+}
+.step-wizard-item.completed:not(:last-child)::after {
+background-color: #3f886386;
+}
+
+/* botões */
+
+/* botão próximo */
+.btn-custom {
+    font-weight: normal; /* Remove o negrito */
+    font-size: 13px; /* Ajusta o tamanho da fonte, se necessário */
+    margin-left: 10px;
+}
+
+/* ícone */
+.botao i {
+    margin-left: 8px; /* espaçamento */
+    font-size: 1.1rem; /* tamanho do ícone */
+}
+
