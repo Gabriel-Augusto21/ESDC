@@ -16,6 +16,7 @@ def gerenciar_dietas(request, id):
 
     # --- Exigência vinculada ---
     exigencia = dieta.exigencia
+    print(exigencia)
     composicoes_exigencia = ComposicaoExigencia.objects.filter(exigencia=exigencia).select_related('nutriente')
 
     # Criar um dicionário com os valores exigidos por nutriente
@@ -48,7 +49,7 @@ def gerenciar_dietas(request, id):
         valor_fornecido = total_fornecido.get(nutriente_nome, 0)
         valor_exigido = exigencia_por_nutriente.get(nutriente_nome, 0)
         balanceamento[nutriente_nome] = round(valor_fornecido - valor_exigido, 2)
-
+    exigencias = Exigencia.objects.exclude(id=exigencia.id)
     context = {
         'dieta': dieta,
         'comp_dieta': comp_dieta,
@@ -57,6 +58,7 @@ def gerenciar_dietas(request, id):
         'total_fornecido': total_fornecido,
         'unidade_por_nutriente': unidade_por_nutriente,
         'exigencia': exigencia,
+        'exigencias': exigencias,
         'exigencia_por_nutriente': exigencia_por_nutriente,
         'balanceamento': balanceamento,
     }

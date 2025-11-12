@@ -1,44 +1,42 @@
 {% extends 'master.html' %}
-{% load static %} 
+{% load static %}
 {% load custom_tags %}
 {% block conteudo %}
 
 <div class="container mt-3">
-    
     <h1>Gerenciamento da Dieta</h1>
-
-
     <div class='row'>
         <div class="col position-relative p-3">
-            <label for="txtNome"
-                class="form-label position-absolute" 
-                style="top: -10px; left: 10px; padding: 0 4px; font-size: 0.9rem;">
-                Nome
+            <label for="txtNome" class="form-label position-absolute"
+                style="top: -10px; left: 10px; padding: 0 4px; font-size: 1rem;">
+                Nome:
             </label>
-            <input class="form-control form-control-md" type="text" id="txtNome" placeholder="Nome...">
+            <input class="form-control form-control-md" type="text" id="txtNome" placeholder="{{dieta.nome}}">
         </div>
         <div class="col position-relative p-3">
-            <label for="txtExigencia" 
-                class="form-label position-absolute" 
-                style="top: -10px; left: 10px; padding: 0 4px; font-size: 0.9rem;">
-                Exigência
+            <label for="txtExigencia" class="form-label position-absolute"
+                style="top: -10px; left: 10px; padding: 0 4px; font-size: 1rem;">
+                Exigência:
             </label>
-            <input class="form-control form-control-md" type="text" id="txtExigencia" class="form-control" placeholder="Exigência...">
+            <select id="id_exigencia" class="form-control" name="exigencia" required>
+                <option value="" disabled selected>{{exigencia.nome}} - {{exigencia.categoria.peso_vivo}}<small> Kg</small></option>
+                {% for exigencia in exigencias %}
+                <option value="{{ exigencia.id }}">{{ exigencia.nome }} - {{exigencia.categoria.peso_vivo}}<small> Kg</small></option>
+                {% endfor %}
+            </select>
         </div>
     </div>
 
     <div class="row">
         <div class="col position-relative p-3">
-            <label for="txtDescricao" 
-                class="form-label position-absolute" 
-                style="top: -10px; left: 10px; padding: 0 4px; font-size: 0.9rem;">
-                Descrição
+            <label for="txtDescricao" class="form-label position-absolute"
+                style="top: -10px; left: 10px; padding: 0 4px; font-size: 1rem;">
+                Descrição:
             </label>
-            <textarea class="form-control form-control-md" id="txtDescricao"></textarea>
+            <textarea class="form-control form-control-md" id="txtDescricao"
+                placeholder="{{dieta.descricao}}"></textarea>
         </div>
     </div>
-    <hr>
-
     <div class="table-responsive" style="border-radius: 10px; ">
         <table class="table">
             <thead class="fw-bold" style="background-color:#2f453a; color:white">
@@ -89,7 +87,7 @@
 
                 <!-- Linha da Exigência -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white">
-                    <td colspan="5" class="text-end">{{exigencia.nome}}:</td>
+                    <td colspan="5" class="text-end">{{exigencia.nome}} - {{exigencia.categoria.peso_vivo}}<small> Kg</small>:</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
                         {{ exigencia_por_nutriente|dictget:nutriente.nome|default:"0" }}
@@ -109,36 +107,34 @@
             </tbody>
         </table>
     </div>
-
+    <!-- Botoes de ação no gerenciamento -->
+    <hr>
     <div class="row d-flex justify-content-end mx-1 my-3">
-        <button 
-            style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px;"
-        >
-            <img src="{% static 'img/add_circle.png' %}" width="20"
-                style="margin-right: 3px;">
+        <button style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px;">
+            <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px;">
             Adicionar Alimento
         </button>
         <button class="botao" style="margin: 0px 0px 0px 10px;">
             Salvar
         </button>
-</div>
+    </div>
 
 </div>
 {% comment %}
 <div class="row mt-4">
-  <div class="col-md-6 mb-3">
-    <label class="form-label">Nome da Dieta</label>
-    <input class="form-control" name="nome" required />
-  </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Nome da Dieta</label>
+        <input class="form-control" name="nome" required />
+    </div>
 
-  <div class="col-md-6 mb-3">
-    <label class="form-label">Exigência</label>
-    <select class="form-control" name="exigencia" required>
-      <option value="" disabled selected>Selecione</option>
-      {% for ex in exigencias %}
-      <option value="{{ ex.id }}">{{ ex.nome }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  {% endcomment %} {% endblock %}
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Exigência</label>
+        <select class="form-control" name="exigencia" required>
+            <option value="" disabled selected>Selecione</option>
+            {% for ex in exigencias %}
+            <option value="{{ ex.id }}">{{ ex.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endcomment %} {% endblock %}
 </div>
