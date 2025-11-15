@@ -49,7 +49,7 @@ def gerenciar_dietas(request, id):
         valor_fornecido = total_fornecido.get(nutriente_nome, 0)
         valor_exigido = exigencia_por_nutriente.get(nutriente_nome, 0)
         balanceamento[nutriente_nome] = round(valor_fornecido - valor_exigido, 2)
-
+    exigencias = Exigencia.objects.exclude(id=exigencia.id)
     context = {
         'dieta': dieta,
         'comp_dieta': comp_dieta,
@@ -58,6 +58,7 @@ def gerenciar_dietas(request, id):
         'total_fornecido': total_fornecido,
         'unidade_por_nutriente': unidade_por_nutriente,
         'exigencia': exigencia,
+        'exigencias': exigencias,
         'exigencia_por_nutriente': exigencia_por_nutriente,
         'balanceamento': balanceamento,
     }
@@ -80,6 +81,8 @@ def desativar_dieta(request):
     dieta = Dieta.objects.get(id=id)
     dieta.is_active = False
     dieta.save()
+    print(dieta.data_criacao)
+    print(dieta.animal.nome)
     return JsonResponse({'Mensagem': f'{dieta.nome} foi desativado'}, status=200)
     
 def ativar_dieta(request):

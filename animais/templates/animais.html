@@ -6,7 +6,7 @@
     .ativar-btn,
     .desativar,
     .editar-dieta-btn,
-    .editar-imagem-btn{
+    .editar-imagem-btn {
         position: absolute;
         width: 22px;
         height: 22px;
@@ -18,26 +18,31 @@
         border: none;
         padding: 0;
     }
-    .desativar-btn{
+
+    .desativar-btn {
         bottom: 8px;
         right: 35px;
     }
+
     .ativar-btn {
         bottom: 10px;
         right: 10px;
     }
-    .desativar{
+
+    .desativar {
         bottom: 10px;
         right: 70px;
         border: none;
         z-index: 10;
     }
-    .editar-imagem-btn{
+
+    .editar-imagem-btn {
         bottom: 10px;
         right: 40px;
         z-index: 10;
     }
-    .editar-dieta-btn{
+
+    .editar-dieta-btn {
         bottom: 10px;
         right: 10px;
     }
@@ -73,7 +78,7 @@
     <div class="row">
         <!-- Contador de registros -->
         <legend class="text-center small">
-        {% if page_obj.paginator.count == 0 %}
+            {% if page_obj.paginator.count == 0 %}
             <img src="{% static 'img/sadhorse.png' %}" width="250" height="200" style="padding-bottom: 7px" />
             <h3 class="text-center">Nenhum animal encontrado.</h3>
         </legend>
@@ -83,13 +88,13 @@
             <div class="row">
                 {% include 'animais_table.html' %}
             </div>
-            
+
             {% include "paginador.html" %}
         </div>
-    </legend>
-    {% else %}
-    {{ page_obj.paginator.count }} animais registrados
-    <div class="container text-center">
+        </legend>
+        {% else %}
+        {{ page_obj.paginator.count }} animais registrados
+        <div class="container text-center">
             <div class="row">
                 {% include 'animais_table.html' %}
             </div>
@@ -151,7 +156,7 @@
                 <img class="desativar" id="desativar-btn" src="{% static 'img/visibility.png' %}" width="20">
                 <img src="{% static 'img/image-up.png' %}" alt="Editar" class="editar-imagem-btn"
                     style="pointer-events:none">
-                <img src="{% static 'img/wheat-off.png' %}" alt="Editar" class="editar-dieta-btn"  id="gerenciar-dieta">
+                <img src="{% static 'img/wheat-off.png' %}" alt="Editar" class="editar-dieta-btn" id="gerenciar-dieta">
 
             </div>
         </div>
@@ -189,12 +194,37 @@
 </div>
 
 <script type="module" src="{% static 'js/atualizar_animais.js' %}"></script>
+
 <script>
     window.urlAtualizarAnimal = "{% url 'animais:atualizar_animal' %}";
     const csrf_token = '{{ csrf_token }}';
     document.body.addEventListener('htmx:configRequest', (event) => {
         event.detail.headers['X-CSRFToken'] = csrf_token;
     });
+    document.addEventListener('DOMContentLoaded', function () {
+        const botaoDieta = document.getElementById('gerenciar-dieta');
+
+        botaoDieta.addEventListener('click', function () {
+            const animalId = this.getAttribute('data-animal-id');
+
+            fetch(`/api/animal/${animalId}/dieta_atual/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.tem_dieta) {
+                        // ✅ Já tem dieta atual → vai pra página da dieta
+                        window.location.href = `/dieta/${animalId}/gerencia_dietas/`;
+                    } else {
+                        // ❌ Não tem dieta → vai pra página de criar nova dieta
+                        window.location.href = `/dieta/${animalId}/inserir_dietas/`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar dieta:', error);
+                    alert('Não foi possível verificar a dieta do animal.');
+                });
+        });
+    });
+
     window.csrf_token = '{{ csrf_token }}';
 </script>
 {% endblock %}

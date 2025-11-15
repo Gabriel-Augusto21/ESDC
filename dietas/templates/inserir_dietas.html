@@ -1,126 +1,108 @@
 {% extends 'master.html' %}
-{% load static %}
 {% block conteudo %}
 
-<div class="container mt-3">
-  <h1>Cadastrar Nova Dieta</h1>
+<div class="container mt-3" > <!-- Limita a largura para o mockup -->
+  <h1 class="mb-4">Criar Dieta</h1>
 
-  <form id="form-dieta" method="post" action="">
-    {% csrf_token %}
-    <div class="row mt-4">
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Nome da Dieta</label>
-        <input class="form-control" name="nome" required>
-      </div>
+  <!-- Passo a passo -->
+  <div class="step-wizard-container">
+    <ul class="step-wizard-list">
+    
+      <li class="step-wizard-item active"> <!-- passo 1 - ativo -->
+        <span class="progress-icon"><i class="bi bi-pencil-square"></i></span> 
+        <span class="progress-label">Identificar</span>
+      </li>
+      <li class="step-wizard-item"> <!-- PASSO 2 - INATIVO -->
+        <span class="progress-icon"><i class="bi-speedometer2"></i></span>
+        <span class="progress-label">Alimentos</span>
+      </li>
+      <li class="step-wizard-item"> <!-- PASSO 3 - INATIVO -->
+        <!-- Ícone da sua imagem (check) -->
+        <span class="progress-icon"><i class="bi bi-check-lg"></i></span>
+        <span class="progress-label">Concluir</span>
+      </li>
+    </ul>
+  </div>
 
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Exigência</label>
-        <select class="form-control" name="exigencia" required>
-          <option value="" disabled selected>Selecione</option>
-          {% for ex in exigencias %}
-          <option value="{{ ex.id }}">{{ ex.nome }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Animal</label>
-        <select class="form-control" name="animal" required>
-          <option value="" disabled selected>Selecione</option>
-          {% for an in animais %}
-          <option value="{{ an.id }}">{{ an.nome }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
+  <!-- 2. Conteúdo do Passo 1 -->
+  <div class="passo-1-content mt-4 align-items-left">
+    <h3>Passo 1: Identificar a Dieta</h3>
+    <p class="text-muted text-left">
+        Para iniciar o balanceamento, primeiro identifique a dieta com um nome e, 
+        opcionalmente, uma descrição. Também selecione o animal ao qual a dieta se 
+        aplica.	O passo mais importante nesta tela é selecionar a Exigência Animal.
+        Este campo define o padrão nutricional que será usado como alvo na próxima
+        etapa para comparar e ajustar os alimentos. 
+    </p>
 
-    <div class="mb-3">
-      <label class="form-label">Descrição</label>
-      <textarea class="form-control" name="descricao" rows="2"></textarea>
-    </div>
-
-    <hr>
-
-    <div class="row">
-      <div class="col-lg-8">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h4 class="mb-0">Alimentos da Dieta</h4>
-          <button type="button" class="btn btn-sm btn-primary" id="abrirModal">
-            <i class="bi bi-plus-circle"></i> Adicionar Alimento
-          </button>
+    <!-- 
+      3. Formulário (Baseado no seu código) 
+      O 'action' deve apontar para a view que salva o Passo 1 e redireciona para o Passo 2.
+    -->
+    <form id="form-dieta-passo-1" method="post" action="">
+      {% csrf_token %}
+      
+      <div class="row mt-4">
+        <div class="col-md-6 mb-3 text-left">
+          <label for="id_nome" class="form-label fw-bold">Nome</label>
+          <input id="id_nome" class="form-control" name="nome" required placeholder="Ex: Dieta Verão - Campeão">
         </div>
 
-        <div id="tabela_dieta">
-          <table class="table table-bordered table-sm align-middle">
-            <thead class="table-light">
-              <tr>
-                <th>Alimento</th>
-                <th style="width: 150px;">Quantidade (kg)</th>
-                <th style="width: 80px;">Ação</th>
-              </tr>
-            </thead>
-            <tbody id="lista-alimentos">
-              <tr>
-                <td colspan="3" class="text-center text-muted">Nenhum alimento adicionado</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="col-md-6 mb-3 text-left">
+          <label for="id_exigencia" class="form-label fw-bold text-start">Exigência</label>
+          <select id="id_exigencia" class="form-control" name="exigencia" required>
+            <option value="" disabled selected>Escolha uma exigência</option>
+            {% for ex in exigencias %}
+            <option value="{{ ex.id }}">{{ ex.nome }}</option>
+            {% endfor %}
+          </select>
         </div>
       </div>
-      <div class="col-lg-4">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white py-2">
-            <strong>Resumo Nutricional</strong>
+
+      <!-- Agrupando Animal e Descrição em uma linha -->
+      <div class="row">
+        <div class="col-md-6 mb-3 text-left">
+            <label for="id_descricao" class="form-label fw-bold">Descrição</label>
+            <!-- Usei o name="descricao" do seu código original -->
+            <textarea id="id_descricao" class="form-control" name="descricao" rows="5" placeholder="Ex: Foco em manutenção de peso em baixa temporada..."></textarea>
           </div>
-          <div class="card-body p-2">
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-              <table class="table table-sm mb-0">
-                <thead>
-                  <tr>
-                    <th>Nutriente</th>
-                    <th>Fornecido</th>
-                    <th>Exigido</th>
-                    <th>Dif.</th>
-                  </tr>
-                </thead>
-                <tbody id="tabela-resumo">
-                  <tr>
-                    <td colspan="4" class="text-center text-muted small">
-                      Selecione a exigência e adicione alimentos
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+
+        <div class="col-md-6 mb-3 text-left">
+          <label class="form-label fw-bold">Animal</label>
+          <select class="form-control" name="animal" required>
+            <option value="" disabled selected>Selecione</option>
+            {% for an in animais %}
+            <option value="{{ an.id }}">{{ an.nome }}</option>
+            {% endfor %}
+          </select>
         </div>
       </div>
+
+      <!-- 4. Navegação -->
+      <hr class="mt-4">
+      <div class="d-flex justify-content-end mt-3 mb-3">
+        <!-- Botão Cancelar -->
+        <a href="{% url 'dietas:dietas' %}" class="btn btn-light">Cancelar</a>
+        <!-- Botão Próximo -->
+        <button type="submit" class="botao btn-custom">
+            Próximo <i class="bi bi-arrow-right-circle-fill"></i>
+        </button>
     </div>
-    <div class="d-flex justify-content-end mt-4">
-      <a href="{% url 'dietas:dietas' %}" class="btn btn-secondary me-2">Cancelar</a>
-      <button type="submit" class="btn btn-success">Criar Dieta</button>
-    </div>
-  </form>
+
+    </form>
+  </div>
 </div>
 
-<!-- passa os dados do Django para o JS-->
-<script>
-  window.ALIMENTOS_JSON = JSON.stringify({{ alimentos|safe }});
-  window.URL_BALANCEAMENTO = "{% url 'dietas:calcular_balanceamento_dinamico' %}";
-  window.CSRF_TOKEN = "{{ csrf_token }}";
-</script>
+<!-- 
+  IMPORTANTE:
+  Os scripts abaixo (ALIMENTOS_JSON, URL_BALANCEAMENTO, etc.)
+  provavelmente não são necessários nesta página (Passo 1).
 
-<script type="module" src="{% static 'js/inserir_dietas.js' %}"></script>
+  Eles serão necessários no "Passo 2", onde você vai 
+  adicionar os alimentos e calcular o balanceamento.
 
-<!-- tive que fazer isso pra poder puxar os alimentos pro select -->
-<script>
-  window.ALIMENTOS_JSON = JSON.stringify([
-    {% for ali in alimentos %}
-      { "id": {{ ali.id }}, "nome": "{{ ali.nome }}" }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-  ]);
-  window.URL_BALANCEAMENTO = "{% url 'dietas:calcular_balanceamento_dinamico' %}";
-  window.CSRF_TOKEN = "{{ csrf_token }}";
-</script>
-
+  Eu os removi para manter este template focado no Passo 1.
+  Você precisará movê-los para o template do Passo 2.
+-->
 
 {% endblock %}
