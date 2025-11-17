@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load static %}
 {% block conteudo %}
 
 <div class="container mt-3" > <!-- Limita a largura para o mockup -->
@@ -69,12 +70,22 @@
 
         <div class="col-md-6 mb-3 text-left">
           <label class="form-label fw-bold">Animal</label>
-          <select class="form-control" name="animal" required>
-            <option value="" disabled selected>Selecione</option>
-            {% for an in animais %}
-            <option value="{{ an.id }}">{{ an.nome }}</option>
-            {% endfor %}
-          </select>
+            <select class="form-control" name="animal" id="select_animal" required
+                    {% if animal_id_url %} disabled {% endif %}>
+                <option value="" disabled {% if not animal_id_url %}selected{% endif %}>Selecione</option>
+
+                {% for an in animais %}
+                    <option value="{{ an.id }}"
+                        {% if animal_id_url == an.id %} selected {% endif %}>
+                        {{ an.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            {% if animal_id_url %}
+                <input type="hidden" name="animal" value="{{ animal_id_url }}">
+            {% endif %}
+
         </div>
       </div>
 
@@ -84,15 +95,23 @@
         <!-- Botão Cancelar -->
         <a href="{% url 'dietas:dietas' %}" class="btn btn-light">Cancelar</a>
         <!-- Botão Próximo -->
-        <button type="submit" class="botao btn-custom">
-            Próximo <i class="bi bi-arrow-right-circle-fill"></i>
-        </button>
+        <form method="POST" action="{% url 'dietas:inserir_dieta' %}">
+            {% csrf_token %}
+            <button type="submit" class="botao btn-custom">
+                Próximo <i class="bi bi-arrow-right-circle-fill"></i>
+            </button>
+        </form>
     </div>
 
     </form>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="{% static 'js/alertas_dietas.js' %}"></script>
+
+<script src="{% static 'js/inserir_dietas.js' %}"></script>
 <!-- 
   IMPORTANTE:
   Os scripts abaixo (ALIMENTOS_JSON, URL_BALANCEAMENTO, etc.)
