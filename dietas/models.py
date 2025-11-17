@@ -1,12 +1,16 @@
 from django.db import models
 from decimal import Decimal
+from django.utils import timezone
+
 
 class Dieta(models.Model):
     nome = models.CharField(max_length=50)
     descricao = models.CharField(max_length=250)
-    especifica = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     exigencia = models.ForeignKey('exigencias.Exigencia', on_delete=models.CASCADE)
+    animal = models.ForeignKey('animais.Animal', on_delete=models.CASCADE, null=True, blank=True)
+    atual = models.BooleanField(default=False)
+    data_criacao = models.DateField(default=timezone.localdate)
 
     def total_nutrientes_vetor(self):
         """

@@ -19,11 +19,13 @@
     </form>
     <!-- Botão de inserir -->
     <div class="form-group row mr-1 justify-content-end">
-        <button type="button" class="botao insert-btn">
-            <img src="{% static 'img/add_circle.png' %}" width="20"
-                style="margin-right: 3px; filter: brightness(0) invert(1)">
-            Inserir
-        </button>
+        <button class="botao" onclick="window.location.href='{% url 'dietas:inserir_dieta' %}'"
+            style="display: flex; align-items: center;">
+        <img src="{% static 'img/add_circle.png' %}" width="20"
+             style="margin-right: 3px; filter: brightness(0) invert(1);">
+        Inserir
+    </button>
+
     </div>
     <!-- Contador de registros -->
     <legend class="text-center small">

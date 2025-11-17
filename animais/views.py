@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from animais.models import Animal
+from dietas.models import Dieta
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from datetime import date
@@ -87,6 +88,10 @@ def ativar_animal(request):
     animal.save()
     return JsonResponse({'Mensagem': f'{animal.nome} foi ativado'}, status=200)
 
+def verificar_dieta_atual(request, animal_id):
+    tem_dieta = Dieta.objects.filter(animal_id=animal_id, atual=True).exists()
+    return JsonResponse({'tem_dieta': tem_dieta})
+
 def atualizar_animal(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -99,8 +104,8 @@ def atualizar_animal(request):
         try:
             animal = Animal.objects.get(id=id)
             animal.nome = nome
-            animal.dono = dono
-            animal.peso = peso
+            animal.proprietario = dono
+            animal.peso_vivo = peso
             animal.genero = genero
             animal.data_nasc = data_nasc
             if imagem:
