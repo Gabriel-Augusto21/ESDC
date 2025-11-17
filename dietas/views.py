@@ -115,6 +115,8 @@ def ativar_dieta(request):
     return JsonResponse({'Mensagem': f'{dieta.nome} foi ativado'}, status=200)
     
 def inserir_dieta(request):
+    animal_id_url = request.GET.get("animal_id")
+
     if request.method == "POST":
         nome = request.POST.get("nome")
         descricao = request.POST.get("descricao")
@@ -129,7 +131,6 @@ def inserir_dieta(request):
         }
 
         request.session["dieta_temp"] = []
-
         return redirect("dietas:inserir_dietas_dois")
 
     animais = Animal.objects.all()
@@ -138,8 +139,8 @@ def inserir_dieta(request):
     return render(request, "inserir_dietas.html", {
         "animais": animais,
         "exigencias": exigencias,
+        "animal_id_url": int(animal_id_url) if animal_id_url else None
     })
-
 
 def add_item_dieta_temp(request):
     alim_id = request.POST.get("alimento")
@@ -297,4 +298,12 @@ def inserir_dietas_tres(request):
         "exigencia": exigencia,
         "itens": itens,
         "resumo_balanceamento": resumo_balanceamento,
+    })
+
+def verificar_dieta_atual(request, animal_id):
+    dieta = Dieta.objects.filter(animal_id=animal_id, is_active=True).last()
+
+    return JsonResponse({
+        'dieta_atual': dieta is not None,
+        'id_dieta': dieta.id if dieta else None
     })

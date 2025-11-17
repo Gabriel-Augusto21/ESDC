@@ -22,7 +22,6 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
 
     });
 }
-
 export function desativar(id, nome) {
     alertaConfirmacao(
         {
@@ -43,7 +42,6 @@ export function ativar(id, nome) {
         dados: { id, nome }
     });
 }
-
 export function inserir(html) {
     Swal.fire({
         width: '800px',
@@ -113,8 +111,6 @@ export function inserir(html) {
         }
     });
 }
-
-
 export function atualizar(id, nome, html) {
     Swal.fire({
         width: '850px',
@@ -130,12 +126,28 @@ export function atualizar(id, nome, html) {
         },
         showCancelButton: true,
         focusConfirm: false,
+
         didOpen: () => {
             const popup = Swal.getHtmlContainer();
             const img = popup.querySelector('#idVisual');
-            const dieta = popup.querySelector('#gerenciar-dieta')
-            const desativar = popup.querySelector('#desativar-btn')
+            const dieta = popup.querySelector('#gerenciar-dieta');
+            const desativar = popup.querySelector('#desativar-btn');
 
+            // TROCA O ÍCONE DA DIETA AQUI
+            fetch(`/api/animal/${id}/dieta_atual/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!dieta) return;
+
+                    if (data.dieta_atual) {
+                        dieta.src = "/static/img/wheat.png";
+                    } else {
+                        dieta.src = "/static/img/wheat-off.png";
+                    }
+                })
+                .catch(err => console.error("Erro ao carregar dieta:", err));
+
+            // BOTÃO DESATIVAR
             desativar.addEventListener('click', () => {
                 Swal.fire({
                     title: 'Tem certeza que deseja desativar esse animal?',
@@ -150,28 +162,41 @@ export function atualizar(id, nome, html) {
                         cancelButton: 'botao-cancela-alerta',
                         confirmButton: 'botao-confirma-alerta',
                     },
-                    allowOutsideClick: false, // impede de fechar clicando fora
+                    allowOutsideClick: false,
                 }).then(result => {
                     if (result.isConfirmed) {
-                        // desativa normalmente
                         htmx.ajax('GET', '/desativar_animal/', {
                             values: { id, nome },
                             swap: 'none'
                         });
                     } else if (result.dismiss === Swal.DismissReason.cancel) {
-                        // <- usuário clicou em cancelar, então reabre o modal anterior
                         setTimeout(() => {
                             atualizar(id, nome, html);
-                        }, 100); // pequeno delay pra suavizar a transição
+                        }, 100);
                     }
                 });
             });
 
-            dieta.addEventListener('click', () => {
-                // window.location.href = `/gerenciar_dietas/${id}`
-                alert('Estamos trabalhando nessa funcionalidade de Dietas ainda! :)')
-            })
+            // CLICOU NO BOTÃO DA DIETA, REDIRECIONA
+            if (dieta) {
+                dieta.addEventListener('click', () => {
+                    fetch(`/api/animal/${id}/dieta_atual/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.dieta_atual) {
+                                window.location.href = `/gerenciar_dietas/${data.id_dieta}/`;
+                            } else {
+                                window.location.href = `/inserir_dieta/?animal_id=${id}`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao verificar dieta atual:', error);
+                            Swal.fire('Erro', 'Não foi possível verificar a dieta atual do animal.', 'error');
+                        });
+                });
+            }
 
+            // IMAGEM PARA TROCAR FOTO
             if (img) {
                 img.style.cursor = 'pointer';
 
@@ -197,9 +222,10 @@ export function atualizar(id, nome, html) {
             }
 
         },
+
         preConfirm: () => {
             const popup = Swal.getHtmlContainer();
-            const fileInput = popup.querySelector('#inputNovaImagem'); // pega o input correto
+            const fileInput = popup.querySelector('#inputNovaImagem');
 
             return {
                 nome: popup.querySelector('#txtNome')?.value.trim(),
@@ -207,7 +233,7 @@ export function atualizar(id, nome, html) {
                 peso: popup.querySelector('#txtPeso')?.value.trim(),
                 genero: popup.querySelector('#idGenero')?.value.trim(),
                 data_nasc: popup.querySelector('#dataNasc')?.value.trim(),
-                imagem: fileInput?.files[0] || null // agora vai funcionar
+                imagem: fileInput?.files[0] || null
             };
         }
 
@@ -215,6 +241,7 @@ export function atualizar(id, nome, html) {
         if (botao.isConfirmed) {
             const dados = botao.value;
             const formData = new FormData();
+
             formData.append('id', id);
             formData.append('nome', dados.nome);
             formData.append('dono', dados.dono);
@@ -222,15 +249,14 @@ export function atualizar(id, nome, html) {
             formData.append('genero', dados.genero);
             formData.append('data_nasc', dados.data_nasc);
 
-            // Só adiciona a imagem se o usuário escolheu uma nova
             if (dados.imagem) formData.append('imagem', dados.imagem);
 
-            // Envia via POST para a API
             fetch(window.urlAtualizarAnimal, {
                 method: 'POST',
                 body: formData,
                 headers: { 'X-CSRFToken': window.csrf_token },
-            }).then(response => response.json().then(data => ({ status: response.status, data })))
+            })
+                .then(response => response.json().then(data => ({ status: response.status, data })))
                 .then(result => {
                     if (result.status === 200) {
                         Swal.fire({
@@ -250,8 +276,6 @@ export function atualizar(id, nome, html) {
         }
     });
 }
-
-
 
 // Tratamento das responses
 htmx.on("htmx:afterOnLoad", (event) => {

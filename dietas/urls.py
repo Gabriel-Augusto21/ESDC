@@ -14,4 +14,5 @@ urlpatterns = [
     path("calcular_balanceamento_dinamico/", views.calcular_balanceamento_dinamico, name="calcular_balanceamento_dinamico"),
     path("inserir_dieta_dois/", views.inserir_dietas_dois, name="inserir_dietas_dois"),
     path("inserir_dieta_tres/", views.inserir_dietas_tres, name="inserir_dietas_tres"),
+    path('api/animal/<int:animal_id>/dieta_atual/', views.verificar_dieta_atual, name='verificar_dieta_atual'),
 ]

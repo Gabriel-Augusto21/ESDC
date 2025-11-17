@@ -70,12 +70,22 @@
 
         <div class="col-md-6 mb-3 text-left">
           <label class="form-label fw-bold">Animal</label>
-          <select class="form-control" name="animal" required>
-            <option value="" disabled selected>Selecione</option>
-            {% for an in animais %}
-            <option value="{{ an.id }}">{{ an.nome }}</option>
-            {% endfor %}
-          </select>
+            <select class="form-control" name="animal" id="select_animal" required
+                    {% if animal_id_url %} disabled {% endif %}>
+                <option value="" disabled {% if not animal_id_url %}selected{% endif %}>Selecione</option>
+
+                {% for an in animais %}
+                    <option value="{{ an.id }}"
+                        {% if animal_id_url == an.id %} selected {% endif %}>
+                        {{ an.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            {% if animal_id_url %}
+                <input type="hidden" name="animal" value="{{ animal_id_url }}">
+            {% endif %}
+
         </div>
       </div>
 
