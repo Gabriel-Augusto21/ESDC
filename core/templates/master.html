@@ -52,21 +52,29 @@
                     <li class="nav-item dropdown">
                         <a class="item nav-link dropdown-toggle mx-lg-2 mx-2" href="#" id="navbarDropdown"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                            style="font-size:14px;">Cadastros</a>
+                            style="font-size:14px;">Alimentos</a>
                         <div class="dropdown-menu mx-auto" aria-labelledby="navbarDropdown" style="font-size:14px">
-                            <a class="dropdown-item" href="{% url 'alimentos:alimentos'%}">Alimentos</a>
+                            <a class="dropdown-item" href="{% url 'alimentos:alimentos'%}">Lista de Alimentos</a>
                             <a class="dropdown-item" href="{% url 'alimentos:classificacao'%}">Classificação</a>
-                            <a class="dropdown-item" href="{% url 'exigencias:exigencias'%}">Exigências</a>
                             <a class="dropdown-item" href="{% url 'alimentos:nutrientes'%}">Nutrientes</a>
-                            <a class="dropdown-item" href="{% url 'core:nois' %}">Sobre</a>
                         </div>
-                    </li>
-                    <li class="nav-item" style="font-size:14px">
-                        <a class="item nav-link ml-lg-2 mx-2" href="{% url 'dietas:dietas' %}">Dieta</a>
                     </li>
                     <li class="nav-item" style="font-size:14px">
                         <a class="item nav-link ml-lg-2 mx-2" href="{% url 'animais:animais'%}">Animais</a>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="item nav-link dropdown-toggle mx-lg-2 mx-2" href="#" id="navbarDropdown"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            style="font-size:14px;">Dieta</a>
+                        <div class="dropdown-menu mx-auto" aria-labelledby="navbarDropdown" style="font-size:14px">
+                            <a class="dropdown-item" href="{% url 'dietas:dietas'%}">Lista de Dietas</a>
+                            <a class="dropdown-item" href="{% url 'dietas:inserir_dieta'%}">Inserir uma nova dieta</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" style="font-size:14px">
+                        <a class="item nav-link ml-lg-2 mx-2" href="{% url 'exigencias:exigencias'%}">Exigências</a>
+                    </li>
+                    
                     <li class="nav-item mx-lg-2 mx-2" style="font-size:14px;">
                         <button type="button" class="botao ml-auto" style="font-weight:200">Login</button>
                     </li>
