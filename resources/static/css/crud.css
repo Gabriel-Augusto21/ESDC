@@ -53,6 +53,7 @@ form button:disabled {
     align-items: center;
 }
 
+
 /* Fonte de tudo */
 
 .instrument-sans {
@@ -143,5 +144,3 @@ Precisamos declarar que uma classe pro elemento la no swal.fire()
   box-shadow: none !important;  /* Caso tenha sombra */
   outline: none !important;     /* Remove o contorno do foco */
 }
-
-

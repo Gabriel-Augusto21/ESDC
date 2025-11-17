@@ -27,7 +27,7 @@
 
   <!-- 2. Conteúdo do Passo 1 -->
   <div class="passo-1-content mt-4 align-items-left">
-    <h3>Passo 1: Identificar a Dieta</h3>
+    <h3>Passo 1: Identifique a Dieta</h3>
     <p class="text-muted text-left">
         Para iniciar o balanceamento, primeiro identifique a dieta com um nome e, 
         opcionalmente, uma descrição. Também selecione o animal ao qual a dieta se 
@@ -37,8 +37,7 @@
     </p>
 
     <!-- 
-      3. Formulário (Baseado no seu código) 
-      O 'action' deve apontar para a view que salva o Passo 1 e redireciona para o Passo 2.
+      3. Formulário
     -->
     <form id="form-dieta-passo-1" method="post" action="">
       {% csrf_token %}
@@ -64,7 +63,6 @@
       <div class="row">
         <div class="col-md-6 mb-3 text-left">
             <label for="id_descricao" class="form-label fw-bold">Descrição</label>
-            <!-- Usei o name="descricao" do seu código original -->
             <textarea id="id_descricao" class="form-control" name="descricao" rows="5" placeholder="Ex: Foco em manutenção de peso em baixa temporada..."></textarea>
           </div>
 
@@ -112,16 +110,5 @@
 <script src="{% static 'js/alertas_dietas.js' %}"></script>
 
 <script src="{% static 'js/inserir_dietas.js' %}"></script>
-<!-- 
-  IMPORTANTE:
-  Os scripts abaixo (ALIMENTOS_JSON, URL_BALANCEAMENTO, etc.)
-  provavelmente não são necessários nesta página (Passo 1).
-
-  Eles serão necessários no "Passo 2", onde você vai 
-  adicionar os alimentos e calcular o balanceamento.
-
-  Eu os removi para manter este template focado no Passo 1.
-  Você precisará movê-los para o template do Passo 2.
--->
 
 {% endblock %}
