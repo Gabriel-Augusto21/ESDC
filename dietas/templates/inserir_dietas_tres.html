@@ -1,0 +1,134 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block conteudo %}
+
+<div class="container mt-3">
+
+  <h1 class="mb-4">Criar Dieta – Passo 3</h1>
+
+  <div class="step-wizard-container mb-4">
+    <ul class="step-wizard-list">
+      <li class="step-wizard-item completed">
+        <span class="progress-icon"><i class="bi bi-pencil-square"></i></span>
+        <span class="progress-label">Identificar</span>
+      </li>
+
+      <li class="step-wizard-item completed">
+        <span class="progress-icon"><i class="bi-speedometer2"></i></span>
+        <span class="progress-label">Alimentos</span>
+      </li>
+
+      <li class="step-wizard-item active">
+        <span class="progress-icon"><i class="bi bi-check-lg"></i></span>
+        <span class="progress-label">Concluir</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Passo 3: Revisão e Conclusão -->
+  <div class="mt-4">
+    <h3>Passo 3: Revisão e Conclusão</h3>
+    <p class="text-muted">
+      Revise todas as informações da dieta antes de salvar. Você poderá editá-la posteriormente.
+    </p>
+  </div>
+
+  <!-- INFORMAÇÕES GERAIS -->
+  <div class="card shadow-sm mt-3">
+    <div class="card-header bg-light fw-bold">
+      Informações Gerais
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Nome da Dieta:</strong> {{ dados.nome }}</p>
+          <p><strong>Descrição:</strong> {{ dados.descricao|default:"Sem descrição" }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Animal:</strong> {{ animal.nome }}</p>
+          <p><strong>Exigência:</strong> {{ exigencia.nome }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALIMENTOS SELECIONADOS -->
+  <div class="card shadow-sm mt-3">
+    <div class="card-header bg-light fw-bold">Alimentos Selecionados</div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Alimento</th>
+            <th>Quantidade (kg)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in itens %}
+          <tr>
+            <td>{{ item.nome }}</td>
+            <td>{{ item.quantidade }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BALANCEAMENTO NUTRICIONAL -->
+  <div class="card shadow-sm mt-3">
+    <div class="card-header bg-light fw-bold">Balanceamento Nutricional</div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead style="background-color:#2f453a; color:white">
+            <tr>
+              <th>Nutriente</th>
+              <th>Fornecido</th>
+              <th>Exigido</th>
+              <th>Diferença</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in resumo_balanceamento %}
+            <tr>
+              <td>{{ item.nutriente }}</td>
+              <td>{{ item.fornecido }}</td>
+              <td>{{ item.exigido }}</td>
+              <td class="{% if item.diferenca >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ item.diferenca }}
+              </td>
+              <td>
+                {% if item.diferenca >= 0 %}
+                  <span class="badge bg-success">Atendido</span>
+                {% else %}
+                  <span class="badge bg-danger">Deficiente</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTÕES DE NAVEGAÇÃO -->
+  <div class="d-flex justify-content-between mt-4 mb-4">
+    <a href="{% url 'dietas:inserir_dietas_dois' %}" class="btn btn-light">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit" class="botao btn-custom">
+        <i class="bi bi-check-circle-fill"></i> Finalizar e Salvar Dieta
+      </button>
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}

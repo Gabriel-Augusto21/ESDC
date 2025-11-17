@@ -22,7 +22,7 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
     });
 }
 
-export function desativar(id, nome) {
+function desativar(id, nome) {
     alertaConfirmacao({
         titulo: 'Tem certeza que deseja desativar essa dieta?',
         texto: 'Você poderá desfazer isso mais tarde!',
@@ -32,7 +32,7 @@ export function desativar(id, nome) {
     });
 }
 
-export function ativar(id, nome) {
+function ativar(id, nome) {
     alertaConfirmacao({
         titulo: 'Tem certeza que deseja ativar essa dieta?',
         texto: 'Você poderá desfazer isso mais tarde!',
@@ -42,7 +42,6 @@ export function ativar(id, nome) {
     });
 }
 
-// Feedback após ativar/desativar via HTMX
 htmx.on("htmx:afterOnLoad", (event) => {
     const resp = JSON.parse(event.detail.xhr.response);
 
@@ -66,7 +65,7 @@ htmx.on("htmx:afterOnLoad", (event) => {
     }
 });
 
-export function inserirAlimentoSwal(alimentos, callbackConfirmar) {
+function inserirAlimentoSwal(alimentos, callbackConfirmar) {
     const opcoes = alimentos.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
 
     Swal.fire({

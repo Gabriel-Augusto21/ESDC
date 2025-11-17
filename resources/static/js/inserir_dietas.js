@@ -1,10 +1,14 @@
-import { inserirAlimentoSwal } from "./alertas_dietas.js";
-
+// ============================================
+// INSERIR DIETAS - PASSO 1
+// ============================================
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("form-dieta");
   const tabela = document.getElementById("lista-alimentos");
   const tabelaResumo = document.getElementById("tabela-resumo");
   const btnAdicionar = document.getElementById("abrirModal");
+
+  // Se não existir os elementos do Passo 1, não executa
+  if (!form || !tabela || !tabelaResumo || !btnAdicionar) return;
 
   const alimentos = JSON.parse(window.ALIMENTOS_JSON || "[]");
   const urlBalanceamento = window.URL_BALANCEAMENTO;
@@ -106,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const data = await resp.json();
       if (data.erro) throw new Error("Erro no cálculo");
 
-      // pra montar a tabela de nutrientes
       let html = "";
       for (const nome in data.balanceamento) {
         const fornecido = data.totais[nome] ?? 0;
@@ -130,3 +133,200 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+
+// ============================================
+// INSERIR DIETAS - PASSO 2
+// ============================================
+
+// URLs e constantes vindas do Django
+let URL_ADD, URL_REMOVE, URL_BAL, EXIGENCIA, CSRF_TOKEN;
+
+// Função para inicializar as variáveis do Passo 2
+function initVariables(urls) {
+    URL_ADD = urls.add;
+    URL_REMOVE = urls.remove;
+    URL_BAL = urls.bal;
+    EXIGENCIA = urls.exigencia;
+    CSRF_TOKEN = urls.csrf;
+}
+
+// Verifica se estamos na página do Passo 2
+if (document.getElementById("btnAdd")) {
+    
+    // Event Listener para adicionar item
+    document.getElementById("btnAdd").addEventListener("click", async () => {
+        const ali = document.getElementById("alimento").value;
+        const qtd = document.getElementById("quantidade").value;
+
+        if (!ali || !qtd) {
+            Swal.fire("Erro", "Selecione o alimento e a quantidade.", "warning");
+            return;
+        }
+
+        const form = new FormData();
+        form.append("alimento", ali);
+        form.append("quantidade", qtd);
+        form.append("csrfmiddlewaretoken", CSRF_TOKEN);
+
+        const r = await fetch(URL_ADD, { method: "POST", body: form });
+        const data = await r.json();
+
+        atualizarTabela(data.itens);
+        calcularBalanceamento();
+
+        document.getElementById("alimento").value = "";
+        document.getElementById("quantidade").value = "";
+    });
+
+    // Event Listener para remover item
+    document.addEventListener("click", async e => {
+        if (e.target.classList.contains("remover-item")) {
+            const id = e.target.closest("tr").dataset.id;
+
+            const form = new FormData();
+            form.append("id", id);
+            form.append("csrfmiddlewaretoken", CSRF_TOKEN);
+
+            const r = await fetch(URL_REMOVE, { method: "POST", body: form });
+            const data = await r.json();
+
+            atualizarTabela(data.itens);
+            calcularBalanceamento();
+        }
+    });
+
+    // Event Listener para mudanças na quantidade (recalcula balanceamento)
+    document.addEventListener("input", e => {
+        if (e.target.classList.contains("quantidade-input")) {
+            calcularBalanceamento();
+        }
+    });
+
+    // Função para atualizar a tabela de itens
+    function atualizarTabela(lista) {
+        const tbody = document.getElementById("itens-corpo");
+        tbody.innerHTML = "";
+
+        if (lista.length === 0) {
+            tbody.innerHTML = `
+                <tr class="linha-vazia">
+                    <td colspan="3" class="text-center text-muted">Nenhum alimento adicionado</td>
+                </tr>`;
+            return;
+        }
+
+        lista.forEach(i => {
+            tbody.innerHTML += `
+                <tr data-id="${i.id}">
+                    <td>${i.nome}</td>
+                    <td>
+                        <input type="number" 
+                               class="form-control form-control-sm quantidade-input" 
+                               value="${i.quantidade}" 
+                               min="0.01" 
+                               step="0.01"
+                               style="width: 100px;">
+                    </td>
+                    <td><button class="btn btn-danger btn-sm remover-item">Remover</button></td>
+                </tr>`;
+        });
+    }
+
+    // Função para calcular balanceamento
+    async function calcularBalanceamento() {
+        const itens = [...document.querySelectorAll("#itens-corpo tr[data-id]")];
+
+        if (itens.length === 0) {
+            document.getElementById("box-balanceamento").innerHTML =
+                `<p class="text-center text-muted">Nenhum alimento para balancear...</p>`;
+            return;
+        }
+
+        const form = new FormData();
+        form.append("exigencia", EXIGENCIA);
+        form.append("csrfmiddlewaretoken", CSRF_TOKEN);
+
+        itens.forEach(tr => {
+            const qtdInput = tr.querySelector(".quantidade-input");
+            form.append("alimentos[]", tr.dataset.id);
+            form.append("quantidades[]", qtdInput.value.trim().replace(",", "."));
+        });
+
+        const r = await fetch(URL_BAL, { method: "POST", body: form });
+        const data = await r.json();
+
+        renderBalanceamento(data);
+    }
+
+    // Função para renderizar o balanceamento
+    function renderBalanceamento(data) {
+        const box = document.getElementById("box-balanceamento");
+        const { exigencia, totais, contribuicao, balanceamento } = data;
+
+        const alimentos = Object.keys(contribuicao);
+        const nutrientes = Object.keys(totais);
+
+        let html = `
+        <div class="table-responsive" style="border-radius: 10px;">
+            <table class="table">
+                <thead class="fw-bold" style="background-color:#2f453a; color:white">
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Quantidade</th>
+                        <th style="white-space: nowrap;">MS (%)</th>
+                        <th style="white-space: nowrap;">PB (Mcal)</th>
+                        <th style="white-space: nowrap;">ED (%MS)</th>`;
+
+        nutrientes.forEach(n => {
+            html += `<th style="white-space: nowrap;">${n}</th>`;
+        });
+
+        html += `</tr></thead><tbody>`;
+
+        alimentos.forEach(alimento => {
+            const info = contribuicao[alimento];
+            html += `
+                <tr>
+                    <td>${alimento}</td>
+                    <td>${parseFloat(info.quantidade || 0).toFixed(2)} <small>(kg)</small></td>
+                    <td>${parseFloat(info.ms || 0).toFixed(2)}</td>
+                    <td>${parseFloat(info.pb || 0).toFixed(2)}</td>
+                    <td>${parseFloat(info.ed || 0).toFixed(2)}</td>`;
+
+            nutrientes.forEach(n => {
+                html += `<td>${parseFloat(info[n] || 0).toFixed(2)}</td>`;
+            });
+
+            html += `</tr>`;
+        });
+
+        html += `
+            <tr class="fw-bold" style="background-color:#2f453a; color:white">
+                <td colspan="5" class="text-end">Total Fornecido:</td>`;
+
+        nutrientes.forEach(n => {
+            html += `<td>${parseFloat(totais[n] || 0).toFixed(2)}</td>`;
+        });
+
+        html += `</tr>
+            <tr class="fw-bold" style="background-color:#2f453a; color:white">
+                <td colspan="5" class="text-end">Exigência:</td>`;
+
+        nutrientes.forEach(n => {
+            html += `<td>${parseFloat(exigencia[n] || 0).toFixed(2)}</td>`;
+        });
+
+        html += `</tr>
+            <tr class="fw-bold" style="background-color:#2f453a; color:white">
+                <td colspan="5" class="text-end">Balanceamento (Diferença p/ Exigência):</td>`;
+
+        nutrientes.forEach(n => {
+            const val = parseFloat(balanceamento[n] || 0).toFixed(2);
+            html += `<td class="${val >= 0 ? "text-success" : "text-danger"}">${val}</td>`;
+        });
+
+        html += `</tr></tbody></table></div>`;
+
+        box.innerHTML = html;
+    }
+}

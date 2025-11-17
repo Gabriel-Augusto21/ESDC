@@ -6,6 +6,7 @@ from animais.models import Animal
 from decimal import Decimal
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+from django.utils import timezone
 
 def gerenciar_dietas(request, id):
     dieta = get_object_or_404(Dieta, pk=id)
@@ -76,6 +77,27 @@ def dietas(request):
         'query': query
     })
 
+def inserir_dietas_dois(request):
+    dados = request.session.get("nova_dieta")
+
+    if not dados:
+        return redirect("dietas:inserir_dieta")
+
+    animal = Animal.objects.get(id=dados["animal_id"])
+    exigencia = Exigencia.objects.get(id=dados["exigencia_id"])
+
+    alimentos = Alimento.objects.all()
+    itens = request.session.get("dieta_temp", [])
+
+    return render(request, "inserir_dietas_dois.html", {
+        "dados": dados,
+        "animal": animal,
+        "exigencia": exigencia,
+        "exigencia_id": exigencia.id,
+        "alimentos": alimentos,
+        "itens": itens,
+    })
+
 def desativar_dieta(request):
     id = request.GET.get('id')
     dieta = Dieta.objects.get(id=id)
@@ -93,42 +115,30 @@ def ativar_dieta(request):
     return JsonResponse({'Mensagem': f'{dieta.nome} foi ativado'}, status=200)
     
 def inserir_dieta(request):
+    if request.method == "POST":
+        nome = request.POST.get("nome")
+        descricao = request.POST.get("descricao")
+        exigencia = request.POST.get("exigencia")
+        animal = request.POST.get("animal")
+
+        request.session["nova_dieta"] = {
+            "nome": nome,
+            "descricao": descricao,
+            "exigencia_id": exigencia,
+            "animal_id": animal,
+        }
+
+        request.session["dieta_temp"] = []
+
+        return redirect("dietas:inserir_dietas_dois")
+
+    animais = Animal.objects.all()
     exigencias = Exigencia.objects.all()
-    alimentos = Alimento.objects.all()
-    animais = Animal.objects.filter(is_active=True) 
 
-    if request.method == 'GET':
-        return render(request, 'inserir_dietas.html', {
-            "exigencias": exigencias,
-            "alimentos": alimentos,
-            "animais": animais,  
-            "itens": []
-        })
-
-    nome = request.POST.get("nome")
-    desc = request.POST.get("descricao", "")
-    ex_id = request.POST.get("exigencia")
-    an_id = request.POST.get("animal") 
-
-    alimentos_ids = request.POST.getlist("alimentos[]")
-    quantidades = request.POST.getlist("quantidades[]")
-
-    dieta = Dieta.objects.create(
-        nome=nome,
-        descricao=desc,
-        exigencia_id=ex_id,
-        animal_id=an_id,  
-        atual=False  
-    )
-
-    for ali_id, qtd in zip(alimentos_ids, quantidades):
-        ComposicaoDieta.objects.create(
-            dieta=dieta,
-            alimento_id=ali_id,
-            quantidade=Decimal(qtd)
-        )
-
-    return redirect("dietas:dietas")
+    return render(request, "inserir_dietas.html", {
+        "animais": animais,
+        "exigencias": exigencias,
+    })
 
 
 def add_item_dieta_temp(request):
@@ -165,10 +175,6 @@ def remover_item_dieta_temp(request):
     return JsonResponse({"ok": True, "itens": dieta_temp})
 
 def calcular_balanceamento_dinamico(request):
-    from decimal import Decimal
-    from alimentos.models import Alimento, ComposicaoAlimento
-    from exigencias.models import Exigencia, ComposicaoExigencia
-
     ex_id = request.POST.get("exigencia")
     alimentos_ids = request.POST.getlist("alimentos[]")
     quantidades = request.POST.getlist("quantidades[]")
@@ -176,18 +182,39 @@ def calcular_balanceamento_dinamico(request):
     if not ex_id or not alimentos_ids:
         return JsonResponse({"erro": "Dados incompletos"}, status=400)
 
-    exigencia = Exigencia.objects.get(id=ex_id)
     exig = {
         e.nutriente.nome: float(e.valor)
-        for e in ComposicaoExigencia.objects.filter(exigencia=exigencia)
+        for e in ComposicaoExigencia.objects.filter(exigencia_id=ex_id)
     }
 
     totais = {}
+    contribuicao = {}
+
     for ali_id, qtd in zip(alimentos_ids, quantidades):
         ali = Alimento.objects.get(id=ali_id)
+        qtd = float(qtd)
+
+        contribuicao[ali.nome] = {
+            "quantidade": qtd,
+            "ms": 0,
+            "pb": 0,
+            "ed": 0
+        }
+
         for comp in ali.composicaoalimento_set.all():
-            nome = comp.nutriente.nome
-            totais[nome] = totais.get(nome, 0) + float(comp.valor) * float(qtd)
+            nutriente = comp.nutriente.nome
+            valor = float(comp.valor) * qtd
+
+            totais[nutriente] = totais.get(nutriente, 0) + valor
+
+            contribuicao[ali.nome][nutriente] = round(valor, 2)
+
+            if nutriente == "MS":
+                contribuicao[ali.nome]["ms"] = round(valor, 2)
+            elif nutriente == "PB":
+                contribuicao[ali.nome]["pb"] = round(valor, 2)
+            elif nutriente == "ED":
+                contribuicao[ali.nome]["ed"] = round(valor, 2)
 
     balanceamento = {
         n: round(totais.get(n, 0) - exig.get(n, 0), 2)
@@ -195,7 +222,79 @@ def calcular_balanceamento_dinamico(request):
     }
 
     return JsonResponse({
-        "totais": {k: round(v, 2) for k, v in totais.items()},
         "exigencia": exig,
+        "totais": {k: round(v, 2) for k, v in totais.items()},
+        "contribuicao": contribuicao,
         "balanceamento": balanceamento,
+    })
+
+def inserir_dietas_tres(request):
+    """Passo 3: Conclusão e salvamento da dieta"""
+    dados = request.session.get("nova_dieta")
+    itens = request.session.get("dieta_temp", [])
+
+    if not dados or not itens:
+        return redirect("dietas:inserir_dieta")
+
+    animal = Animal.objects.get(id=dados["animal_id"])
+    exigencia = Exigencia.objects.get(id=dados["exigencia_id"])
+
+    totais = {}
+    for item in itens:
+        ali = Alimento.objects.get(id=item["id"])
+        qtd = float(item["quantidade"])
+        
+        for comp in ali.composicaoalimento_set.all():
+            nutriente = comp.nutriente.nome
+            valor = float(comp.valor) * qtd
+            totais[nutriente] = totais.get(nutriente, 0) + valor
+
+    exig = {
+        e.nutriente.nome: float(e.valor)
+        for e in ComposicaoExigencia.objects.filter(exigencia_id=exigencia.id)
+    }
+
+    resumo_balanceamento = []
+    todos_nutrientes = set(list(totais.keys()) + list(exig.keys()))
+    
+    for nutriente in sorted(todos_nutrientes):
+        fornecido = round(totais.get(nutriente, 0), 2)
+        exigido = round(exig.get(nutriente, 0), 2)
+        diferenca = round(fornecido - exigido, 2)
+        
+        resumo_balanceamento.append({
+            'nutriente': nutriente,
+            'fornecido': fornecido,
+            'exigido': exigido,
+            'diferenca': diferenca
+        })
+
+    if request.method == "POST":
+        dieta = Dieta.objects.create(
+            nome=dados["nome"],
+            descricao=dados.get("descricao", ""),
+            animal=animal,
+            exigencia=exigencia,
+            data_criacao=timezone.now()
+        )
+
+        for item in itens:
+            ali = Alimento.objects.get(id=item["id"])
+            ComposicaoDieta.objects.create(
+                dieta=dieta,
+                alimento=ali,
+                quantidade=Decimal(str(item["quantidade"]))
+            )
+
+        del request.session["nova_dieta"]
+        del request.session["dieta_temp"]
+
+        return redirect("dietas:gerenciar_dietas", id=dieta.id)
+
+    return render(request, "inserir_dietas_tres.html", {
+        "dados": dados,
+        "animal": animal,
+        "exigencia": exigencia,
+        "itens": itens,
+        "resumo_balanceamento": resumo_balanceamento,
     })

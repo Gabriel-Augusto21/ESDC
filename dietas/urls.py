@@ -12,5 +12,6 @@ urlpatterns = [
     path("add_item_dieta_temp/", views.add_item_dieta_temp, name="add_item_dieta_temp"),
     path("remover_item_dieta_temp/", views.remover_item_dieta_temp, name="remover_item_dieta_temp"),
     path("calcular_balanceamento_dinamico/", views.calcular_balanceamento_dinamico, name="calcular_balanceamento_dinamico"),
-
+    path("inserir_dieta_dois/", views.inserir_dietas_dois, name="inserir_dietas_dois"),
+    path("inserir_dieta_tres/", views.inserir_dietas_tres, name="inserir_dietas_tres"),
 ]
