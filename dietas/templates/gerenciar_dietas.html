@@ -109,15 +109,33 @@
     </div>
     <!-- Botoes de ação no gerenciamento -->
     <hr>
-    <div class="row d-flex justify-content-end mx-1 my-3">
-        <button style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px;">
-            <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px;">
-            Adicionar Alimento
-        </button>
-        <button class="botao" style="margin: 0px 0px 0px 10px;">
-            Salvar
-        </button>
+    
+    <div class="d-flex justify-content-between align-items-center mx-1 my-3">
+
+        <!-- Botão ESQUERDA (Voltar ou Adicionar Alimento?) -->
+        <a href="{% url 'dietas:dietas' %}">    
+            <button style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px;">
+                <img src="{% static 'img/botao-voltar.png' %}" width="20" style="margin-right: 3px;">
+                Voltar
+            </button>
+        </a>
+
+        <!-- Botões da DIREITA lado a lado -->
+        <div class="d-flex align-items-center">
+
+            <button style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px; white-space: nowrap;">
+                <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px;">
+                Adicionar Alimento
+            </button>
+
+            <button class="botao" style="margin-left: 10px; white-space: nowrap;">
+                Salvar
+            </button>
+
+        </div>
     </div>
+
+
 
 </div>
 {% comment %}

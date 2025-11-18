@@ -22,11 +22,11 @@
                 <p class="mb-1 text-white-50" style="font-size: 1.5rem;">{{ animal.proprietario }}</p>
             </div>
             {% if animal.is_active %}
-            <img class="desativar-btn" src="{% static 'img/visibility.png' %}" width="20">
-            <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn"
+            <img class="desativar-btn" src="{% static 'img/visibility.png' %}" width="20" title="Desativar animal">
+            <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn" title="Editar"
                 style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
             {% else %}
-            <img class="ativar-btn" src="{% static 'img/not_visibility.png' %}" width="25">
+            <img class="ativar-btn" src="{% static 'img/not_visibility.png' %}" width="25" title="Ativar alimento">
             {% endif %}
         </div>
     </div>

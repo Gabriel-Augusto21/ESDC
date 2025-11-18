@@ -30,13 +30,15 @@
             </button>
             <button class="btn btn-sm desativar-btn"
                     data-id="{{ composicao.id }}"
-                    data-url="{% url 'alimentos:desativar_composicaoAlimento' %}?id={{ composicao.id }}">
+                    data-url="{% url 'alimentos:desativar_composicaoAlimento' %}?id={{ composicao.id }}"
+                    title="Desativar alimento">
                 <img src="{% static 'img/visibility.png' %}" width="20">
             </button>
             {% else %}
             <button class="btn btn-sm ativar-btn"
                     data-id="{{ composicao.id }}"
-                    data-url="{% url 'alimentos:ativar_composicaoAlimento' %}?id={{ composicao.id }}">
+                    data-url="{% url 'alimentos:ativar_composicaoAlimento' %}?id={{ composicao.id }}"
+                    title="Ativar alimento">
                 <img src="{% static 'img/not_visibility.png' %}" width="20">
             </button>
             {% endif %}

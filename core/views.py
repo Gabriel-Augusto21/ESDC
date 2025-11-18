@@ -4,6 +4,3 @@ from django.shortcuts import render
 #@login_required
 def main(request):
     return render(request, "main.html")
-
-def nois(request):
-    return render(request, "nois.html")
