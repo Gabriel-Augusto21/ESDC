@@ -115,17 +115,14 @@
     <!-- Navegação -->
     <hr class="mt-4">
 
-    <div class="row w-100 mb-3">
+    <div class="row mb-3" style="position: relative; text-align: end;">
 
-        <div class="col-6">
+        <div class="col" >
             <form action="{% url 'dietas:inserir_dieta' %}" method="get" class="d-inline">
-                <button type="submit" class="btn btn-light">
+                <button type="submit" class="btn btn-light mb-1">
                     <i class="bi bi-arrow-left"></i> Voltar
                 </button>
             </form>
-        </div>
-
-        <div class="col-6 text-end">
             <form action="{% url 'dietas:inserir_dietas_tres' %}" method="get" class="d-inline">
                 <button type="submit" class="botao btn-custom">
                     Próximo <i class="bi bi-arrow-right-circle-fill"></i>

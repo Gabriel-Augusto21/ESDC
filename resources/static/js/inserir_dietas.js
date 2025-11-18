@@ -181,8 +181,9 @@ if (document.getElementById("btnAdd")) {
     // Event Listener para remover item
     document.addEventListener("click", async e => {
         if (e.target.classList.contains("remover-item")) {
+            console.log('Clicou')
             const id = e.target.closest("tr").dataset.id;
-
+            console.log(id)
             const form = new FormData();
             form.append("id", id);
             form.append("csrfmiddlewaretoken", CSRF_TOKEN);
@@ -205,7 +206,7 @@ if (document.getElementById("btnAdd")) {
     // Função para atualizar a tabela de itens
     function atualizarTabela(lista) {
         const tbody = document.getElementById("itens-corpo");
-        tbody.innerHTML = "";
+        tbody.innerHTML = '';
 
         if (lista.length === 0) {
             tbody.innerHTML = `
@@ -227,7 +228,9 @@ if (document.getElementById("btnAdd")) {
                                step="0.01"
                                style="width: 100px;">
                     </td>
-                    <td><button class="btn btn-danger btn-sm remover-item">Remover</button></td>
+                    <td><button type="button" class="btn remover-item">
+                                <i class="bi bi-trash"></i>
+                            </button></td>
                 </tr>`;
         });
     }
