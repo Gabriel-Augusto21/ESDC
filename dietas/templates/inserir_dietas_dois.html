@@ -95,8 +95,11 @@
                 </div>
 
                 <div class="col-md-3 mb-3 d-flex align-items-end">
-                    <button id="btnAdd" class="btn btn-success w-100">
-                        Adicionar
+                    <button
+                        style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px; white-space: nowrap;"
+                        class="w-100 btn" id="btnAdd">
+                        <img src="{% static 'img/add_circle.png' %}" width="20" style="margin: 0.5px;">
+                        Adicionar Alimento
                     </button>
                 </div>
             </div>
@@ -117,7 +120,7 @@
 
     <div class="row mb-3" style="position: relative; text-align: end;">
 
-        <div class="col" >
+        <div class="col">
             <form action="{% url 'dietas:inserir_dieta' %}" method="get" class="d-inline">
                 <button type="submit" class="btn btn-light mb-1">
                     <i class="bi bi-arrow-left"></i> Voltar

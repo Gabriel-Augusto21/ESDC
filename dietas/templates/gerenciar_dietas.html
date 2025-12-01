@@ -5,42 +5,113 @@
 
 <div class="container mt-3">
     <h1>Gerenciamento da Dieta</h1>
-    <div class='row'>
-        <div class="col position-relative p-3">
-            <label for="txtNome" class="form-label position-absolute"
-                style="top: -10px; left: 10px; padding: 0 4px; font-size: 1rem;">
-                Nome:
-            </label>
-            <input class="form-control form-control-md" type="text" id="txtNome" placeholder="{{dieta.nome}}">
+
+    <!-- Card - Animal da dieta -->
+    <div class="row g-4 mt-3">
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold align-items-left" style="background-color: #2f453a; color:white;">
+                    Animal Referenciado
+                </div>
+                <div class="card-body d-flex p-4">
+
+                    <div class="d-flex flex-column align-items-center flex-shrink-0" style="width: 150px;">
+                        <img src="{{ animal.imagem.url }}" onerror="this.src='{% static 'img/default.jpg' %}'"
+                            class="rounded border" style="width: 150px; height: 150px; object-fit: cover;">
+                        <h5 class="mt-3 text-center mb-0">{{ animal.nome }}</h5>
+                    </div>
+
+                    <div class="border-start mx-4"></div>
+
+                    <div class="d-flex flex-column justify-content-center flex-grow-1">
+
+                        <div class="bg-light p-2 rounded mb-2">
+                            <small class="text-muted d-block">Peso</small>
+                            <strong>{{ animal.peso_vivo }} kg</strong>
+                        </div>
+
+                        <div class="bg-light p-2 rounded mb-2">
+                            <small class="text-muted d-block">Nascimento</small>
+                            <strong>{{ animal.data_nasc }}</strong>
+                        </div>
+
+                        <div class="bg-light p-2 rounded">
+                            <small class="text-muted d-block">Gênero</small>
+                            <strong>{% if animal.genero == 'M' %} Macho {% else %} Fêmea {% endif %}</strong>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
-        <div class="col position-relative p-3">
-            <label for="txtExigencia" class="form-label position-absolute"
-                style="top: -10px; left: 10px; padding: 0 4px; font-size: 1rem;">
-                Exigência:
-            </label>
-            <select id="id_exigencia" class="form-control" name="exigencia" required>
-                <option value="" disabled selected>{{exigencia.nome}} - {{exigencia.categoria.peso_vivo}}<small> Kg</small></option>
-                {% for exigencia in exigencias %}
-                <option value="{{ exigencia.id }}">{{ exigencia.nome }} - {{exigencia.categoria.peso_vivo}}<small> Kg</small></option>
-                {% endfor %}
-            </select>
+
+        <!-- Card - Informações Gerais da dieta -->
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-header fw-bold" style="background-color: #2f453a; color:white;">
+                    Informações Gerais
+                </div>
+                <div class="card-body p-4 d-flex justify-content-end mt-3">
+
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="row g-2">
+
+                            <div class="col-6">
+                                <label for="id_nome" class="form-label mb-1"><small class="text-muted">Nome da
+                                        Dieta</small></label>
+                                <input type="text" class="form-control" id="id_nome" name="nome"
+                                    value="{{ dieta.nome }}" required>
+                            </div>
+
+                            <div class="col-6">
+                                <label for="animal_display" class="form-label mb-1"><small
+                                        class="text-muted">Animal</small></label>
+                                <input type="text" class="form-control bg-light" id="animal_display"
+                                    value="{{ animal.nome }}" readonly>
+                            </div>
+
+                            <div class="col-6 mt-2">
+                                <label for="id_exigencia" class="form-label mb-1"><small
+                                        class="text-muted">Exigência</small></label>
+                                <select class="form-control" id="id_exigencia" name="exigencia_id" required>
+
+                                    <option value="{{ exigencia.id }}" selected>{{ exigencia.nome }}</option>
+
+                                    {% for ex in exigencias %}
+                                    {% if ex.id != exigencia.id %}
+                                    <option value="{{ ex.id }}">{{ ex.nome }}</option>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+                            <div class="col-6 mt-2">
+                                <label for="id_descricao" class="form-label mb-1"><small
+                                        class="text-muted">Descrição</small></label>
+                                <textarea class="form-control" id="id_descricao" name="descricao"
+                                    rows="1">{{ dieta.descricao|default:"" }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="botao btn-custom">Salvar Informações</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col position-relative p-3">
-            <label for="txtDescricao" class="form-label position-absolute"
-                style="top: -10px; left: 10px; padding: 0 4px; font-size: 1rem;">
-                Descrição:
-            </label>
-            <textarea class="form-control form-control-md" id="txtDescricao"
-                placeholder="{{dieta.descricao}}"></textarea>
-        </div>
-    </div>
-    <div class="table-responsive" style="border-radius: 10px; ">
+    <!-- Tabela da dieta -->
+    <div class="table-responsive my-3" style="border-radius: 10px; ">
         <table class="table">
             <thead class="fw-bold" style="background-color:#2f453a; color:white">
                 <tr>
+                    <th>Remover</th>
                     <th>Alimento</th>
                     <th>Quantidade</th>
                     <th style="white-space: nowrap;">MS <small>(%)</small></th>
@@ -57,8 +128,20 @@
             <tbody>
                 {% for comp in comp_dieta %}
                 <tr>
+                    {% comment %}
+                    Botão para remover o alimento da dieta.
+                    Galera do back: implementar a funcionalidade de remoção.
+                    {% endcomment %}
+                    <td> <button class="btn btn-sm remover-btn" alt="Remover" title="Remover alimento da dieta">
+                            <i class="bi bi-trash"></i>
+                        {% comment %} <img src="{% static 'img/trash.png' %}" width="20"> {% endcomment %}
+                        </button> </td>
                     <td style="white-space: nowrap;">{{ comp.alimento.nome }}</td>
-                    <td>{{ comp.quantidade|truncar:2 }} <small>(kg)</small></td>
+                    {% comment %}
+                    Aqui, o campo de quantidade é um input de texto para permitir edição direta.
+                    Galera do back: implementar a funcionalidade de atualização da quantidade.
+                    {% endcomment %}
+                    <td><input style="text-align: center;" type="text" value="{{ comp.quantidade|truncar:2 }} Kg"></td>
                     <td>{{ comp.alimento.ms }}</td>
                     <td>{{ comp.alimento.pb }}</td>
                     <td>{{ comp.alimento.ed }}</td>
@@ -77,7 +160,7 @@
 
                 <!-- Linha de total fornecido -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white">
-                    <td colspan="5" class="text-end">Total Fornecido:</td>
+                    <td colspan="6" class="text-end">Total Fornecido:</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
                         {{ total_fornecido|dictget:nutriente.nome|default:"0" }}
@@ -87,7 +170,8 @@
 
                 <!-- Linha da Exigência -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white">
-                    <td colspan="5" class="text-end">{{exigencia.nome}} - {{exigencia.categoria.peso_vivo}}<small> Kg</small>:</td>
+                    <td colspan="6" class="text-end">{{exigencia.nome}} - {{exigencia.categoria.peso_vivo}}<small>
+                            Kg</small>:</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
                         {{ exigencia_por_nutriente|dictget:nutriente.nome|default:"0" }}
@@ -97,7 +181,7 @@
 
                 <!-- Linha de balanceamento -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white">
-                    <td colspan="5" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
+                    <td colspan="6" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
                     {% for nutriente in todos_nutrientes %}
                     <td>
                         {{ balanceamento|dictget:nutriente.nome|default:"0" }}
@@ -108,31 +192,28 @@
         </table>
     </div>
     <!-- Botoes de ação no gerenciamento -->
+    <div class="d-flex justify-content-end my-3">
+        <button
+            style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px; white-space: nowrap;">
+            <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px;">
+            Adicionar Alimento
+        </button>
+
+        <button class="botao btn-custom" style="margin-left: 10px; white-space: nowrap;">
+            Salvar Balanceamento
+        </button>
+    </div>
+
     <hr>
-    
+
     <div class="d-flex justify-content-between align-items-center mx-1 my-3">
 
         <!-- Botão ESQUERDA (Voltar ou Adicionar Alimento?) -->
-        <a href="{% url 'dietas:dietas' %}">    
-            <button style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px;">
-                <img src="{% static 'img/botao-voltar.png' %}" width="20" style="margin-right: 3px;">
-                Voltar
+        <a href="{% url 'dietas:dietas' %}">
+            <button type="submit" class="btn btn-light mb-1">
+                <i class="bi bi-arrow-left"></i> Voltar
             </button>
         </a>
-
-        <!-- Botões da DIREITA lado a lado -->
-        <div class="d-flex align-items-center">
-
-            <button style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px; white-space: nowrap;">
-                <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px;">
-                Adicionar Alimento
-            </button>
-
-            <button class="botao" style="margin-left: 10px; white-space: nowrap;">
-                Salvar
-            </button>
-
-        </div>
     </div>
 
 

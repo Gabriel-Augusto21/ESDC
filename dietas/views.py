@@ -51,6 +51,23 @@ def gerenciar_dietas(request, id):
         valor_exigido = exigencia_por_nutriente.get(nutriente_nome, 0)
         balanceamento[nutriente_nome] = round(valor_fornecido - valor_exigido, 2)
     exigencias = Exigencia.objects.exclude(id=exigencia.id)
+
+    animal = dieta.animal
+    
+    resumo_balanceamento = []
+    for nutriente in sorted(todos_nutrientes, key=lambda n: n.nome):
+        nome = nutriente.nome
+        fornecido = total_fornecido.get(nome, 0)
+        exigido = exigencia_por_nutriente.get(nome, 0)
+        diferenca = balanceamento.get(nome, 0)
+        resumo_balanceamento.append({
+            'nutriente': nome,
+            'fornecido': fornecido,
+            'exigido': exigido,
+            'diferenca': diferenca
+        })
+    
+    
     context = {
         'dieta': dieta,
         'comp_dieta': comp_dieta,
@@ -61,7 +78,9 @@ def gerenciar_dietas(request, id):
         'exigencia': exigencia,
         'exigencias': exigencias,
         'exigencia_por_nutriente': exigencia_por_nutriente,
+        'animal': animal,
         'balanceamento': balanceamento,
+        'resumo_balanceamento': resumo_balanceamento,
     }
     return render(request, 'gerenciar_dietas.html', context)
 
