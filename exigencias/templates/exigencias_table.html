@@ -32,17 +32,17 @@
             <td class="d-none d-sm-table-cell">{{exigencia.ed}}</td>
             <td class="d-none d-sm-table-cell">{{exigencia.pb}}</td>
             <td class="text-end">{% if exigencia.is_active %}
-                <button class="btn btn-sm desativar-btn" alt="Ativar">
+                <button class="btn btn-sm desativar-btn" alt="Desativar" title="Desativar exigência">
                     <img src="{% static 'img/visibility.png' %}" width="20">
                 </button>
-                <button class="btn btn-sm update-btn" id="{{exigencia.id}}">
+                <button class="btn btn-sm update-btn" id="{{exigencia.id}}" title="Editar">
                     <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
                 </button>
-                <button type="button" class="btn btn-sm composicao-btn" id="{{ exigencia.id }}">
+                <button type="button" class="btn btn-sm composicao-btn" id="{{ exigencia.id }}" title="Composição da exigência">
                     <img src="{% static 'img/app_registration.png' %}" alt="Composição" width="20" height="20">
                 </button>
                 {% else %}
-                    <button class="btn btn-sm ativar-btn" alt="Ativar">
+                    <button class="btn btn-sm ativar-btn" alt="Ativar" title="Ativar exigência">
                         <img src="{% static 'img/not_visibility.png' %}" width="20">
                     </button>
                 {% endif %}

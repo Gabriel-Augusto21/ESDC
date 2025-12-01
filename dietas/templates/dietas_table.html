@@ -16,14 +16,14 @@
             <td id="txtExigencia">{{dieta.exigencia.nome}} - {{dieta.exigencia.categoria.peso_vivo}} kgs</td>
             <td id="txtData">{{dieta.data_criacao}}</td>
             <td class="text-end">{% if dieta.is_active %}
-                <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
+                <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}" title="Desativar dieta">
                     <img src="{% static 'img/visibility.png' %}" width="20">
                 </button>
-                <button class="btn btn-sm btn-ver-dieta" data-id="{{ dieta.id }}">
+                <button class="btn btn-sm btn-ver-dieta" data-id="{{ dieta.id }}" title="Editar">
                     <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
                 </button>
                 {% else %}
-                <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}">
+                <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}" title="Ativar dieta">
                     <img src="{% static 'img/not_visibility.png' %}" width="20">
                 </button>
                 {% endif %}

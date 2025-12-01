@@ -10,6 +10,4 @@ urlpatterns = [
    path("desativar_animal/", views.desativar_animal, name="desativar_animal"),
    path("ativar_animal/", views.ativar_animal, name="desativar_animal"),
    path("editar_animais/", views.editar_animais, name="editar_animais"),
-   path('api/animal/<int:animal_id>/dieta_atual/', views.verificar_dieta_atual, name='verificar_dieta_atual'),
-
 ]

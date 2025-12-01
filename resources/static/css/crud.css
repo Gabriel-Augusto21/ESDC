@@ -49,9 +49,9 @@ form button:disabled {
     cursor: pointer;
     padding: 5px 15px 5px 15px;
     font-weight: 650;
-    display: flex;
-    align-items: center;
+    align-items: end;
 }
+
 
 /* Fonte de tudo */
 
@@ -143,5 +143,3 @@ Precisamos declarar que uma classe pro elemento la no swal.fire()
   box-shadow: none !important;  /* Caso tenha sombra */
   outline: none !important;     /* Remove o contorno do foco */
 }
-
-

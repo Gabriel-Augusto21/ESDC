@@ -1,0 +1,157 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block conteudo %}
+
+<!-- Container principal com a mesma largura do Passo 1 -->
+<div class="container mt-3">
+
+    <!-- Título -->
+    <h1 class="mb-4">Criar Dieta</h1>
+
+    <!-- Indicador de Passos -->
+    <div class="step-wizard-container">
+        <ul class="step-wizard-list">
+            <li class="step-wizard-item completed">
+                <span class="progress-icon"><i class="bi bi-pencil-square"></i></span>
+                <span class="progress-label">Identificar</span>
+            </li>
+
+            <li class="step-wizard-item active">
+                <span class="progress-icon"><i class="bi-speedometer2"></i></span>
+                <span class="progress-label">Alimentos</span>
+            </li>
+
+            <li class="step-wizard-item">
+                <span class="progress-icon"><i class="bi bi-check-lg"></i></span>
+                <span class="progress-label">Concluir</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Conteúdo do Passo 2 -->
+    <div class="passo-1-content mt-4 align-items-left">
+        <h3>Passo 2: Balanceie a Dieta</h3>
+        <p class="text-muted text-left">
+            Selecione os alimentos que farão parte da dieta e defina a quantidade de cada um em quilogramas.
+            À medida que você adiciona os alimentos, o sistema calcula automaticamente o balanceamento nutricional,
+            comparando os valores fornecidos com a exigência selecionada anteriormente. Você pode ajustar as
+            quantidades a qualquer momento para encontrar a formulação ideal.
+        </p>
+    </div>
+
+    <!-- Tabela dos Alimentos -->
+    <div class="card shadow-sm mt-3">
+        <div class="card-header text-left h6">Alimentos</div>
+        <div class="card-body">
+            <table class="table table-striped" id="tabela-itens">
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th class="text-center">Quantidade (kg)</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="itens-corpo">
+                    {% for item in itens %}
+                    <tr data-id="{{ item.id }}">
+                        <td>{{ item.nome }}</td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm quantidade-input mx-auto"
+                                value="{{ item.quantidade }}" min="0.01" step="0.01" style="width: 100px;">
+                        </td>
+                        <td>
+                            <button type="button" class="btn remover-item">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr class="linha-vazia">
+                        <td colspan="3" class="text-center text-muted">
+                            Nenhum alimento adicionado ainda
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Add Item -->
+            <div class="row mt-4">
+                <div class="col-md-6 mb-3 text-left">
+                    <label for="alimento" class="form-label fw-bold">Alimento</label>
+                    <select id="alimento" class="form-control">
+                        <option value="" disabled selected>Selecione um alimento</option>
+                        {% for a in alimentos %}
+                        <option value="{{ a.id }}">{{ a.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3 text-left">
+                    <label for="quantidade" class="form-label fw-bold">Quantidade (kg)</label>
+                    <input type="number" id="quantidade" class="form-control" min="0.01" step="0.01"
+                        placeholder="Ex: 2.5">
+                </div>
+
+                <div class="col-md-3 mb-3 d-flex align-items-end">
+                    <button id="btnAdd" class="btn btn-success w-100">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Balanceamento -->
+    <div class="card shadow-sm w-100 mt-4">
+        <div class="card-header text-left h6">Balanceamento Nutricional</div>
+        <div class="card-body" id="box-balanceamento">
+            <p class="text-muted text-center">Adicione alimentos para calcular o balanceamento nutricional...</p>
+        </div>
+    </div>
+
+    <!-- Navegação -->
+    <hr class="mt-4">
+
+    <div class="row mb-3" style="position: relative; text-align: end;">
+
+        <div class="col" >
+            <form action="{% url 'dietas:inserir_dieta' %}" method="get" class="d-inline">
+                <button type="submit" class="btn btn-light mb-1">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </button>
+            </form>
+            <form action="{% url 'dietas:inserir_dietas_tres' %}" method="get" class="d-inline">
+                <button type="submit" class="botao btn-custom">
+                    Próximo <i class="bi bi-arrow-right-circle-fill"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Alertas primeiro -->
+<script src="{% static 'js/alertas_dietas.js' %}"></script>
+
+<!-- Depois inserir_dietas -->
+<script src="{% static 'js/inserir_dietas.js' %}"></script>
+
+<!-- Scripts de inicialização -->
+<script>
+    initVariables({
+        add: "{% url 'dietas:add_item_dieta_temp' %}",
+        remove: "{% url 'dietas:remover_item_dieta_temp' %}",
+        bal: "{% url 'dietas:calcular_balanceamento_dinamico' %}",
+        exigencia: "{{ exigencia_id }}",
+        csrf: "{{ csrf_token }}"
+    });
+</script>
+
+{% endblock %}

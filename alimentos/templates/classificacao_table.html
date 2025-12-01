@@ -19,18 +19,21 @@
                 {% if classificacao.is_active %}
                 <button class="btn btn-sm desativar-btn"
                         data-id="{{ classificacao.id }}"
-                        data-url="{% url 'alimentos:desativar_classificacao' %}?id={{ classificacao.id }}">
+                        data-url="{% url 'alimentos:desativar_classificacao' %}?id={{ classificacao.id }}"
+                        title="Desativar alimento">
                     <img src="{% static 'img/visibility.png' %}" width="20">
                 </button>
                 <button class="btn btn-sm update-btn"
                         data-id="{{ classificacao.id }}"
-                        data-nome="{{ classificacao.nome|escapejs }}">
+                        data-nome="{{ classificacao.nome|escapejs }}"
+                        title="Editar">
                     <img src="{% static 'img/edit.png' %}" width="20">
                 </button>
                 {% else %}
                 <button class="btn btn-sm ativar-btn"
                         data-id="{{ classificacao.id }}"
-                        data-url="{% url 'alimentos:ativar_classificacao' %}?id={{ classificacao.id }}">
+                        data-url="{% url 'alimentos:ativar_classificacao' %}?id={{ classificacao.id }}"
+                        title="Ativar alimento">
                     <img src="{% static 'img/not_visibility.png' %}" width="20">
                 </button>
                 {% endif %}

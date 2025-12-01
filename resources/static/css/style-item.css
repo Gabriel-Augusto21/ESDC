@@ -1,89 +1,133 @@
+/* estilo do step wizard */
+
 .step-wizard-list {
     display: flex;
-    justify-content: flex-start; /* Alinha os itens à esquerda */
-    align-items: flex-start; /* Alinha os itens ao topo */
+    justify-content: flex-start; /* Alinha à esquerda no PC */
+    align-items: flex-start;
     padding: 20px 0;
     list-style: none;
     position: relative;
     margin-bottom: 20px;
+    width: 100%; /* Garante que o container tenha largura */
 }
 
 .step-wizard-item {
-    flex: none; /* Remove o comportamento de expansão automática */
-    text-align: left; /* Alinha o texto à esquerda */
-    margin-right: 170px; /* Adiciona espaçamento entre os itens */
+    flex: none;
+    text-align: left;
+    margin-right: 170px; /* Espaço fixo no PC */
     position: relative;
+    display: flex;          /* Ajuste para alinhar ícone/texto */
+    flex-direction: column; /* Um embaixo do outro */
+    align-items: center;    /* Centraliza ícone com o texto */
 }
 
+/* Ícone (Bolinha) */
 .progress-icon {
-display: flex;
-align-items: center;
-justify-content: center;
-width: 40px;
-height: 40px;
-border-radius: 50%;
-background-color: #f8f9fa; /* Fundo do ícone inativo */
-color: #adb5bd; /* Cor do ícone inativo */
-margin: 0 auto 10px;
-font-size: 1.5rem;
-position: relative;
-z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 2;
 }
 
+/* Texto (Label) */
 .progress-label {
-color: #adb5bd; /* Cor do texto inativo */
+    color: #adb5bd;
+    font-size: 14px;
+    font-weight: 500;
 }
 
-
+/* Barra Conectora (Linha cinza) */
 .step-wizard-item:not(:last-child)::after {
     content: '';
     position: absolute;
-    top: 30%; /* Alinha a barra verticalmente ao centro do ícone */
-    left: 70%; /* Posiciona a barra à direita do item */
-    height: 2px; /* Espessura da barra */
-    width: 200px; /* Define o comprimento da barra */
-    background-color: #dee2e6; /* Cor da barra */
-    transform: translateY(-50%); /* Ajusta o alinhamento vertical */
+    top: 20px;  /* Exatamente no meio da bolinha (40px / 2) */
+    left: 50%;  /* Sai do meio da bolinha */
+    width: 210px; /* 170px da margem + 40px da bolinha (aprox) */
+    height: 2px;
+    background-color: #dee2e6;
+    transform: translateY(-50%);
     z-index: 1;
 }
 
-/* --- Estado Ativo (Verde, como no mockup) --- */
+/*estado dos itens*/
+
+/* Estado Ativo (O passo atual) */
 .step-wizard-item.active .progress-icon {
-background-color: #e6f7ec; /* Fundo do ícone ativo (verde claro) */
-color: #3f8863b0; /* Cor do ícone ativo (verde) */
+    background-color: #e6f7ec;
+    color: #3f8863;
 }
 .step-wizard-item.active .progress-label {
-color: #3f8863; /* Cor do texto ativo (escuro) */
+    color: #3f8863;
 }
-/* Linha verde após o passo ativo */
+/* Pinta a linha se o item estiver ativo */
 .step-wizard-item.active:not(:last-child)::after {
-background-color: #3f886386; /* Verde */
+    background-color: #3f8863; /* Verde escuro */
+    opacity: 0.5; /* Levemente transparente */
 }
 
-/* --- Estado Concluído (para passos anteriores) --- */
+/* Estado Concluído (Passos passados) */
 .step-wizard-item.completed .progress-icon {
-background-color: #e6f7ec;
-color: #3f8863ec;
+    background-color: #e6f7ec;
+    color: #3f8863;
 }
 .step-wizard-item.completed .progress-label {
-color: #3f886386;
+    color: #3f8863;
 }
 .step-wizard-item.completed:not(:last-child)::after {
-background-color: #3f886386;
+    background-color: #3f8863; /* Verde escuro */
+    opacity: 0.5;
 }
 
+
+/* media query para responsividade */
+
+@media screen and (max-width: 768px) {
+    
+    /* Distribui os itens na tela toda */
+    .step-wizard-list {
+        justify-content: space-between !important;
+        padding: 20px 0 !important;
+    }
+
+    /* Remove margens fixas e torna flexível */
+    .step-wizard-item {
+        margin-right: 0 !important; /* Remove o espaço fixo */
+        flex: 1 !important;         /* Divide o espaço igualmente */
+        min-width: 0 !important;    /* Evita quebrar layout */
+    }
+
+    /* Ajusta a linha para ser elástica */
+    .step-wizard-item:not(:last-child)::after {
+        width: 100% !important; /* Ocupa todo o espaço entre bolinhas */
+        left: 50% !important;
+    }
+    
+    /* Diminui texto se necessário */
+    .progress-label {
+        font-size: 12px !important;
+    }
+}
 /* botões */
 
 /* botão próximo */
 .btn-custom {
     font-weight: normal; /* Remove o negrito */
     font-size: 13px; /* Ajusta o tamanho da fonte, se necessário */
-    margin-left: 10px;
 }
 
 /* ícone */
 .botao i {
-    margin-left: 8px; /* espaçamento */
-    font-size: 1.1rem; /* tamanho do ícone */
+    padding: 0px;/* espaçamento */
+    font-size: 1rem; /* tamanho do ícone */
 }
+
+
 
