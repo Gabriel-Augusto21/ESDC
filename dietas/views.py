@@ -44,15 +44,16 @@ def gerenciar_dietas(request, id):
         for ca in comp.alimento.composicaoalimento_set.all():
             nutrientes_por_alimento[comp.alimento.id][ca.nutriente.id] = round(ca.valor, 2)
 
-    # --- Balanceamento: diferença entre fornecido e exigido ---
     balanceamento = {}
     for nutriente_nome in total_fornecido.keys():
         valor_fornecido = total_fornecido.get(nutriente_nome, 0)
         valor_exigido = exigencia_por_nutriente.get(nutriente_nome, 0)
         balanceamento[nutriente_nome] = round(valor_fornecido - valor_exigido, 2)
+    
     exigencias = Exigencia.objects.exclude(id=exigencia.id)
-
     animal = dieta.animal
+    
+    alimentos = Alimento.objects.all()
     
     resumo_balanceamento = []
     for nutriente in sorted(todos_nutrientes, key=lambda n: n.nome):
@@ -67,7 +68,6 @@ def gerenciar_dietas(request, id):
             'diferenca': diferenca
         })
     
-    
     context = {
         'dieta': dieta,
         'comp_dieta': comp_dieta,
@@ -81,6 +81,7 @@ def gerenciar_dietas(request, id):
         'animal': animal,
         'balanceamento': balanceamento,
         'resumo_balanceamento': resumo_balanceamento,
+        'alimentos': alimentos,
     }
     return render(request, 'gerenciar_dietas.html', context)
 
@@ -163,16 +164,24 @@ def inserir_dieta(request):
 
 def add_item_dieta_temp(request):
     alim_id = request.POST.get("alimento")
-    qtd = Decimal(request.POST.get("quantidade"))
+    qtd = request.POST.get("quantidade")
+    
+    if not alim_id or not qtd:
+        return JsonResponse({"ok": False, "erro": "Dados incompletos"}, status=400)
+    
+    try:
+        qtd = Decimal(qtd)
+        if qtd <= 0:
+            return JsonResponse({"ok": False, "erro": "Quantidade deve ser maior que zero"}, status=400)
+    except:
+        return JsonResponse({"ok": False, "erro": "Quantidade inválida"}, status=400)
 
     dieta_temp = request.session.get("dieta_temp", [])
-
+    ali = Alimento.objects.get(id=alim_id)
     existente = next((i for i in dieta_temp if i["id"] == int(alim_id)), None)
 
-    ali = Alimento.objects.get(id=alim_id)
-
     if existente:
-        existente["quantidade"] += float(qtd)
+        existente["quantidade"] = float(qtd)
     else:
         dieta_temp.append({
             "id": ali.id,
@@ -181,9 +190,9 @@ def add_item_dieta_temp(request):
         })
 
     request.session["dieta_temp"] = dieta_temp
+    request.session.modified = True
 
     return JsonResponse({"ok": True, "itens": dieta_temp})
-
 
 def remover_item_dieta_temp(request):
     alim_id = request.POST.get("id")
@@ -211,22 +220,30 @@ def calcular_balanceamento_dinamico(request):
     contribuicao = {}
 
     for ali_id, qtd in zip(alimentos_ids, quantidades):
-        ali = Alimento.objects.get(id=ali_id)
-        qtd = float(qtd)
 
-        contribuicao[ali.nome] = {
-            "quantidade": qtd,
-            "ms": 0,
-            "pb": 0,
-            "ed": 0
-        }
+        if not qtd or qtd.strip() == "":
+            continue
+
+        try:
+            qtd = float(qtd)
+        except:
+            continue
+
+        ali = Alimento.objects.get(id=ali_id)
+
+        if ali.nome not in contribuicao:
+            contribuicao[ali.nome] = {
+                "quantidade": qtd,
+                "ms": 0,
+                "pb": 0,
+                "ed": 0
+            }
 
         for comp in ali.composicaoalimento_set.all():
             nutriente = comp.nutriente.nome
             valor = float(comp.valor) * qtd
 
             totais[nutriente] = totais.get(nutriente, 0) + valor
-
             contribuicao[ali.nome][nutriente] = round(valor, 2)
 
             if nutriente == "MS":
@@ -325,4 +342,69 @@ def verificar_dieta_atual(request, animal_id):
     return JsonResponse({
         'dieta_atual': dieta is not None,
         'id_dieta': dieta.id if dieta else None
+    })
+
+def remover_item_dieta(request, dieta_id):
+    if request.method == "POST":
+        alimento_id = request.POST.get("alimento_id")
+        
+        try:
+            comp = ComposicaoDieta.objects.get(
+                dieta_id=dieta_id,
+                alimento_id=alimento_id
+            )
+            comp.delete()
+            
+            return JsonResponse({
+                "ok": True,
+                "mensagem": "Alimento removido com sucesso"
+            })
+        except ComposicaoDieta.DoesNotExist:
+            return JsonResponse({
+                "ok": False,
+                "erro": "Item não encontrado"
+            }, status=404)
+    
+    return JsonResponse({"ok": False}, status=400)
+
+def calcular_balanceamento_dieta(request, dieta_id):
+    dieta = get_object_or_404(Dieta, pk=dieta_id)
+    
+    exigencia = dieta.exigencia
+    exig = {
+        e.nutriente.nome: float(e.valor)
+        for e in ComposicaoExigencia.objects.filter(exigencia=exigencia)
+    }
+    
+    comp_dieta = ComposicaoDieta.objects.filter(dieta=dieta).select_related('alimento')
+    
+    totais = {}
+    contribuicao = {}
+    
+    for comp in comp_dieta:
+        ali = comp.alimento
+        qtd = float(comp.quantidade)
+        
+        contribuicao[ali.nome] = {
+            "quantidade": qtd,
+            "alimento_id": ali.id
+        }
+        
+        for comp_ali in ali.composicaoalimento_set.all():
+            nutriente = comp_ali.nutriente.nome
+            valor = float(comp_ali.valor) * qtd
+            
+            totais[nutriente] = totais.get(nutriente, 0) + valor
+            contribuicao[ali.nome][nutriente] = round(valor, 2)
+    
+    balanceamento = {
+        n: round(totais.get(n, 0) - exig.get(n, 0), 2)
+        for n in set(list(totais.keys()) + list(exig.keys()))
+    }
+    
+    return JsonResponse({
+        "exigencia": exig,
+        "totais": {k: round(v, 2) for k, v in totais.items()},
+        "contribuicao": contribuicao,
+        "balanceamento": balanceamento,
     })

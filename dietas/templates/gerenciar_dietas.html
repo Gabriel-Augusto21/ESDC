@@ -128,19 +128,16 @@
             <tbody>
                 {% for comp in comp_dieta %}
                 <tr>
-                    {% comment %}
-                    Botão para remover o alimento da dieta.
-                    Galera do back: implementar a funcionalidade de remoção.
-                    {% endcomment %}
-                    <td> <button class="btn btn-sm remover-btn" alt="Remover" title="Remover alimento da dieta">
+                    <td> 
+                        <button class="btn btn-sm remover-btn" 
+                                data-alimento-id="{{ comp.alimento.id }}"
+                                data-alimento-nome="{{ comp.alimento.nome }}"
+                                alt="Remover" 
+                                title="Remover alimento da dieta">
                             <i class="bi bi-trash"></i>
-                        {% comment %} <img src="{% static 'img/trash.png' %}" width="20"> {% endcomment %}
-                        </button> </td>
+                        </button> 
+                    </td>
                     <td style="white-space: nowrap;">{{ comp.alimento.nome }}</td>
-                    {% comment %}
-                    Aqui, o campo de quantidade é um input de texto para permitir edição direta.
-                    Galera do back: implementar a funcionalidade de atualização da quantidade.
-                    {% endcomment %}
                     <td><input style="text-align: center;" type="text" value="{{ comp.quantidade|truncar:2 }} Kg"></td>
                     <td>{{ comp.alimento.ms }}</td>
                     <td>{{ comp.alimento.pb }}</td>
@@ -216,24 +213,48 @@
         </a>
     </div>
 
-
-
 </div>
-{% comment %}
-<div class="row mt-4">
-    <div class="col-md-6 mb-3">
-        <label class="form-label">Nome da Dieta</label>
-        <input class="form-control" name="nome" required />
-    </div>
 
-    <div class="col-md-6 mb-3">
-        <label class="form-label">Exigência</label>
-        <select class="form-control" name="exigencia" required>
-            <option value="" disabled selected>Selecione</option>
-            {% for ex in exigencias %}
-            <option value="{{ ex.id }}">{{ ex.nome }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    {% endcomment %} {% endblock %}
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const botoesRemover = document.querySelectorAll('.remover-btn');
+    
+    botoesRemover.forEach(botao => {
+        botao.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const alimentoId = this.getAttribute('data-alimento-id');
+            const alimentoNome = this.getAttribute('data-alimento-nome');
+            
+            if (!confirm(`Deseja realmente remover "${alimentoNome}" da dieta?`)) {
+                return;
+            }
+            
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch("{% url 'dietas:remover_item_dieta' dieta.id %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: `alimento_id=${alimentoId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    location.reload();
+                } else {
+                    alert('Erro ao remover alimento: ' + (data.erro || 'Erro desconhecido'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao remover alimento. Tente novamente.');
+            });
+        });
+    });
+});
+</script>
+
+{% endblock %}

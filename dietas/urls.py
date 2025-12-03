@@ -15,4 +15,6 @@ urlpatterns = [
     path("inserir_dieta_dois/", views.inserir_dietas_dois, name="inserir_dietas_dois"),
     path("inserir_dieta_tres/", views.inserir_dietas_tres, name="inserir_dietas_tres"),
     path('api/animal/<int:animal_id>/dieta_atual/', views.verificar_dieta_atual, name='verificar_dieta_atual'),
+    path('gerenciar/<int:dieta_id>/remover/', views.remover_item_dieta, name='remover_item_dieta'),
+    path('gerenciar/<int:dieta_id>/balanceamento/', views.calcular_balanceamento_dieta, name='calcular_balanceamento_dieta'),
 ]
