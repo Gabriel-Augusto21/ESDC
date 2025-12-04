@@ -1,9 +1,9 @@
 {% extends 'master.html' %}
 {% load static %}
-
+{% load custom_tags %}
 {% block conteudo %}
 
-<!-- Container principal com a mesma largura do Passo 1 -->
+<!-- Container principal -->
 <div class="container mt-3">
 
     <!-- Título -->
@@ -16,12 +16,10 @@
                 <span class="progress-icon"><i class="bi bi-pencil-square"></i></span>
                 <span class="progress-label">Identificar</span>
             </li>
-
             <li class="step-wizard-item active">
                 <span class="progress-icon"><i class="bi-speedometer2"></i></span>
                 <span class="progress-label">Alimentos</span>
             </li>
-
             <li class="step-wizard-item">
                 <span class="progress-icon"><i class="bi bi-check-lg"></i></span>
                 <span class="progress-label">Concluir</span>
@@ -40,86 +38,100 @@
         </p>
     </div>
 
-    <!-- Tabela dos Alimentos -->
-    <div class="card shadow-sm mt-3">
-        <div class="card-header text-left h6">Alimentos</div>
-        <div class="card-body">
-            <table class="table table-striped" id="tabela-itens">
-                <thead>
-                    <tr>
-                        <th>Alimento</th>
-                        <th class="text-center">Quantidade (kg)</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="itens-corpo">
-                    {% for item in itens %}
-                    <tr data-id="{{ item.id }}">
-                        <td>{{ item.nome }}</td>
-                        <td>
-                            <input type="number" class="form-control form-control-sm quantidade-input mx-auto"
-                                value="{{ item.quantidade }}" min="0.01" step="0.01" style="width: 100px;">
-                        </td>
-                        <td>
-                            <button type="button" class="btn remover-item">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr class="linha-vazia">
-                        <td colspan="3" class="text-center text-muted">
-                            Nenhum alimento adicionado ainda
-                        </td>
-                    </tr>
+    <!-- Tabela de Balanceamento -->
+    <div class="table-responsive my-3" style="border-radius: 10px;">
+        <table class="table border" id="tabela-balanceamento">
+            <thead class="fw-bold" style="background-color:#2f453a; color:white">
+                <tr>
+                    <th>Ação</th>
+                    <th>Alimento</th>
+                    <th>Quantidade</th>
+                    <th style="white-space: nowrap;">MS <small>(%)</small></th>
+                    <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
+                    <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
+                    {% for nutriente in todos_nutrientes %}
+                    <th style="white-space: nowrap;">
+                        {{ nutriente.nome }} <small>({{ nutriente.unidade }})</small>
+                    </th>
                     {% endfor %}
-                </tbody>
-            </table>
+                </tr>
+            </thead>
 
-            <!-- Add Item -->
-            <div class="row mt-4">
-                <div class="col-md-6 mb-3 text-left">
-                    <label for="alimento" class="form-label fw-bold">Alimento</label>
-                    <select id="alimento" class="form-control">
-                        <option value="" disabled selected>Selecione um alimento</option>
-                        {% for a in alimentos %}
-                        <option value="{{ a.id }}">{{ a.nome }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <tbody>
+                <!-- Alimentos serão inseridos aqui via JavaScript -->
+            </tbody>
 
-                <div class="col-md-3 mb-3 text-left">
-                    <label for="quantidade" class="form-label fw-bold">Quantidade (kg)</label>
-                    <input type="number" id="quantidade" class="form-control" min="0.01" step="0.01"
-                        placeholder="Ex: 2.5">
-                </div>
+            <tfoot>
+                <tr id="linha-novo">
+                    <td><small>Novo</small></td>
+                    <td>
+                        <select id="alimento" class="form-control form-control-sm" style="width: 150px;">
+                            <option value="" disabled selected>Selecione um alimento</option>
+                            {% for a in alimentos %}
+                            <option value="{{ a.id }}">{{ a.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <input class="form-control form-control-sm" type="number" min="0.01" step="0.01"
+                            style="width: 100px;">
+                    </td>
+                    <td style="white-space: nowrap; text-align: center;">-</td>
+                    <td style="white-space: nowrap; text-align: center;">-</td>
+                    <td style="white-space: nowrap; text-align: center;">-</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td style="white-space: nowrap; text-align: center;">-</td>
+                    {% endfor %}
+                </tr>
 
-                <div class="col-md-3 mb-3 d-flex align-items-end">
-                    <button
-                        style="background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px; white-space: nowrap;"
-                        class="w-100 btn" id="btnAdd">
-                        <img src="{% static 'img/add_circle.png' %}" width="20" style="margin: 0.5px;">
-                        Adicionar Alimento
-                    </button>
-                </div>
-            </div>
+                <!-- Linha Total Fornecido -->
+                <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-total">
+                    <td colspan="3" class="text-end">Total Fornecido:</td>
+                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">-</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td style="text-align: center;">-</td>
+                    {% endfor %}
+                </tr>
 
-        </div>
+                <!-- Linha da Exigência -->
+                <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-exigencia">
+                    <td colspan="3" class="text-end">{{ exigencia.nome }} - {{ exigencia.categoria.peso_vivo
+                        }}<small>Kg</small>:</td>
+                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">-</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td style="text-align: center;">-</td>
+                    {% endfor %}
+                </tr>
+
+                <!-- Linha de Balanceamento -->
+                <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-balanceamento">
+                    <td colspan="3" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
+                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">-</td>
+                    {% for nutriente in todos_nutrientes %}
+                    <td style="text-align: center;">-</td>
+                    {% endfor %}
+                </tr>
+            </tfoot>
+        </table>
     </div>
 
-    <!-- Balanceamento -->
-    <div class="card shadow-sm w-100 mt-4">
-        <div class="card-header text-left h6">Balanceamento Nutricional</div>
-        <div class="card-body" id="box-balanceamento">
-            <p class="text-muted text-center">Adicione alimentos para calcular o balanceamento nutricional...</p>
-        </div>
+    <div class="d-flex justify-content-end my-3">
+        <button id="btnAdicionar"
+            style="display: none; background-color:white; color:#2f453a; border:2px solid #2f453a; border-radius: 4px; white-space: nowrap; padding: 8px 16px;">
+            <img src="{% static 'img/add_circle.png' %}" width="20" style="margin-right: 3px;">
+            Adicionar Alimento
+        </button>
     </div>
 
     <!-- Navegação -->
     <hr class="mt-4">
-
     <div class="row mb-3" style="position: relative; text-align: end;">
-
         <div class="col">
             <form action="{% url 'dietas:inserir_dieta' %}" method="get" class="d-inline">
                 <button type="submit" class="btn btn-light mb-1">
@@ -132,7 +144,6 @@
                 </button>
             </form>
         </div>
-
     </div>
 
 </div>
@@ -140,20 +151,508 @@
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- Alertas primeiro -->
-<script src="{% static 'js/alertas_dietas.js' %}"></script>
+<!-- CSS para os botões de ação -->
+<style>
+    .btn-acao {
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 5px 10px;
+        transition: all 0.2s;
+    }
 
-<!-- Depois inserir_dietas -->
-<script src="{% static 'js/inserir_dietas.js' %}"></script>
+    .btn-acao:hover {
+        transform: scale(1.1);
+    }
 
-<!-- Scripts de inicialização -->
+    .btn-acao.remover i {
+        color: #dc3545;
+    }
+
+    .btn-acao.salvar i {
+        color: #28a745;
+    }
+
+    .quantidade-alterada {
+        border: 2px solid #28a745 !important;
+        background-color: #e8f5e9 !important;
+    }
+</style>
+
+<!-- ===================================================================== -->
+<!-- Script Principal de Balanceamento                                      -->
+<!-- ===================================================================== -->
 <script>
-    initVariables({
-        add: "{% url 'dietas:add_item_dieta_temp' %}",
-        remove: "{% url 'dietas:remover_item_dieta_temp' %}",
-        bal: "{% url 'dietas:calcular_balanceamento_dinamico' %}",
-        exigencia: "{{ exigencia_id }}",
-        csrf: "{{ csrf_token }}"
+    document.addEventListener("DOMContentLoaded", function () {
+        const botao = document.getElementById("btnAdicionar");
+        const exigenciaId = "{{ exigencia_id }}";
+        const csrfToken = "{{ csrf_token }}";
+
+        // URLs
+        const urlAdd = "{% url 'dietas:add_item_dieta_temp' %}";
+        const urlRemover = "{% url 'dietas:remover_item_dieta_temp' %}";
+        const urlAtualizar = "{% url 'dietas:atualizar_quantidade_dieta_temp' %}";
+        const urlGetNutrientes = "{% url 'dietas:get_nutrientes_alimento' %}";
+
+        // Guarda os nutrientes do alimento selecionado
+        let alimentoSelecionado = null;
+
+        // Guarda as quantidades originais para detectar mudanças
+        let quantidadesOriginais = {};
+
+        // ===== FUNÇÕES AUXILIARES =====
+        function formatarValor(valor) {
+            if (valor === undefined || valor === null || valor === "-") return "-";
+            const num = parseFloat(valor);
+            if (isNaN(num)) return "-";
+            return num.toFixed(4);
+        }
+
+        // ===== FORMATA BALANCEAMENTO COM COR (10% MARGEM) =====
+        function formatarBalanceamento(diferenca, valorExigido) {
+            if (diferenca === undefined || diferenca === null || diferenca === "-") return "-";
+            const num = parseFloat(diferenca);
+            if (isNaN(num)) return "-";
+
+            const formatted = num.toFixed(4);
+            const exigido = parseFloat(valorExigido) || 0;
+
+            // Calcula 10% do valor exigido
+            const margem = Math.abs(exigido) * 0.25;
+
+            // Se a diferença está fora da margem de ±10%, fica vermelho
+            // Se está dentro, fica verde
+            if (num > margem || num < -margem) {
+                // Fora da margem - VERMELHO
+                if (num > 0) {
+                    return `<span style="color: #FF6B6B;">+${formatted}</span>`;
+                } else {
+                    return `<span style="color: #FF6B6B;">${formatted}</span>`;
+                }
+            } else {
+                // Dentro da margem - VERDE
+                if (num > 0) {
+                    return `<span style="color: #90EE90;">+${formatted}</span>`;
+                } else if (num < 0) {
+                    return `<span style="color: #90EE90;">${formatted}</span>`;
+                }
+                return `<span style="color: #90EE90;">${formatted}</span>`;
+            }
+        }
+
+        function obterHeaderNutrientes() {
+            const thead = document.querySelector("thead");
+            const ths = thead.querySelectorAll("th");
+            const nutrientes = [];
+
+            for (let i = 6; i < ths.length; i++) {
+                const texto = ths[i].textContent.trim();
+                const nome = texto.split(" ")[0];
+                nutrientes.push(nome);
+            }
+            return nutrientes;
+        }
+
+        function verificarCampos() {
+            const selectAlimento = document.getElementById("alimento");
+            const inputQuantidade = document.querySelector("#linha-novo input[type='number']");
+
+            if (selectAlimento && inputQuantidade && selectAlimento.value && parseFloat(inputQuantidade.value) > 0) {
+                botao.style.display = "inline-block";
+            } else {
+                botao.style.display = "none";
+            }
+        }
+
+        // ===== BUSCA NUTRIENTES AO SELECIONAR ALIMENTO =====
+        async function buscarNutrientesAlimento(alimentoId) {
+            if (!alimentoId) {
+                limparPreviewNutrientes();
+                return;
+            }
+
+            try {
+                const url = `${urlGetNutrientes}?alimento_id=${alimentoId}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.ok) {
+                    alimentoSelecionado = data.alimento;
+                    exibirPreviewNutrientes(data.alimento);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar nutrientes:", error);
+            }
+        }
+
+        function exibirPreviewNutrientes(alimento) {
+            const linhaNovoTr = document.getElementById("linha-novo");
+            const celulas = linhaNovoTr.querySelectorAll("td");
+
+            if (celulas.length >= 6) {
+                celulas[3].textContent = alimento.ms;
+                celulas[4].textContent = alimento.pb;
+                celulas[5].textContent = alimento.ed;
+
+                const headerNutrientes = obterHeaderNutrientes();
+                const nutrientesDict = {};
+                alimento.nutrientes.forEach(n => {
+                    nutrientesDict[n.nutriente] = n.valor;
+                });
+
+                for (let i = 6; i < celulas.length; i++) {
+                    const nomeNutriente = headerNutrientes[i - 6];
+                    const valor = nutrientesDict[nomeNutriente];
+                    celulas[i].textContent = valor !== undefined ? valor : "-";
+                }
+            }
+        }
+
+        function limparPreviewNutrientes() {
+            const linhaNovoTr = document.getElementById("linha-novo");
+            if (!linhaNovoTr) return;
+
+            const celulas = linhaNovoTr.querySelectorAll("td");
+            for (let i = 3; i < celulas.length; i++) {
+                celulas[i].textContent = "-";
+            }
+            alimentoSelecionado = null;
+        }
+
+        // ===== ATUALIZA A TABELA COMPLETA =====
+        function atualizarTabela(data) {
+            const thead = document.querySelector("table thead");
+            const tbody = document.querySelector("table tbody");
+            const tfoot = document.querySelector("table tfoot");
+
+            const numNutrientes = data.header_nutrientes.length;
+
+            // Reseta as quantidades originais
+            quantidadesOriginais = {};
+
+            // ===== ATUALIZA CABEÇALHO =====
+            let headerHtml = `
+            <tr>
+                <th>Ação</th>
+                <th>Alimento</th>
+                <th>Quantidade</th>
+                <th style="white-space: nowrap;">MS <small>(%)</small></th>
+                <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
+                <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
+        `;
+            data.header_nutrientes.forEach(nutr => {
+                headerHtml += `<th style="white-space: nowrap;">${nutr}</th>`;
+            });
+            headerHtml += `</tr>`;
+            thead.innerHTML = headerHtml;
+
+            // ===== ATUALIZA BODY =====
+            let bodyHtml = '';
+            data.dietas_temp.forEach(linha => {
+                // Guarda quantidade original
+                quantidadesOriginais[linha.id] = linha.quantidade;
+
+                let colunasNutrientes = '';
+                if (linha.comp_alimento) {
+                    linha.comp_alimento.forEach(valor => {
+                        colunasNutrientes += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+                    });
+                }
+
+                bodyHtml += `
+                <tr data-id="${linha.id}">
+                    <td>
+                        <button class="btn-acao remover" data-id="${linha.id}" title="Remover alimento">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                    <td style="white-space: nowrap;">${linha.nome}</td>
+                    <td>
+                        <input class="form-control form-control-sm quantidade-input" 
+                               type="number" min="0.01" step="0.01" 
+                               style="width: 100px; text-align: center;" 
+                               value="${linha.quantidade}"
+                               data-id="${linha.id}"
+                               data-original="${linha.quantidade}">
+                    </td>
+                    <td style="text-align: center;">${formatarValor(linha.ms)}</td>
+                    <td style="text-align: center;">${formatarValor(linha.pb)}</td>
+                    <td style="text-align: center;">${formatarValor(linha.ed)}</td>
+                    ${colunasNutrientes}
+                </tr>
+            `;
+            });
+            tbody.innerHTML = bodyHtml;
+
+            // ===== ATUALIZA FOOTER =====
+            const opcoesAlimentos = `
+            <option value="" disabled selected>Selecione um alimento</option>
+            {% for a in alimentos %}
+            <option value="{{ a.id }}">{{ a.nome }}</option>
+            {% endfor %}
+        `;
+
+            // Linha "Novo"
+            let footerHtml = `
+            <tr id="linha-novo">
+                <td><small>Novo</small></td>
+                <td>
+                    <select id="alimento" class="form-control form-control-sm" style="width: 150px;">
+                        ${opcoesAlimentos}
+                    </select>
+                </td>
+                <td>
+                    <input class="form-control form-control-sm" type="number" min="0.01" step="0.01" style="width: 100px;">
+                </td>
+                <td style="text-align: center;">-</td>
+                <td style="text-align: center;">-</td>
+                <td style="text-align: center;">-</td>
+        `;
+            for (let i = 0; i < numNutrientes; i++) {
+                footerHtml += `<td style="text-align: center;">-</td>`;
+            }
+            footerHtml += `</tr>`;
+
+            // Linha do Total Fornecido
+            footerHtml += `
+            <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-total">
+                <td colspan="3" class="text-end">Total Fornecido:</td>
+                <td style="text-align: center;">${formatarValor(data.total_fornecido.ms)}</td>
+                <td style="text-align: center;">${formatarValor(data.total_fornecido.pb)}</td>
+                <td style="text-align: center;">${formatarValor(data.total_fornecido.ed)}</td>
+        `;
+            data.header_nutrientes.forEach(nutr => {
+                const valor = data.total_fornecido.nutrientes[nutr] || 0;
+                footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+            });
+            footerHtml += `</tr>`;
+
+            // Linha da Exigência
+            footerHtml += `
+            <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-exigencia">
+                <td colspan="3" class="text-end">
+                    ${data.exigencia.nome || '{{ exigencia.nome }}'} - ${data.exigencia.peso || '{{ exigencia.categoria.peso_vivo }}'}<small>Kg</small>:
+                </td>
+                <td style="text-align: center;">${formatarValor(data.exigencia.valores.ms)}</td>
+                <td style="text-align: center;">${formatarValor(data.exigencia.valores.pb)}</td>
+                <td style="text-align: center;">${formatarValor(data.exigencia.valores.ed)}</td>
+        `;
+            data.header_nutrientes.forEach(nutr => {
+                const valor = data.exigencia.valores.nutrientes[nutr] || 0;
+                footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+            });
+            footerHtml += `</tr>`;
+
+            // Linha de Balanceamento
+            // Linha de Balanceamento
+            footerHtml += `
+                <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-balanceamento">
+                    <td colspan="3" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
+                    <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ms, data.exigencia.valores.ms)}</td>
+                    <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.pb, data.exigencia.valores.pb)}</td>
+                    <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ed, data.exigencia.valores.ed)}</td>
+            `;
+            data.header_nutrientes.forEach(nutr => {
+                const valorBalanceamento = data.balanceamento.nutrientes[nutr] || 0;
+                const valorExigido = data.exigencia.valores.nutrientes[nutr] || 0;
+                footerHtml += `<td style="text-align: center;">${formatarBalanceamento(valorBalanceamento, valorExigido)}</td>`;
+            });
+            footerHtml += `</tr>`;
+
+            tfoot.innerHTML = footerHtml;
+
+            // Limpa referência do alimento selecionado
+            alimentoSelecionado = null;
+            botao.style.display = "none";
+        }
+
+        // ===== REMOVER ALIMENTO =====
+        async function removerAlimento(alimentoId) {
+            const confirmacao = await Swal.fire({
+                title: 'Remover alimento?',
+                text: 'Deseja realmente remover este alimento da dieta?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, remover',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!confirmacao.isConfirmed) return;
+
+            const form = new FormData();
+            form.append("id", alimentoId);
+            form.append("exigencia_id", exigenciaId);
+            form.append("csrfmiddlewaretoken", csrfToken);
+
+            try {
+                const r = await fetch(urlRemover, { method: "POST", body: form });
+                const data = await r.json();
+
+                if (data.ok) {
+                    atualizarTabela(data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Removido!',
+                        text: 'Alimento removido com sucesso.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    throw new Error(data.erro || "Erro ao remover");
+                }
+            } catch (error) {
+                console.error("Erro ao remover:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao remover alimento. Tente novamente.'
+                });
+            }
+        }
+
+        // ===== ATUALIZAR QUANTIDADE =====
+        async function atualizarQuantidade(alimentoId, novaQuantidade) {
+            const form = new FormData();
+            form.append("id", alimentoId);
+            form.append("quantidade", novaQuantidade);
+            form.append("exigencia_id", exigenciaId);
+            form.append("csrfmiddlewaretoken", csrfToken);
+
+            try {
+                const r = await fetch(urlAtualizar, { method: "POST", body: form });
+                const data = await r.json();
+
+                if (data.ok) {
+                    atualizarTabela(data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Atualizado!',
+                        text: 'Quantidade atualizada com sucesso.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    throw new Error(data.erro || "Erro ao atualizar");
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao atualizar quantidade. Tente novamente.'
+                });
+            }
+        }
+
+        // ===== DELEGAÇÃO DE EVENTOS =====
+
+        // Evento change no select de alimento (linha novo)
+        document.addEventListener("change", function (e) {
+            if (e.target && e.target.id === "alimento") {
+                buscarNutrientesAlimento(e.target.value);
+                verificarCampos();
+            }
+        });
+
+        // Evento input no campo quantidade (linha novo)
+        document.addEventListener("input", function (e) {
+            if (e.target && e.target.closest("#linha-novo") && e.target.type === "number") {
+                verificarCampos();
+            }
+
+            // Detecta mudança na quantidade de um alimento existente
+            if (e.target && e.target.classList.contains("quantidade-input")) {
+                const input = e.target;
+                const alimentoId = input.dataset.id;
+                const valorOriginal = parseFloat(input.dataset.original);
+                const valorAtual = parseFloat(input.value);
+                const tr = input.closest("tr");
+                const btnAcao = tr.querySelector(".btn-acao");
+
+                if (valorAtual !== valorOriginal && valorAtual > 0) {
+                    // Muda o botão para "salvar"
+                    input.classList.add("quantidade-alterada");
+                    btnAcao.classList.remove("remover");
+                    btnAcao.classList.add("salvar");
+                    btnAcao.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+                    btnAcao.title = "Salvar alteração";
+                } else {
+                    // Volta o botão para "remover"
+                    input.classList.remove("quantidade-alterada");
+                    btnAcao.classList.remove("salvar");
+                    btnAcao.classList.add("remover");
+                    btnAcao.innerHTML = '<i class="bi bi-trash"></i>';
+                    btnAcao.title = "Remover alimento";
+                }
+            }
+        });
+
+        // Evento click nos botões de ação (remover/salvar)
+        document.addEventListener("click", function (e) {
+            const btnAcao = e.target.closest(".btn-acao");
+            if (!btnAcao) return;
+
+            const alimentoId = btnAcao.dataset.id;
+            const tr = btnAcao.closest("tr");
+            const input = tr.querySelector(".quantidade-input");
+
+            if (btnAcao.classList.contains("salvar")) {
+                // Salvar nova quantidade
+                const novaQuantidade = input.value;
+                atualizarQuantidade(alimentoId, novaQuantidade);
+            } else if (btnAcao.classList.contains("remover")) {
+                // Remover alimento
+                removerAlimento(alimentoId);
+            }
+        });
+
+        // ===== BOTÃO ADICIONAR =====
+        botao.addEventListener('click', async () => {
+            const selectAlimento = document.getElementById("alimento");
+            const inputQuantidade = document.querySelector("#linha-novo input[type='number']");
+
+            if (!selectAlimento.value || !inputQuantidade.value) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atenção',
+                    text: 'Selecione um alimento e informe a quantidade.'
+                });
+                return;
+            }
+
+            const form = new FormData();
+            form.append("alimento", selectAlimento.value);
+            form.append("quantidade", inputQuantidade.value);
+            form.append("exigencia_id", exigenciaId);
+            form.append("csrfmiddlewaretoken", csrfToken);
+
+            try {
+                const r = await fetch(urlAdd, { method: "POST", body: form });
+                const data = await r.json();
+
+                if (data.ok) {
+                    atualizarTabela(data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Adicionado!',
+                        text: 'Alimento adicionado com sucesso.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } else {
+                    throw new Error(data.erro || "Erro ao adicionar");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao adicionar alimento. Tente novamente.'
+                });
+            }
+        });
     });
 </script>
 
