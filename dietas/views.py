@@ -118,7 +118,6 @@ def recalcular_header_e_matriz(dieta_temp):
 
 
 # ===== VIEWS PRINCIPAIS =====
-
 def gerenciar_dietas(request, id):
     dieta = get_object_or_404(Dieta, pk=id)
     comp_dieta = (
@@ -127,73 +126,167 @@ def gerenciar_dietas(request, id):
         .prefetch_related('alimento__composicaoalimento_set__nutriente')
     )
 
-    # --- Exigência vinculada ---
-    exigencia = dieta.exigencia
-    composicoes_exigencia = ComposicaoExigencia.objects.filter(exigencia=exigencia).select_related('nutriente')
-
-    # Criar um dicionário com os valores exigidos por nutriente
-    exigencia_por_nutriente = {
-        ce.nutriente.nome: round(ce.valor, 2) for ce in composicoes_exigencia
-    }
-
-    # --- Totais fornecidos pela dieta ---
-    totais = dieta.total_nutrientes_vetor()
-    total_fornecido = {t['nutriente']: round(t['total'], 2) for t in totais}
-    unidade_por_nutriente = {t['nutriente']: t['unidade'] for t in totais}
-
-    # --- Nutrientes usados na tabela ---
-    todos_nutrientes = set()
+    # ===== POPULA A SESSÃO COM OS ALIMENTOS DA DIETA =====
+    dieta_temp = []
     for comp in comp_dieta:
-        for ca in comp.alimento.composicaoalimento_set.all():
-            todos_nutrientes.add(ca.nutriente)
-    todos_nutrientes = sorted(list(todos_nutrientes), key=lambda n: n.nome)
-
-    # --- Nutrientes por alimento ---
-    nutrientes_por_alimento = {}
-    for comp in comp_dieta:
-        nutrientes_por_alimento[comp.alimento.id] = {n.id: 0 for n in todos_nutrientes}
-        for ca in comp.alimento.composicaoalimento_set.all():
-            nutrientes_por_alimento[comp.alimento.id][ca.nutriente.id] = round(ca.valor, 2)
-
-    # --- Balanceamento: diferença entre fornecido e exigido ---
-    balanceamento = {}
-    for nutriente_nome in total_fornecido.keys():
-        valor_fornecido = total_fornecido.get(nutriente_nome, 0)
-        valor_exigido = exigencia_por_nutriente.get(nutriente_nome, 0)
-        balanceamento[nutriente_nome] = round(valor_fornecido - valor_exigido, 2)
-    exigencias = Exigencia.objects.exclude(id=exigencia.id)
-
-    animal = dieta.animal
-    
-    resumo_balanceamento = []
-    for nutriente in sorted(todos_nutrientes, key=lambda n: n.nome):
-        nome = nutriente.nome
-        fornecido = total_fornecido.get(nome, 0)
-        exigido = exigencia_por_nutriente.get(nome, 0)
-        diferenca = balanceamento.get(nome, 0)
-        resumo_balanceamento.append({
-            'nutriente': nome,
-            'fornecido': fornecido,
-            'exigido': exigido,
-            'diferenca': diferenca
+        ali = comp.alimento
+        
+        # Busca composição detalhada do alimento
+        comp_alimento_qs = ComposicaoAlimento.objects.filter(
+            alimento=ali,
+            is_active=True
+        ).select_related("nutriente")
+        
+        comp_detalhado = [
+            {"nutriente": ca.nutriente.nome, "valor": float(ca.valor)}
+            for ca in comp_alimento_qs
+        ]
+        
+        dieta_temp.append({
+            "id": ali.id,
+            "nome": ali.nome,
+            "quantidade": float(comp.quantidade) if comp.quantidade else 0.0,
+            "ms": float(ali.ms) if ali.ms else 0,
+            "pb": float(ali.pb) if ali.pb else 0,
+            "ed": float(ali.ed) if ali.ed else 0,
+            "comp_alimento_detalhado": comp_detalhado
         })
     
+    # ===== RECALCULA HEADER BASEADO NO ALIMENTO COM MAIS NUTRIENTES =====
+    header_nutrientes = []
+    if dieta_temp:
+        # Encontra o alimento com mais nutrientes
+        maior_alimento = max(
+            dieta_temp,
+            key=lambda x: len([ca for ca in x.get("comp_alimento_detalhado", []) if ca["valor"] != 0]),
+            default=None
+        )
+        
+        if maior_alimento and "comp_alimento_detalhado" in maior_alimento:
+            header_nutrientes = [ca["nutriente"] for ca in maior_alimento["comp_alimento_detalhado"]]
+        
+        # Recalcula a matriz de cada alimento baseado no header
+        for a in dieta_temp:
+            if "comp_alimento_detalhado" in a:
+                comp_dict = {ca["nutriente"]: ca["valor"] for ca in a["comp_alimento_detalhado"]}
+                a["comp_alimento"] = [comp_dict.get(n, 0) for n in header_nutrientes]
+    
+    # Ordena e salva na sessão
+    dieta_temp = sorted(dieta_temp, key=lambda x: x["nome"])
+    request.session["dieta_temp"] = dieta_temp
+    request.session["dieta_gerenciada_id"] = id
+
+    # ===== CALCULA TOTAL FORNECIDO =====
+    total_ms = 0
+    total_pb = 0
+    total_ed = 0
+    totais_nutrientes = {n: 0 for n in header_nutrientes}
+
+    for item in dieta_temp:
+        qtd = item["quantidade"]
+        total_ms += item.get("ms", 0) * qtd
+        total_pb += item.get("pb", 0) * qtd
+        total_ed += item.get("ed", 0) * qtd
+        
+        for i, nutriente_nome in enumerate(header_nutrientes):
+            if i < len(item.get("comp_alimento", [])):
+                valor = item["comp_alimento"][i]
+                if valor and valor != 0:
+                    totais_nutrientes[nutriente_nome] += float(valor) * qtd
+
+    total_fornecido = {
+        "ms": round(total_ms, 4),
+        "pb": round(total_pb, 4),
+        "ed": round(total_ed, 4),
+        "nutrientes": {k: round(v, 4) for k, v in totais_nutrientes.items()}
+    }
+
+    # ===== BUSCA VALORES DA EXIGÊNCIA =====
+    exigencia = dieta.exigencia
+    exigencia_valores = {"ms": 0, "pb": 0, "ed": 0, "nutrientes": {n: 0 for n in header_nutrientes}}
+    
+    comp_exigencia = ComposicaoExigencia.objects.filter(
+        exigencia=exigencia
+    ).select_related("nutriente")
+    
+    for ce in comp_exigencia:
+        nutriente_nome = ce.nutriente.nome
+        if nutriente_nome == "MS":
+            exigencia_valores["ms"] = float(ce.valor)
+        elif nutriente_nome == "PB":
+            exigencia_valores["pb"] = float(ce.valor)
+        elif nutriente_nome == "ED":
+            exigencia_valores["ed"] = float(ce.valor)
+        elif nutriente_nome in header_nutrientes:
+            exigencia_valores["nutrientes"][nutriente_nome] = float(ce.valor)
+
+    # ===== CALCULA BALANCEAMENTO =====
+    balanceamento = {
+        "ms": round(total_fornecido["ms"] - exigencia_valores["ms"], 4),
+        "pb": round(total_fornecido["pb"] - exigencia_valores["pb"], 4),
+        "ed": round(total_fornecido["ed"] - exigencia_valores["ed"], 4),
+        "nutrientes": {}
+    }
+    
+    for nutriente_nome in header_nutrientes:
+        fornecido = total_fornecido["nutrientes"].get(nutriente_nome, 0)
+        exigido = exigencia_valores["nutrientes"].get(nutriente_nome, 0)
+        balanceamento["nutrientes"][nutriente_nome] = round(fornecido - exigido, 4)
+
+    # ===== CONTEXTO =====
+    exigencias = Exigencia.objects.exclude(id=exigencia.id)
+    animal = dieta.animal
+    alimentos = Alimento.objects.all()
+
     context = {
         'dieta': dieta,
-        'comp_dieta': comp_dieta,
-        'todos_nutrientes': todos_nutrientes,
-        'nutrientes_por_alimento': nutrientes_por_alimento,
-        'total_fornecido': total_fornecido,
-        'unidade_por_nutriente': unidade_por_nutriente,
         'exigencia': exigencia,
+        'exigencia_id': exigencia.id,
         'exigencias': exigencias,
-        'exigencia_por_nutriente': exigencia_por_nutriente,
         'animal': animal,
+        'alimentos': alimentos,
+        'header_nutrientes': header_nutrientes,
+        'dieta_temp': dieta_temp,
+        'total_fornecido': total_fornecido,
+        'exigencia_valores': exigencia_valores,
         'balanceamento': balanceamento,
-        'resumo_balanceamento': resumo_balanceamento,
     }
     return render(request, 'gerenciar_dietas.html', context)
-
+def salvar_balanceamento_dieta(request):
+    """Salva as alterações da dieta_temp no banco de dados"""
+    if request.method != "POST":
+        return JsonResponse({"erro": "Método não permitido"}, status=405)
+    
+    dieta_id = request.session.get("dieta_gerenciada_id")
+    dieta_temp = request.session.get("dieta_temp", [])
+    
+    if not dieta_id:
+        return JsonResponse({"erro": "Nenhuma dieta sendo gerenciada"}, status=400)
+    
+    try:
+        dieta = Dieta.objects.get(id=dieta_id)
+        
+        # Remove todas as composições antigas
+        ComposicaoDieta.objects.filter(dieta=dieta).delete()
+        
+        # Cria as novas composições
+        for item in dieta_temp:
+            ali = Alimento.objects.get(id=item["id"])
+            ComposicaoDieta.objects.create(
+                dieta=dieta,
+                alimento=ali,
+                quantidade=Decimal(str(item["quantidade"]))
+            )
+        
+        return JsonResponse({
+            "ok": True,
+            "mensagem": "Balanceamento salvo com sucesso!"
+        })
+    
+    except Dieta.DoesNotExist:
+        return JsonResponse({"erro": "Dieta não encontrada"}, status=404)
+    except Exception as e:
+        return JsonResponse({"erro": str(e)}, status=500)
 
 def dietas(request):
     query = request.GET.get('query', '')
