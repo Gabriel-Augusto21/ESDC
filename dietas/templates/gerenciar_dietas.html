@@ -3,7 +3,7 @@
 {% load custom_tags %}
 {% block conteudo %}
 
-<div class="container mt-3">
+<div class="container mt-3" data-dieta-id="{{ dieta.id }}">
     <h1>Gerenciamento da Dieta</h1>
 
     <!-- Card - Animal da dieta -->
@@ -45,46 +45,51 @@
                     Informações Gerais
                 </div>
                 <div class="card-body p-4 d-flex justify-content-end mt-3">
-                    <form method="POST" action="">
+                    <form id="formInformacoesDieta" method="POST" action="">
                         {% csrf_token %}
                         <div class="row g-2">
                             <div class="col-6">
-                                <label for="id_nome" class="form-label mb-1"><small class="text-muted">Nome da Dieta</small></label>
-                                <input type="text" class="form-control" id="id_nome" name="nome" value="{{ dieta.nome }}" required>
+                                <label for="id_nome" class="form-label mb-1">
+                                    <small class="text-muted">Nome da Dieta</small>
+                                </label>
+                                <input type="text" class="form-control" id="id_nome" name="nome"
+                                    value="{{ dieta.nome }}" required>
                             </div>
                             <div class="col-6">
-                                <label for="animal_display" class="form-label mb-1"><small
-                                        class="text-muted">Animal</small></label>
+                                <label for="animal_display" class="form-label mb-1">
+                                    <small class="text-muted">Animal</small>
+                                </label>
                                 <div class="row">
                                     <input type="text" class="form-control bg-light" id="animal_display"
                                         value="{{ animal.nome }}" readonly>
                                 </div>
                             </div>
+
                             <div class="col-6 mt-2">
-                                <label for="id_descricao" class="form-label mb-1"><small
-                                        class="text-muted">Descrição</small></label>
+                                <label for="id_descricao" class="form-label mb-1">
+                                    <small class="text-muted">Descrição</small>
+                                </label>
                                 <textarea class="form-control" id="id_descricao" name="descricao"
-                                    rows="5">{{ dieta.descricao|default:"" }}</textarea>
+                            
+                                rows="5">{{ dieta.descricao|default:"" }}</textarea>
                             </div>
                             <div class="col-6 mt-2">
                                 <div class="row">
-                                    <label for="id_exigencia" class="form-label mb-1"><small
-                                            class="text-muted">Exigência</small></label>
-                                    <select class="form-control" id="id_exigencia" name="exigencia_id" required style="box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);">
-
+                                    <label for="id_exigencia" class="form-label mb-1">
+                                        <small class="text-muted">Exigência</small>
+                                    </label>
+                                    <select class="form-control" id="id_exigencia" name="exigencia_id" required>
                                         <option value="{{ exigencia.id }}" selected>{{ exigencia.nome }}</option>
-
                                         {% for ex in exigencias %}
-                                        {% if ex.id != exigencia.id %}
-                                        <option value="{{ ex.id }}">{{ ex.nome }}</option>
-                                        {% endif %}
+                                            {% if ex.id != exigencia.id %}
+                                                <option value="{{ ex.id }}">{{ ex.nome }}</option>
+                                            {% endif %}
                                         {% endfor %}
-
                                     </select>
                                 </div>
                                 <div class="row d-flex justify-content-end mt-4 mt-2" style="position: end">
-                                        <button type="submit" class="botao btn-custom">Salvar Informações</button>
-                                    
+                                        <button type="button" id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+                                        <button type="submit" id="btnSalvar" class="botao btn-custom">Salvar Informações</button>
                                 </div>
                             </div>
                         </div>
@@ -106,7 +111,7 @@
                     <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
                     <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
                     {% for nutriente in header_nutrientes %}
-                    <th style="white-space: nowrap;">{{ nutriente }}</th>
+                    <th style="white-space: nowrap;">{{ nutriente.nome }} <small>({{ nutriente.unidade }})</small></th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -744,6 +749,103 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Botão Salvar Balanceamento
     btnSalvar.addEventListener('click', salvarBalanceamento);
+    const formInformacoes = document.getElementById('formInformacoesDieta');
+    const btnSalvarDados = document.getElementById('btnSalvar');
+    const btnCancelar = document.getElementById('btnCancelar');
+    const idNome = document.getElementById('id_nome');
+    const idExigencia = document.getElementById('id_exigencia');
+    const idDescricao = document.getElementById('id_descricao');
+    const containerDieta = document.querySelector('[data-dieta-id]');
+    const dietaId = containerDieta ? containerDieta.getAttribute('data-dieta-id') : null;
+
+    const valoresOriginais = {
+        nome: idNome.value,
+        exigencia: idExigencia.value,
+        descricao: idDescricao.value
+    };
+
+    btnCancelar.addEventListener('click', function() {
+        idNome.value = valoresOriginais.nome;
+        idExigencia.value = valoresOriginais.exigencia;
+        idDescricao.value = valoresOriginais.descricao;
+    });
+
+    formInformacoes.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const nome = idNome.value.trim();
+        const exigenciaId = idExigencia.value;
+        const descricao = idDescricao.value.trim();
+
+        if (!nome) {
+            alert('Nome da dieta não pode estar vazio');
+            return;
+        }
+
+        if (!exigenciaId) {
+            alert('Selecione uma exigência');
+            return;
+        }
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        const textoBotao = btnSalvarDados.textContent;
+        btnSalvarDados.textContent = 'Salvando...';
+        btnSalvarDados.disabled = true;
+
+        fetch(`/atualizar-informacoes/${dietaId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrftoken
+            },
+            body: new URLSearchParams({
+                'nome': nome,
+                'descricao': descricao,
+                'exigencia_id': exigenciaId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            btnSalvarDados.textContent = textoBotao;
+            btnSalvarDados.disabled = false;
+
+            if (data.ok) {
+                valoresOriginais.nome = nome;
+                valoresOriginais.exigencia = exigenciaId;
+                valoresOriginais.descricao = descricao;
+                
+                mostrarAlertaSucesso(data.mensagem);
+            } else {
+                alert('Erro: ' + (data.erro || 'Erro desconhecido'));
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            btnSalvarDados.textContent = textoBotao;
+            btnSalvarDados.disabled = false;
+            alert('Erro ao salvar as informações. Tente novamente.');
+        });
+    });
+
+    // Função para mostrar alerta de sucesso
+    function mostrarAlertaSucesso(mensagem) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            <strong>Sucesso!</strong> ${mensagem}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+
+        const container = document.querySelector('.container');
+        container.insertBefore(alertDiv, container.firstChild);
+
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
 });
 </script>
 
