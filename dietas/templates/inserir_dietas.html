@@ -92,9 +92,11 @@
 
             <!-- 4. Navegação -->
             <hr class="mt-4">
-            <div class="d-flex justify-content-end mt-3 mb-3">
+            <div class="d-flex justify-content-start mt-3 mb-3">
                 <!-- Botão Cancelar -->
                 <a href="{% url 'dietas:dietas' %}" class="btn btn-light">Cancelar</a>
+            </div>
+            <div class="d-flex justify-content-end mt-3 mb-3">
                 <!-- Botão Próximo -->
                 <form method="POST" action="{% url 'dietas:inserir_dieta' %}">
                     {% csrf_token %}

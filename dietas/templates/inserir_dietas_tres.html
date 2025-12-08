@@ -40,7 +40,7 @@
 
         <div class="col-lg-5">
             <div class="card shadow-sm h-100">
-                <div class="card-header bg-light fw-bold align-items-left">
+                <div class="card-header fw-bold align-items-left" style="background-color: #2f453a; color: white;">
                     Animal Referenciado
                 </div>
                 <div class="card-body d-flex p-4">
@@ -78,7 +78,7 @@
 
         <div class="col-lg-7">
             <div class="card shadow-sm h-100">
-                <div class="card-header bg-light fw-bold">
+                <div class="card-header fw-bold" style="background-color: #2f453a; color: white;">
                     Informações Gerais
                 </div>
                 <div class="card-body p-4">
@@ -115,7 +115,7 @@
 
     <!-- Alimentos -->
     <div class="card shadow-sm mt-3">
-        <div class="card-header bg-light fw-bold">Alimentos Selecionados</div>
+        <div class="card-header fw-bold" style="background-color: #2f453a; color: white;">Alimentos Selecionados</div>
         <div class="card-body">
             <table class="table table-striped">
                 <thead>
@@ -176,21 +176,22 @@
     </div>
 
     <!-- Navegação -->
-    <div class="d-flex justify-content-between mt-4 mb-4">
-
-        <form action="{% url 'dietas:inserir_dietas_dois' %}" method="get" class="d-inline">
-            <button type="submit" class="btn btn-light">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </button>
-        </form>
-
-        <form method="POST" class="d-inline">
-            {% csrf_token %}
-            <button type="submit" class="botao btn-custom">
-                Salvar Dieta <i class="bi bi-save-fill"></i>
-            </button>
-        </form>
-
+    <div class="row mb-3" style="position: relative; margin-top: 5px">
+        <div class="col" style="text-align: start">
+            <form action="{% url 'dietas:inserir_dietas_dois' %}" method="get" class="d-inline">
+                <button type="submit" class="btn btn-light">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </button>
+            </form>
+        </div>
+        <div class="col" style="text-align: end">
+            <form method="POST" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="botao btn-custom">
+                    Salvar Dieta <img src="{% static 'img/save.png' %}" alt="Salvar dieta" style="width: 15px; padding-bottom: 2px">
+                </button>
+            </form>
+        </div>
     </div>
 
 </div>

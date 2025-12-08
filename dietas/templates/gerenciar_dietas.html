@@ -68,37 +68,41 @@
                             <div class="col-6">
                                 <label for="animal_display" class="form-label mb-1"><small
                                         class="text-muted">Animal</small></label>
-                                <input type="text" class="form-control bg-light" id="animal_display"
-                                    value="{{ animal.nome }}" readonly>
+                                <div class="row">
+                                    <input type="text" class="form-control bg-light" id="animal_display"
+                                        value="{{ animal.nome }}" readonly>
+                                </div>
                             </div>
-
-                            <div class="col-6 mt-2">
-                                <label for="id_exigencia" class="form-label mb-1"><small
-                                        class="text-muted">Exigência</small></label>
-                                <select class="form-control" id="id_exigencia" name="exigencia_id" required>
-
-                                    <option value="{{ exigencia.id }}" selected>{{ exigencia.nome }}</option>
-
-                                    {% for ex in exigencias %}
-                                    {% if ex.id != exigencia.id %}
-                                    <option value="{{ ex.id }}">{{ ex.nome }}</option>
-                                    {% endif %}
-                                    {% endfor %}
-
-                                </select>
-                            </div>
-
                             <div class="col-6 mt-2">
                                 <label for="id_descricao" class="form-label mb-1"><small
                                         class="text-muted">Descrição</small></label>
                                 <textarea class="form-control" id="id_descricao" name="descricao"
-                                    rows="1">{{ dieta.descricao|default:"" }}</textarea>
+                                    rows="5">{{ dieta.descricao|default:"" }}</textarea>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <div class="row">
+                                    <label for="id_exigencia" class="form-label mb-1"><small
+                                            class="text-muted">Exigência</small></label>
+                                    <select class="form-control" id="id_exigencia" name="exigencia_id" required style="box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.1);">
+
+                                        <option value="{{ exigencia.id }}" selected>{{ exigencia.nome }}</option>
+
+                                        {% for ex in exigencias %}
+                                        {% if ex.id != exigencia.id %}
+                                        <option value="{{ ex.id }}">{{ ex.nome }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+
+                                    </select>
+                                </div>
+                                <div class="row d-flex justify-content-end mt-4 mt-2" style="position: end">
+                                        <button type="submit" class="botao btn-custom">Salvar Informações</button>
+                                    
+                                </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="botao btn-custom">Salvar Informações</button>
-                        </div>
+                        
 
                     </form>
                 </div>
@@ -199,7 +203,7 @@
         </button>
 
         <button class="botao btn-custom" style="margin-left: 10px; white-space: nowrap;">
-            Salvar Balanceamento
+            Salvar Balanceamento <img src="{% static 'img/save.png' %}" alt="Salvar balanceamento" style="width: 15px; padding-bottom: 2px">
         </button>
     </div>
 
