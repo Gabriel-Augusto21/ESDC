@@ -10,6 +10,7 @@ urlpatterns = [
     path("ativar_dieta/", views.ativar_dieta, name="ativar_dieta"),
     path("inserir_dieta/", views.inserir_dieta, name="inserir_dieta"),
     path("add_item_dieta_temp/", views.add_item_dieta_temp, name="add_item_dieta_temp"),
+    path("salvar_balanceamento_dieta/", views.salvar_balanceamento_dieta, name="salvar_balanceamento_dieta"),
     path("remover_item_dieta_temp/", views.remover_item_dieta_temp, name="remover_item_dieta_temp"),
     path("atualizar_quantidade_dieta_temp/", views.atualizar_quantidade_dieta_temp, name="atualizar_quantidade_dieta_temp"),
     path("calcular_balanceamento_dinamico/", views.calcular_balanceamento_dinamico, name="calcular_balanceamento_dinamico"),
