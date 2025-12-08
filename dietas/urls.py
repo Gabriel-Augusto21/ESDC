@@ -11,10 +11,12 @@ urlpatterns = [
     path("inserir_dieta/", views.inserir_dieta, name="inserir_dieta"),
     path("add_item_dieta_temp/", views.add_item_dieta_temp, name="add_item_dieta_temp"),
     path("remover_item_dieta_temp/", views.remover_item_dieta_temp, name="remover_item_dieta_temp"),
+    path("atualizar_quantidade_dieta_temp/", views.atualizar_quantidade_dieta_temp, name="atualizar_quantidade_dieta_temp"),
     path("calcular_balanceamento_dinamico/", views.calcular_balanceamento_dinamico, name="calcular_balanceamento_dinamico"),
     path("inserir_dieta_dois/", views.inserir_dietas_dois, name="inserir_dietas_dois"),
     path("inserir_dieta_tres/", views.inserir_dietas_tres, name="inserir_dietas_tres"),
     path('api/animal/<int:animal_id>/dieta_atual/', views.verificar_dieta_atual, name='verificar_dieta_atual'),
     path('gerenciar/<int:dieta_id>/remover/', views.remover_item_dieta, name='remover_item_dieta'),
     path('gerenciar/<int:dieta_id>/balanceamento/', views.calcular_balanceamento_dieta, name='calcular_balanceamento_dieta'),
+    path('get-nutrientes-alimento/', views.get_nutrientes_alimento, name='get_nutrientes_alimento'),
 ]
