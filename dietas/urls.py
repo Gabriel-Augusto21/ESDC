@@ -19,4 +19,5 @@ urlpatterns = [
     path('gerenciar/<int:dieta_id>/remover/', views.remover_item_dieta, name='remover_item_dieta'),
     path('gerenciar/<int:dieta_id>/balanceamento/', views.calcular_balanceamento_dieta, name='calcular_balanceamento_dieta'),
     path('get-nutrientes-alimento/', views.get_nutrientes_alimento, name='get_nutrientes_alimento'),
+    path('atualizar-informacoes/<int:dieta_id>/', views.atualizar_informacoes_dieta, name='atualizar_informacoes_dieta'),
 ]

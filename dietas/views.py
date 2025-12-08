@@ -643,3 +643,51 @@ def calcular_balanceamento_dieta(request, dieta_id):
         "contribuicao": contribuicao,
         "balanceamento": balanceamento,
     })
+
+def atualizar_informacoes_dieta(request, dieta_id):
+    dieta = get_object_or_404(Dieta, pk=dieta_id)
+    
+    if request.method == "POST":
+        nome = request.POST.get("nome", "").strip()
+        descricao = request.POST.get("descricao", "").strip()
+        exigencia_id = request.POST.get("exigencia_id")
+        
+        if not nome:
+            return JsonResponse({
+                "ok": False,
+                "erro": "Nome da dieta não pode estar vazio"
+            }, status=400)
+        
+        if not exigencia_id:
+            return JsonResponse({
+                "ok": False,
+                "erro": "Exigência deve ser selecionada"
+            }, status=400)
+        
+        try:
+            exigencia = Exigencia.objects.get(id=exigencia_id)
+            dieta.nome = nome
+            dieta.descricao = descricao
+            dieta.exigencia = exigencia
+            dieta.save()
+            
+            return JsonResponse({
+                "ok": True,
+                "mensagem": "Informações da dieta atualizadas com sucesso!"
+            })
+        
+        except Exigencia.DoesNotExist:
+            return JsonResponse({
+                "ok": False,
+                "erro": "Exigência não encontrada"
+            }, status=404)
+        except Exception as e:
+            return JsonResponse({
+                "ok": False,
+                "erro": f"Erro ao atualizar: {str(e)}"
+            }, status=500)
+    
+    return JsonResponse({
+        "ok": False,
+        "erro": "Método não permitido"
+    }, status=405)
