@@ -1,3 +1,6 @@
+import { ativar, desativar } from './alertas_dietas.js';
+
+
 const htmlInsercao = document.getElementById('txtInserir');
 
 document.body.addEventListener('click', function (evento){ 
