@@ -79,10 +79,10 @@
                                         <small class="text-muted">Exigência</small>
                                     </label>
                                     <select class="form-control" id="id_exigencia" name="exigencia_id" required>
-                                        <option value="{{ exigencia.id }}" selected>{{ exigencia.nome }}</option>
+                                        <option value="{{ exigencia.id }}" selected>{{ exigencia.nome }} - {{ exigencia.categoria.peso_vivo }}Kg</option>
                                         {% for ex in exigencias %}
                                             {% if ex.id != exigencia.id %}
-                                                <option value="{{ ex.id }}">{{ ex.nome }}</option>
+                                                <option value="{{ ex.id }}">{{ ex.nome }} - {{ ex.categoria.peso_vivo }}Kg</option>
                                             {% endif %}
                                         {% endfor %}
                                     </select>
@@ -177,7 +177,7 @@
                     <td style="text-align: center;">{{ total_fornecido.pb }}</td>
                     <td style="text-align: center;">{{ total_fornecido.ed }}</td>
                     {% for nutriente in header_nutrientes %}
-                    <td style="text-align: center;">{{ total_fornecido.nutrientes|dictget:nutriente|default:"0" }}</td>
+                    <td style="text-align: center;">{{ total_fornecido.nutrientes|dictget:nutriente.nome|default:"0" }}</td>
                     {% endfor %}
                 </tr>
 
@@ -188,7 +188,7 @@
                     <td style="text-align: center;">{{ exigencia_valores.pb }}</td>
                     <td style="text-align: center;">{{ exigencia_valores.ed }}</td>
                     {% for nutriente in header_nutrientes %}
-                    <td style="text-align: center;">{{ exigencia_valores.nutrientes|dictget:nutriente|default:"0" }}</td>
+                    <td style="text-align: center;">{{ exigencia_valores.nutrientes|dictget:nutriente.nome|default:"0" }}</td>
                     {% endfor %}
                 </tr>
 
@@ -212,9 +212,9 @@
                     </td>
                     {% for nutriente in header_nutrientes %}
                     <td style="text-align: center;" class="balanceamento-cell" 
-                        data-valor="{{ balanceamento.nutrientes|dictget:nutriente|default:'0' }}" 
-                        data-exigido="{{ exigencia_valores.nutrientes|dictget:nutriente|default:'0' }}">
-                        {{ balanceamento.nutrientes|dictget:nutriente|default:"0" }}
+                        data-valor="{{ balanceamento.nutrientes|dictget:nutriente.nome|default:'0' }}" 
+                        data-exigido="{{ exigencia_valores.nutrientes|dictget:nutriente.nome|default:'0' }}">
+                        {{ balanceamento.nutrientes|dictget:nutriente.nome|default:"0" }}
                     </td>
                     {% endfor %}
                 </tr>
@@ -278,7 +278,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const botao = document.getElementById("btnAdicionar");
     const btnSalvar = document.getElementById("btnSalvarBalanceamento");
-    const exigenciaId = "{{ exigencia_id }}";
+    let exigenciaId = "{{ exigencia_id }}";
     const csrfToken = "{{ csrf_token }}";
 
     // URLs
@@ -287,8 +287,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const urlAtualizar = "{% url 'dietas:atualizar_quantidade_dieta_temp' %}";
     const urlGetNutrientes = "{% url 'dietas:get_nutrientes_alimento' %}";
     const urlSalvar = "{% url 'dietas:salvar_balanceamento_dieta' %}";
+    const urlGetExigencia = "/get-exigencia-dados/";  // URL para buscar dados da exigência
 
     let alimentoSelecionado = null;
+
+    // Header nutrientes do backend (com nome e unidade)
+    const headerNutrientesBackend = {{ header_nutrientes_json|safe }};
 
     // ===== APLICA CORES NO BALANCEAMENTO INICIAL =====
     function aplicarCoresBalanceamentoInicial() {
@@ -345,15 +349,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function obterHeaderNutrientes() {
-        const thead = document.querySelector("thead");
-        const ths = thead.querySelectorAll("th");
-        const nutrientes = [];
-        for (let i = 6; i < ths.length; i++) {
-            const texto = ths[i].textContent.trim();
-            const nome = texto.split(" ")[0];
-            nutrientes.push(nome);
-        }
-        return nutrientes;
+        // Retorna apenas os nomes dos nutrientes
+        return headerNutrientesBackend.map(n => n.nome);
     }
 
     function verificarCampos() {
@@ -382,6 +379,151 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         } catch (error) {
             console.error("Erro ao buscar nutrientes:", error);
+        }
+    }
+
+    // ===== BUSCA DADOS DA EXIGÊNCIA =====
+    async function buscarDadosExigencia(exigenciaId) {
+        try {
+            const url = `${urlGetExigencia}?exigencia_id=${exigenciaId}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.ok) {
+                atualizarLinhasExigenciaBalanceamento(data);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar exigência:", error);
+        }
+    }
+
+    // ===== ATUALIZA LINHAS DE EXIGÊNCIA E BALANCEAMENTO =====
+    // ===== ATUALIZA LINHAS DE EXIGÊNCIA E BALANCEAMENTO =====
+    function atualizarLinhasExigenciaBalanceamento(data) {
+        const headerNutrientes = obterHeaderNutrientes();
+        
+        // Pega os dados atuais da tabela
+        const tbody = document.querySelector('table tbody');
+        const linhas = tbody.querySelectorAll('tr[data-id]');
+        
+        let total_ms = 0, total_pb = 0, total_ed = 0;
+        const totais_nutrientes = {};
+        headerNutrientes.forEach(n => totais_nutrientes[n] = 0);
+
+        // Calcula totais baseado nos valores ATUAIS da tabela
+        linhas.forEach(linha => {
+            const quantidadeInput = linha.querySelector('.quantidade-input');
+            const qtd = parseFloat(quantidadeInput.value) || 0;
+            
+            // Pega todas as células da linha
+            const cells = linha.querySelectorAll('td');
+            
+            // MS, PB, ED estão nas posições 3, 4, 5 
+            // (índices após: 0=Ação, 1=Alimento, 2=Quantidade)
+            const ms = parseFloat(cells[3].textContent.trim()) || 0;
+            const pb = parseFloat(cells[4].textContent.trim()) || 0;
+            const ed = parseFloat(cells[5].textContent.trim()) || 0;
+            
+            total_ms += ms * qtd;
+            total_pb += pb * qtd;
+            total_ed += ed * qtd;
+            
+            // Nutrientes começam na posição 6
+            for (let i = 6; i < cells.length; i++) {
+                const nutrienteIndex = i - 6;
+                if (nutrienteIndex < headerNutrientes.length) {
+                    const nutriente = headerNutrientes[nutrienteIndex];
+                    const valorText = cells[i].textContent.trim();
+                    const valor = parseFloat(valorText) || 0;
+                    totais_nutrientes[nutriente] = (totais_nutrientes[nutriente] || 0) + (valor * qtd);
+                }
+            }
+        });
+
+        // DEBUG - Remover após testar
+        console.log('✅ Totais calculados:', { 
+            total_ms: total_ms.toFixed(4), 
+            total_pb: total_pb.toFixed(4), 
+            total_ed: total_ed.toFixed(4), 
+            totais_nutrientes 
+        });
+
+        // ===== ATUALIZA LINHA TOTAL FORNECIDO =====
+        const linhaTotal = document.getElementById('linha-total');
+        const linhaTotalCells = linhaTotal.querySelectorAll('td');
+        
+        // Total Fornecido tem colspan=3 na primeira célula
+        // Então: índice 0 = label, índice 1 = MS, índice 2 = PB, etc.
+        if (linhaTotalCells.length > 3) {
+            linhaTotalCells[1].textContent = formatarValor(total_ms);
+            linhaTotalCells[2].textContent = formatarValor(total_pb);
+            linhaTotalCells[3].textContent = formatarValor(total_ed);
+            
+            // Nutrientes do Total Fornecido
+            for (let i = 4; i < linhaTotalCells.length; i++) {
+                const nutrienteIndex = i - 4;
+                if (nutrienteIndex < headerNutrientes.length) {
+                    const nutriente = headerNutrientes[nutrienteIndex];
+                    linhaTotalCells[i].textContent = formatarValor(totais_nutrientes[nutriente] || 0);
+                }
+            }
+        }
+
+        // ===== ATUALIZA LINHA EXIGÊNCIA =====
+        const linhaExigencia = document.getElementById('linha-exigencia');
+        const linhaExigenciaCells = linhaExigencia.querySelectorAll('td');
+        
+        if (linhaExigenciaCells.length > 0) {
+            // Atualiza o nome da exigência (primeira célula com colspan=3)
+            linhaExigenciaCells[0].innerHTML = `${data.exigencia.nome} - ${data.exigencia.peso}<small>Kg</small>:`;
+            linhaExigenciaCells[0].className = 'text-end';
+            
+            // Atualiza valores da exigência
+            linhaExigenciaCells[1].textContent = formatarValor(data.exigencia_valores.ms);
+            linhaExigenciaCells[2].textContent = formatarValor(data.exigencia_valores.pb);
+            linhaExigenciaCells[3].textContent = formatarValor(data.exigencia_valores.ed);
+            
+            // Nutrientes da exigência
+            for (let i = 4; i < linhaExigenciaCells.length; i++) {
+                const nutrienteIndex = i - 4;
+                if (nutrienteIndex < headerNutrientes.length) {
+                    const nutriente = headerNutrientes[nutrienteIndex];
+                    linhaExigenciaCells[i].textContent = formatarValor(data.exigencia_valores.nutrientes[nutriente] || 0);
+                }
+            }
+        }
+
+        // ===== CALCULA E ATUALIZA BALANCEAMENTO =====
+        const linhaBalanceamento = document.getElementById('linha-balanceamento');
+        const linhaBalanceamentoCells = linhaBalanceamento.querySelectorAll('td');
+        
+        const bal_ms = total_ms - (data.exigencia_valores.ms || 0);
+        const bal_pb = total_pb - (data.exigencia_valores.pb || 0);
+        const bal_ed = total_ed - (data.exigencia_valores.ed || 0);
+        
+        // DEBUG - Remover após testar
+        console.log('⚖️ Balanceamento:', { 
+            bal_ms: bal_ms.toFixed(4), 
+            bal_pb: bal_pb.toFixed(4), 
+            bal_ed: bal_ed.toFixed(4) 
+        });
+        
+        if (linhaBalanceamentoCells.length > 0) {
+            // Atualiza valores de balanceamento
+            linhaBalanceamentoCells[1].innerHTML = formatarBalanceamento(bal_ms, data.exigencia_valores.ms);
+            linhaBalanceamentoCells[2].innerHTML = formatarBalanceamento(bal_pb, data.exigencia_valores.pb);
+            linhaBalanceamentoCells[3].innerHTML = formatarBalanceamento(bal_ed, data.exigencia_valores.ed);
+            
+            // Nutrientes do balanceamento
+            for (let i = 4; i < linhaBalanceamentoCells.length; i++) {
+                const nutrienteIndex = i - 4;
+                if (nutrienteIndex < headerNutrientes.length) {
+                    const nutriente = headerNutrientes[nutrienteIndex];
+                    const fornecido = totais_nutrientes[nutriente] || 0;
+                    const exigido = data.exigencia_valores.nutrientes[nutriente] || 0;
+                    const balanceamento = fornecido - exigido;
+                    linhaBalanceamentoCells[i].innerHTML = formatarBalanceamento(balanceamento, exigido);
+                }
+            }
         }
     }
 
@@ -433,7 +575,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
         `;
         data.header_nutrientes.forEach(nutr => {
-            headerHtml += `<th style="white-space: nowrap;">${nutr}</th>`;
+            headerHtml += `<th style="white-space: nowrap;">${nutr.nome} <small>(${nutr.unidade})</small></th>`;
         });
         headerHtml += `</tr>`;
         thead.innerHTML = headerHtml;
@@ -509,7 +651,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td style="text-align: center;">${formatarValor(data.total_fornecido.ed)}</td>
         `;
         data.header_nutrientes.forEach(nutr => {
-            const valor = data.total_fornecido.nutrientes[nutr] || 0;
+            const valor = data.total_fornecido.nutrientes[nutr.nome] || 0;
             footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
         });
         footerHtml += `</tr>`;
@@ -525,7 +667,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td style="text-align: center;">${formatarValor(data.exigencia.valores.ed)}</td>
         `;
         data.header_nutrientes.forEach(nutr => {
-            const valor = data.exigencia.valores.nutrientes[nutr] || 0;
+            const valor = data.exigencia.valores.nutrientes[nutr.nome] || 0;
             footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
         });
         footerHtml += `</tr>`;
@@ -539,8 +681,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ed, data.exigencia.valores.ed)}</td>
         `;
         data.header_nutrientes.forEach(nutr => {
-            const valorBalanceamento = data.balanceamento.nutrientes[nutr] || 0;
-            const valorExigido = data.exigencia.valores.nutrientes[nutr] || 0;
+            const valorBalanceamento = data.balanceamento.nutrientes[nutr.nome] || 0;
+            const valorExigido = data.exigencia.valores.nutrientes[nutr.nome] || 0;
             footerHtml += `<td style="text-align: center;">${formatarBalanceamento(valorBalanceamento, valorExigido)}</td>`;
         });
         footerHtml += `</tr>`;
@@ -663,6 +805,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (e.target && e.target.id === "alimento") {
             buscarNutrientesAlimento(e.target.value);
             verificarCampos();
+        }
+        
+        // Detecta mudança na exigência
+        if (e.target && e.target.id === "id_exigencia") {
+            exigenciaId = e.target.value;  // ADICIONE ESTA LINHA
+            buscarDadosExigencia(e.target.value);
         }
     });
 

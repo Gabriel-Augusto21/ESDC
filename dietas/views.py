@@ -6,6 +6,7 @@ from animais.models import Animal
 from decimal import Decimal
 from django.core.paginator import Paginator
 from django.http import JsonResponse
+import json
 from django.utils import timezone
 
 
@@ -14,11 +15,17 @@ from django.utils import timezone
 def calcular_totais_e_balanceamento(dieta_temp, header_nutrientes, exigencia_id):
     """Função auxiliar para calcular totais, exigência e balanceamento"""
     
+    # Extrai apenas os nomes dos nutrientes se vier como lista de dicts
+    if header_nutrientes and isinstance(header_nutrientes[0], dict):
+        nutrientes_nomes = [n["nome"] for n in header_nutrientes]
+    else:
+        nutrientes_nomes = header_nutrientes
+    
     # ===== CALCULA TOTAL FORNECIDO =====
     total_ms = 0
     total_pb = 0
     total_ed = 0
-    totais_nutrientes = {n: 0 for n in header_nutrientes}
+    totais_nutrientes = {n: 0 for n in nutrientes_nomes}
 
     for item in dieta_temp:
         qtd_item = item["quantidade"]
@@ -26,7 +33,7 @@ def calcular_totais_e_balanceamento(dieta_temp, header_nutrientes, exigencia_id)
         total_pb += item.get("pb", 0) * qtd_item
         total_ed += item.get("ed", 0) * qtd_item
         
-        for i, nutriente_nome in enumerate(header_nutrientes):
+        for i, nutriente_nome in enumerate(nutrientes_nomes):
             if i < len(item.get("comp_alimento", [])):
                 valor = item["comp_alimento"][i]
                 if valor != "-" and valor != 0:
@@ -75,7 +82,7 @@ def calcular_totais_e_balanceamento(dieta_temp, header_nutrientes, exigencia_id)
         "nutrientes": {}
     }
     
-    for nutriente_nome in header_nutrientes:
+    for nutriente_nome in nutrientes_nomes:
         fornecido = total_fornecido["nutrientes"].get(nutriente_nome, 0)
         exigido = exigencia_valores["nutrientes"].get(nutriente_nome, 0)
         balanceamento["nutrientes"][nutriente_nome] = round(fornecido - exigido, 4)
@@ -89,7 +96,6 @@ def calcular_totais_e_balanceamento(dieta_temp, header_nutrientes, exigencia_id)
         },
         "balanceamento": balanceamento
     }
-
 
 def recalcular_header_e_matriz(dieta_temp):
     """Recalcula o header de nutrientes e a matriz de cada alimento"""
@@ -105,17 +111,80 @@ def recalcular_header_e_matriz(dieta_temp):
     
     header_nutrientes = []
     if maior_alimento and "comp_alimento_detalhado" in maior_alimento:
-        header_nutrientes = [ca["nutriente"] for ca in maior_alimento["comp_alimento_detalhado"]]
+        # CORRIGIDO: Agora retorna dicionário com nome e unidade
+        header_nutrientes = [
+            {
+                "nome": ca["nutriente"],
+                "unidade": ca.get("unidade", "")
+            }
+            for ca in maior_alimento["comp_alimento_detalhado"]
+        ]
     
-    # Recalcula a matriz de cada alimento
+    # Recalcula a matriz de cada alimento baseado no header
+    nutrientes_nomes = [n["nome"] for n in header_nutrientes]  # Lista só com nomes para lookup
     for a in dieta_temp:
         if "comp_alimento_detalhado" in a:
             comp_dict = {ca["nutriente"]: ca["valor"] for ca in a["comp_alimento_detalhado"]}
-            a["comp_alimento"] = [comp_dict.get(n, 0) for n in header_nutrientes]
-            a["nutrientes_header"] = header_nutrientes
+            a["comp_alimento"] = [comp_dict.get(n, 0) for n in nutrientes_nomes]
+            a["nutrientes_header"] = nutrientes_nomes
     
     return header_nutrientes, dieta_temp
 
+def get_exigencia_dados(request):
+    """
+    Retorna os dados de uma exigência específica incluindo seus valores nutricionais
+    """
+    exigencia_id = request.GET.get('exigencia_id')
+    
+    if not exigencia_id:
+        return JsonResponse({'ok': False, 'erro': 'ID da exigência não fornecido'})
+    
+    try:
+        # Otimiza query com select_related
+        exigencia = get_object_or_404(
+            Exigencia.objects.select_related('categoria'),
+            pk=exigencia_id
+        )
+        
+        # Busca composição da exigência
+        comp_exigencia = ComposicaoExigencia.objects.filter(
+            exigencia=exigencia,
+            is_active=True
+        ).select_related("nutriente")
+        
+        # Estrutura os valores
+        exigencia_valores = {
+            "ms": 0,
+            "pb": 0,
+            "ed": 0,
+            "nutrientes": {}
+        }
+        
+        for ce in comp_exigencia:
+            nutriente_nome = ce.nutriente.nome
+            valor = float(ce.valor) if ce.valor else 0
+            
+            if nutriente_nome == "MS":
+                exigencia_valores["ms"] = valor
+            elif nutriente_nome == "PB":
+                exigencia_valores["pb"] = valor
+            elif nutriente_nome == "ED":
+                exigencia_valores["ed"] = valor
+            else:
+                exigencia_valores["nutrientes"][nutriente_nome] = valor
+        
+        return JsonResponse({
+            'ok': True,
+            'exigencia': {
+                'id': exigencia.id,
+                'nome': exigencia.nome,
+                'peso': float(exigencia.categoria.peso_vivo) if exigencia.categoria else 0
+            },
+            'exigencia_valores': exigencia_valores
+        })
+        
+    except Exception as e:
+        return JsonResponse({'ok': False, 'erro': str(e)})
 
 # ===== VIEWS PRINCIPAIS =====
 def gerenciar_dietas(request, id):
@@ -138,7 +207,11 @@ def gerenciar_dietas(request, id):
         ).select_related("nutriente")
         
         comp_detalhado = [
-            {"nutriente": ca.nutriente.nome, "valor": float(ca.valor)}
+            {
+                "nutriente": ca.nutriente.nome,
+                "unidade": ca.nutriente.unidade,  # ADICIONADO
+                "valor": float(ca.valor)
+            }
             for ca in comp_alimento_qs
         ]
         
@@ -163,13 +236,21 @@ def gerenciar_dietas(request, id):
         )
         
         if maior_alimento and "comp_alimento_detalhado" in maior_alimento:
-            header_nutrientes = [ca["nutriente"] for ca in maior_alimento["comp_alimento_detalhado"]]
+            # CORRIGIDO: Agora retorna dicionário com nome e unidade
+            header_nutrientes = [
+                {
+                    "nome": ca["nutriente"],
+                    "unidade": ca.get("unidade", "")
+                }
+                for ca in maior_alimento["comp_alimento_detalhado"]
+            ]
         
         # Recalcula a matriz de cada alimento baseado no header
+        nutrientes_nomes = [n["nome"] for n in header_nutrientes]  # Lista só com nomes
         for a in dieta_temp:
             if "comp_alimento_detalhado" in a:
                 comp_dict = {ca["nutriente"]: ca["valor"] for ca in a["comp_alimento_detalhado"]}
-                a["comp_alimento"] = [comp_dict.get(n, 0) for n in header_nutrientes]
+                a["comp_alimento"] = [comp_dict.get(n, 0) for n in nutrientes_nomes]
     
     # Ordena e salva na sessão
     dieta_temp = sorted(dieta_temp, key=lambda x: x["nome"])
@@ -180,7 +261,8 @@ def gerenciar_dietas(request, id):
     total_ms = 0
     total_pb = 0
     total_ed = 0
-    totais_nutrientes = {n: 0 for n in header_nutrientes}
+    nutrientes_nomes = [n["nome"] for n in header_nutrientes]  # Lista só com nomes
+    totais_nutrientes = {n: 0 for n in nutrientes_nomes}
 
     for item in dieta_temp:
         qtd = item["quantidade"]
@@ -188,7 +270,7 @@ def gerenciar_dietas(request, id):
         total_pb += item.get("pb", 0) * qtd
         total_ed += item.get("ed", 0) * qtd
         
-        for i, nutriente_nome in enumerate(header_nutrientes):
+        for i, nutriente_nome in enumerate(nutrientes_nomes):
             if i < len(item.get("comp_alimento", [])):
                 valor = item["comp_alimento"][i]
                 if valor and valor != 0:
@@ -203,7 +285,7 @@ def gerenciar_dietas(request, id):
 
     # ===== BUSCA VALORES DA EXIGÊNCIA =====
     exigencia = dieta.exigencia
-    exigencia_valores = {"ms": 0, "pb": 0, "ed": 0, "nutrientes": {n: 0 for n in header_nutrientes}}
+    exigencia_valores = {"ms": 0, "pb": 0, "ed": 0, "nutrientes": {n: 0 for n in nutrientes_nomes}}
     
     comp_exigencia = ComposicaoExigencia.objects.filter(
         exigencia=exigencia
@@ -217,7 +299,7 @@ def gerenciar_dietas(request, id):
             exigencia_valores["pb"] = float(ce.valor)
         elif nutriente_nome == "ED":
             exigencia_valores["ed"] = float(ce.valor)
-        elif nutriente_nome in header_nutrientes:
+        elif nutriente_nome in nutrientes_nomes:
             exigencia_valores["nutrientes"][nutriente_nome] = float(ce.valor)
 
     # ===== CALCULA BALANCEAMENTO =====
@@ -228,13 +310,13 @@ def gerenciar_dietas(request, id):
         "nutrientes": {}
     }
     
-    for nutriente_nome in header_nutrientes:
+    for nutriente_nome in nutrientes_nomes:
         fornecido = total_fornecido["nutrientes"].get(nutriente_nome, 0)
         exigido = exigencia_valores["nutrientes"].get(nutriente_nome, 0)
         balanceamento["nutrientes"][nutriente_nome] = round(fornecido - exigido, 4)
 
     # ===== CONTEXTO =====
-    exigencias = Exigencia.objects.exclude(id=exigencia.id)
+    exigencias = Exigencia.objects.exclude(id=exigencia.id).select_related('categoria')
     animal = dieta.animal
     alimentos = Alimento.objects.all()
 
@@ -246,12 +328,14 @@ def gerenciar_dietas(request, id):
         'animal': animal,
         'alimentos': alimentos,
         'header_nutrientes': header_nutrientes,
+        'header_nutrientes_json': json.dumps(header_nutrientes),  # ADICIONADO
         'dieta_temp': dieta_temp,
         'total_fornecido': total_fornecido,
         'exigencia_valores': exigencia_valores,
         'balanceamento': balanceamento,
     }
     return render(request, 'gerenciar_dietas.html', context)
+
 def salvar_balanceamento_dieta(request):
     """Salva as alterações da dieta_temp no banco de dados"""
     if request.method != "POST":
