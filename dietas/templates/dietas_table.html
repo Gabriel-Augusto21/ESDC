@@ -1,5 +1,6 @@
 {% load static %}
 {% load custom_filters %}
+
 <table class="tabela table-responsive-sm" style="font-size: 1.2em;">
     <thead>
         <tr>
@@ -15,7 +16,8 @@
             <td id="txtNome">{{ dieta.nome }}</td>
             <td id="txtExigencia">{{dieta.exigencia.nome}} - {{dieta.exigencia.categoria.peso_vivo}} kgs</td>
             <td id="txtData">{{dieta.data_criacao}}</td>
-            <td class="text-end">{% if dieta.is_active %}
+            <td class="text-end">
+                {% if dieta.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}" title="Desativar dieta">
                     <img src="{% static 'img/visibility.png' %}" width="20">
                 </button>

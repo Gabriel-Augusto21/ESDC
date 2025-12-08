@@ -22,7 +22,7 @@ function alertaConfirmacao({ titulo, texto, acao, url, dados }) {
     });
 }
 
-function desativar(id, nome) {
+export function desativar(id, nome) {
     alertaConfirmacao({
         titulo: 'Tem certeza que deseja desativar essa dieta?',
         texto: 'Você poderá desfazer isso mais tarde!',
@@ -32,7 +32,7 @@ function desativar(id, nome) {
     });
 }
 
-function ativar(id, nome) {
+export function ativar(id, nome) {
     alertaConfirmacao({
         titulo: 'Tem certeza que deseja ativar essa dieta?',
         texto: 'Você poderá desfazer isso mais tarde!',
