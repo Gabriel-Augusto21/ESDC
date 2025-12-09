@@ -29,6 +29,7 @@
         <h3>Passo 2: Balanceie a Dieta</h3>
         <p class="text-muted text-left">
             Selecione os alimentos e suas quantidades em kg para calcular o balanceamento nutricional.
+            <br>*A coloração da taxa de balanceamento está setada em 25% atualmente.
         </p>
     </div>
 
@@ -43,7 +44,7 @@
                     <th style="white-space: nowrap;">MS <small>(%)</small></th>
                     <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
                     <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
-                    {% for nutriente in todos_nutrientes %}
+                    {% for nutriente in header_nutrientes %}
                     <th style="white-space: nowrap;">
                         {{ nutriente.nome }} <small>({{ nutriente.unidade }})</small>
                     </th>
@@ -52,7 +53,32 @@
             </thead>
 
             <tbody>
-                <!-- Alimentos serão inseridos aqui via JavaScript -->
+                {% for item in itens %}
+                <tr data-id="{{ item.id }}">
+                    <td>
+                        <button class="btn-acao remover" data-id="{{ item.id }}" title="Remover alimento">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                    <td style="white-space: nowrap;">{{ item.nome }}</td>
+                    <td>
+                        <input class="form-control form-control-sm quantidade-input" 
+                            type="number" min="0.01" step="0.01" 
+                            style="width: 100px; text-align: center;" 
+                            value="{{ item.quantidade }}"
+                            data-id="{{ item.id }}"
+                            data-original="{{ item.quantidade }}">
+                    </td>
+                    <td style="text-align: center;">{{ item.ms }}</td>
+                    <td style="text-align: center;">{{ item.pb }}</td>
+                    <td style="text-align: center;">{{ item.ed }}</td>
+                    {% for valor in item.comp_alimento %}
+                    <td style="text-align: center;">{{ valor }}</td>
+                    {% endfor %}
+                </tr>
+                {% empty %}
+                <!-- Nenhum alimento ainda -->
+                {% endfor %}
             </tbody>
 
             <tfoot>
@@ -73,7 +99,7 @@
                     <td style="white-space: nowrap; text-align: center;">-</td>
                     <td style="white-space: nowrap; text-align: center;">-</td>
                     <td style="white-space: nowrap; text-align: center;">-</td>
-                    {% for nutriente in todos_nutrientes %}
+                    {% for nutriente in header_nutrientes %}
                     <td style="white-space: nowrap; text-align: center;">-</td>
                     {% endfor %}
                 </tr>
@@ -81,33 +107,49 @@
                 <!-- Linha Total Fornecido -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-total">
                     <td colspan="3" class="text-end">Total Fornecido:</td>
-                    <td style="text-align: center;">-</td>
-                    <td style="text-align: center;">-</td>
-                    <td style="text-align: center;">-</td>
-                    {% for nutriente in todos_nutrientes %}
-                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;">{{ total_fornecido.ms|default:"-" }}</td>
+                    <td style="text-align: center;">{{ total_fornecido.pb|default:"-" }}</td>
+                    <td style="text-align: center;">{{ total_fornecido.ed|default:"-" }}</td>
+                    {% for nutriente in header_nutrientes %}
+                    <td style="text-align: center;">{{ total_fornecido.nutrientes|dictget:nutriente.nome|default:"0" }}</td>
                     {% endfor %}
                 </tr>
 
                 <!-- Linha da Exigência -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-exigencia">
-                    <td colspan="3" class="text-end">{{ exigencia.nome }} - {{ exigencia.categoria.peso_vivo}}<small>Kg</small>:</td>
-                    <td style="text-align: center;">-</td>
-                    <td style="text-align: center;">-</td>
-                    <td style="text-align: center;">-</td>
-                    {% for nutriente in todos_nutrientes %}
-                    <td style="text-align: center;">-</td>
+                    <td colspan="3" class="text-end">{{ exigencia.nome }} - {{ exigencia.categoria.peso_vivo }}<small>Kg</small>:</td>
+                    <td style="text-align: center;">{{ exigencia_valores.ms|default:"-" }}</td>
+                    <td style="text-align: center;">{{ exigencia_valores.pb|default:"-" }}</td>
+                    <td style="text-align: center;">{{ exigencia_valores.ed|default:"-" }}</td>
+                    {% for nutriente in header_nutrientes %}
+                    <td style="text-align: center;">{{ exigencia_valores.nutrientes|dictget:nutriente.nome|default:"0" }}</td>
                     {% endfor %}
                 </tr>
 
                 <!-- Linha de Balanceamento -->
                 <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-balanceamento">
                     <td colspan="3" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
-                    <td style="text-align: center;">-</td>
-                    <td style="text-align: center;">-</td>
-                    <td style="text-align: center;">-</td>
-                    {% for nutriente in todos_nutrientes %}
-                    <td style="text-align: center;">-</td>
+                    <td style="text-align: center;" class="balanceamento-cell" 
+                        data-valor="{{ balanceamento.ms }}" 
+                        data-exigido="{{ exigencia_valores.ms }}">
+                        {{ balanceamento.ms|default:"-" }}
+                    </td>
+                    <td style="text-align: center;" class="balanceamento-cell" 
+                        data-valor="{{ balanceamento.pb }}" 
+                        data-exigido="{{ exigencia_valores.pb }}">
+                        {{ balanceamento.pb|default:"-" }}
+                    </td>
+                    <td style="text-align: center;" class="balanceamento-cell" 
+                        data-valor="{{ balanceamento.ed }}" 
+                        data-exigido="{{ exigencia_valores.ed }}">
+                        {{ balanceamento.ed|default:"-" }}
+                    </td>
+                    {% for nutriente in header_nutrientes %}
+                    <td style="text-align: center;" class="balanceamento-cell" 
+                        data-valor="{{ balanceamento.nutrientes|dictget:nutriente.nome|default:'0' }}" 
+                        data-exigido="{{ exigencia_valores.nutrientes|dictget:nutriente.nome|default:'0' }}">
+                        {{ balanceamento.nutrientes|dictget:nutriente.nome|default:"0" }}
+                    </td>
                     {% endfor %}
                 </tr>
             </tfoot>
@@ -172,481 +214,500 @@
     }
 </style>
 
-<!-- ===================================================================== -->
-<!-- Script Principal de Balanceamento                                      -->
-<!-- ===================================================================== -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const botao = document.getElementById("btnAdicionar");
-        const exigenciaId = "{{ exigencia_id }}";
-        const csrfToken = "{{ csrf_token }}";
+document.addEventListener("DOMContentLoaded", function () {
+    const botao = document.getElementById("btnAdicionar");
+    const exigenciaId = "{{ exigencia_id }}";
+    const csrfToken = "{{ csrf_token }}";
 
-        // URLs
-        const urlAdd = "{% url 'dietas:add_item_dieta_temp' %}";
-        const urlRemover = "{% url 'dietas:remover_item_dieta_temp' %}";
-        const urlAtualizar = "{% url 'dietas:atualizar_quantidade_dieta_temp' %}";
-        const urlGetNutrientes = "{% url 'dietas:get_nutrientes_alimento' %}";
+    // URLs
+    const urlAdd = "{% url 'dietas:add_item_dieta_temp' %}";
+    const urlRemover = "{% url 'dietas:remover_item_dieta_temp' %}";
+    const urlAtualizar = "{% url 'dietas:atualizar_quantidade_dieta_temp' %}";
+    const urlGetNutrientes = "{% url 'dietas:get_nutrientes_alimento' %}";
 
-        // Guarda os nutrientes do alimento selecionado
-        let alimentoSelecionado = null;
+    // Header nutrientes do backend (com nome e unidade)
+    let headerNutrientesBackend = {{ header_nutrientes_json|safe|default:"[]" }};
 
-        // Guarda as quantidades originais para detectar mudanças
-        let quantidadesOriginais = {};
+    // Guarda os nutrientes do alimento selecionado
+    let alimentoSelecionado = null;
 
-        // ===== FUNÇÕES AUXILIARES =====
-        function formatarValor(valor) {
-            if (valor === undefined || valor === null || valor === "-") return "-";
-            const num = parseFloat(valor);
-            if (isNaN(num)) return "-";
-            return num.toFixed(4);
-        }
+    // ===== APLICA CORES NO BALANCEAMENTO INICIAL =====
+    function aplicarCoresBalanceamentoInicial() {
+        const celulas = document.querySelectorAll('.balanceamento-cell');
+        celulas.forEach(celula => {
+            const valor = parseFloat(celula.dataset.valor) || 0;
+            const exigido = parseFloat(celula.dataset.exigido) || 0;
 
-        // ===== FORMATA BALANCEAMENTO COM COR (10% MARGEM) =====
-        function formatarBalanceamento(diferenca, valorExigido) {
-            if (diferenca === undefined || diferenca === null || diferenca === "-") return "-";
-            const num = parseFloat(diferenca);
-            if (isNaN(num)) return "-";
-
-            const formatted = num.toFixed(4);
-            const exigido = parseFloat(valorExigido) || 0;
-
-            // Calcula 10% do valor exigido
+            // MARGEM, TAXA, PERCENTUAL
             const margem = Math.abs(exigido) * 0.25;
-
-            // Se a diferença está fora da margem de ±10%, fica vermelho
-            // Se está dentro, fica verde
-            if (num > margem || num < -margem) {
-                // Fora da margem - VERMELHO
-                if (num > 0) {
-                    return `<span style="color: #FF6B6B;">+${formatted}</span>`;
-                } else {
-                    return `<span style="color: #FF6B6B;">${formatted}</span>`;
-                }
+            
+            let formatted = valor.toFixed(4);
+            let cor = '#90EE90'; // Verde (dentro da margem)
+            
+            if (valor > margem || valor < -margem) {
+                cor = '#FF6B6B'; // Vermelho (fora da margem)
+            }
+            
+            if (valor > 0) {
+                celula.innerHTML = `<span style="color: ${cor};">+${formatted}</span>`;
             } else {
-                // Dentro da margem - VERDE
-                if (num > 0) {
-                    return `<span style="color: #90EE90;">+${formatted}</span>`;
-                } else if (num < 0) {
-                    return `<span style="color: #90EE90;">${formatted}</span>`;
-                }
-                return `<span style="color: #90EE90;">${formatted}</span>`;
+                celula.innerHTML = `<span style="color: ${cor};">${formatted}</span>`;
             }
+        });
+    }
+    
+    // Aplica cores ao carregar a página
+    aplicarCoresBalanceamentoInicial();
+
+    // ===== FUNÇÕES AUXILIARES =====
+    function formatarValor(valor) {
+        if (valor === undefined || valor === null || valor === "-") return "-";
+        const num = parseFloat(valor);
+        if (isNaN(num)) return "-";
+        return num.toFixed(4);
+    }
+
+    function formatarBalanceamento(diferenca, valorExigido) {
+        if (diferenca === undefined || diferenca === null || diferenca === "-") return "-";
+        const num = parseFloat(diferenca);
+        if (isNaN(num)) return "-";
+
+        const formatted = num.toFixed(4);
+        const exigido = parseFloat(valorExigido) || 0;
+        const margem = Math.abs(exigido) * 0.25;
+
+        let cor = '#90EE90'; // Verde
+        if (num > margem || num < -margem) {
+            cor = '#FF6B6B'; // Vermelho
         }
 
-        function obterHeaderNutrientes() {
-            const thead = document.querySelector("thead");
-            const ths = thead.querySelectorAll("th");
-            const nutrientes = [];
+        if (num > 0) {
+            return `<span style="color: ${cor};">+${formatted}</span>`;
+        }
+        return `<span style="color: ${cor};">${formatted}</span>`;
+    }
 
-            for (let i = 6; i < ths.length; i++) {
-                const texto = ths[i].textContent.trim();
-                const nome = texto.split(" ")[0];
-                nutrientes.push(nome);
-            }
-            return nutrientes;
+    function obterHeaderNutrientesNomes() {
+        // Retorna apenas os nomes dos nutrientes
+        return headerNutrientesBackend.map(n => typeof n === 'object' ? n.nome : n);
+    }
+
+    function verificarCampos() {
+        const selectAlimento = document.getElementById("alimento");
+        const inputQuantidade = document.querySelector("#linha-novo input[type='number']");
+
+        if (selectAlimento && inputQuantidade && selectAlimento.value && parseFloat(inputQuantidade.value) > 0) {
+            botao.style.display = "inline-block";
+        } else {
+            botao.style.display = "none";
+        }
+    }
+
+    // ===== BUSCA NUTRIENTES AO SELECIONAR ALIMENTO =====
+    async function buscarNutrientesAlimento(alimentoId) {
+        if (!alimentoId) {
+            limparPreviewNutrientes();
+            return;
         }
 
-        function verificarCampos() {
-            const selectAlimento = document.getElementById("alimento");
-            const inputQuantidade = document.querySelector("#linha-novo input[type='number']");
+        try {
+            const url = `${urlGetNutrientes}?alimento_id=${alimentoId}`;
+            const response = await fetch(url);
+            const data = await response.json();
 
-            if (selectAlimento && inputQuantidade && selectAlimento.value && parseFloat(inputQuantidade.value) > 0) {
-                botao.style.display = "inline-block";
-            } else {
-                botao.style.display = "none";
+            if (data.ok) {
+                alimentoSelecionado = data.alimento;
+                exibirPreviewNutrientes(data.alimento);
             }
+        } catch (error) {
+            console.error("Erro ao buscar nutrientes:", error);
         }
+    }
 
-        // ===== BUSCA NUTRIENTES AO SELECIONAR ALIMENTO =====
-        async function buscarNutrientesAlimento(alimentoId) {
-            if (!alimentoId) {
-                limparPreviewNutrientes();
-                return;
-            }
+    function exibirPreviewNutrientes(alimento) {
+        const linhaNovoTr = document.getElementById("linha-novo");
+        const celulas = linhaNovoTr.querySelectorAll("td");
 
-            try {
-                const url = `${urlGetNutrientes}?alimento_id=${alimentoId}`;
-                const response = await fetch(url);
-                const data = await response.json();
+        if (celulas.length >= 6) {
+            // MS, PB, ED
+            celulas[3].textContent = formatarValor(alimento.ms);
+            celulas[4].textContent = formatarValor(alimento.pb);
+            celulas[5].textContent = formatarValor(alimento.ed);
 
-                if (data.ok) {
-                    alimentoSelecionado = data.alimento;
-                    exibirPreviewNutrientes(data.alimento);
-                }
-            } catch (error) {
-                console.error("Erro ao buscar nutrientes:", error);
-            }
-        }
+            // Cria um dicionário com os nutrientes do alimento
+            const nutrientesDict = {};
+            alimento.nutrientes.forEach(n => {
+                nutrientesDict[n.nutriente] = n.valor;
+            });
 
-        function exibirPreviewNutrientes(alimento) {
-            const linhaNovoTr = document.getElementById("linha-novo");
-            const celulas = linhaNovoTr.querySelectorAll("td");
-
-            if (celulas.length >= 6) {
-                celulas[3].textContent = alimento.ms;
-                celulas[4].textContent = alimento.pb;
-                celulas[5].textContent = alimento.ed;
-
-                const headerNutrientes = obterHeaderNutrientes();
-                const nutrientesDict = {};
-                alimento.nutrientes.forEach(n => {
-                    nutrientesDict[n.nutriente] = n.valor;
-                });
-
+            // Se não há header definido ainda, usa os nutrientes do próprio alimento
+            let headerNomes = obterHeaderNutrientesNomes();
+            
+            if (headerNomes.length === 0) {
+                // Não há header ainda - preenche só as primeiras células disponíveis
+                // ou aguarda o primeiro alimento ser adicionado
                 for (let i = 6; i < celulas.length; i++) {
-                    const nomeNutriente = headerNutrientes[i - 6];
+                    celulas[i].textContent = "-";
+                }
+            } else {
+                // Preenche baseado no header existente
+                for (let i = 6; i < celulas.length; i++) {
+                    const nomeNutriente = headerNomes[i - 6];
                     const valor = nutrientesDict[nomeNutriente];
-                    celulas[i].textContent = valor !== undefined ? valor : "-";
+                    celulas[i].textContent = valor !== undefined ? formatarValor(valor) : "-";
                 }
             }
         }
+    }
 
-        function limparPreviewNutrientes() {
-            const linhaNovoTr = document.getElementById("linha-novo");
-            if (!linhaNovoTr) return;
+    function limparPreviewNutrientes() {
+        const linhaNovoTr = document.getElementById("linha-novo");
+        if (!linhaNovoTr) return;
 
-            const celulas = linhaNovoTr.querySelectorAll("td");
-            for (let i = 3; i < celulas.length; i++) {
-                celulas[i].textContent = "-";
-            }
-            alimentoSelecionado = null;
+        const celulas = linhaNovoTr.querySelectorAll("td");
+        for (let i = 3; i < celulas.length; i++) {
+            celulas[i].textContent = "-";
         }
+        alimentoSelecionado = null;
+    }
 
-        // ===== ATUALIZA A TABELA COMPLETA =====
-        function atualizarTabela(data) {
-            const thead = document.querySelector("table thead");
-            const tbody = document.querySelector("table tbody");
-            const tfoot = document.querySelector("table tfoot");
+    // ===== ATUALIZA A TABELA COMPLETA =====
+    function atualizarTabela(data) {
+        const thead = document.querySelector("table thead");
+        const tbody = document.querySelector("table tbody");
+        const tfoot = document.querySelector("table tfoot");
 
-            const numNutrientes = data.header_nutrientes.length;
+        // Normaliza header_nutrientes - pode vir como array de strings ou objetos
+        let headerNutrientes = data.header_nutrientes || [];
+        let headerNutrientesNomes = headerNutrientes.map(n => typeof n === 'object' ? n.nome : n);
+        let headerNutrientesUnidades = headerNutrientes.map(n => typeof n === 'object' ? (n.unidade || '') : '');
+        
+        const numNutrientes = headerNutrientesNomes.length;
 
-            // Reseta as quantidades originais
-            quantidadesOriginais = {};
+        // Atualiza o backend com os novos dados
+        headerNutrientesBackend = headerNutrientes.map(n => {
+            if (typeof n === 'object') return n;
+            return { nome: n, unidade: '' };
+        });
 
-            // ===== ATUALIZA CABEÇALHO =====
-            let headerHtml = `
-            <tr>
-                <th>Ação</th>
-                <th>Alimento</th>
-                <th>Quantidade</th>
-                <th style="white-space: nowrap;">MS <small>(%)</small></th>
-                <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
-                <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
+        // ===== ATUALIZA CABEÇALHO =====
+        let headerHtml = `
+        <tr>
+            <th>Ação</th>
+            <th>Alimento</th>
+            <th>Quantidade</th>
+            <th style="white-space: nowrap;">MS <small>(%)</small></th>
+            <th style="white-space: nowrap;">PB <small>(Mcal)</small></th>
+            <th style="white-space: nowrap;">ED <small>(%MS)</small></th>
         `;
-            data.header_nutrientes.forEach(nutr => {
-                headerHtml += `<th style="white-space: nowrap;">${nutr}</th>`;
-            });
-            headerHtml += `</tr>`;
-            thead.innerHTML = headerHtml;
+        for (let i = 0; i < numNutrientes; i++) {
+            const nome = headerNutrientesNomes[i];
+            const unidade = headerNutrientesUnidades[i];
+            headerHtml += `<th style="white-space: nowrap;">${nome} <small>(${unidade})</small></th>`;
+        }
+        headerHtml += `</tr>`;
+        thead.innerHTML = headerHtml;
 
-            // ===== ATUALIZA BODY =====
-            let bodyHtml = '';
-            data.dietas_temp.forEach(linha => {
-                // Guarda quantidade original
-                quantidadesOriginais[linha.id] = linha.quantidade;
+        // ===== ATUALIZA BODY =====
+        let bodyHtml = '';
+        data.dietas_temp.forEach(linha => {
+            let colunasNutrientes = '';
+            if (linha.comp_alimento) {
+                linha.comp_alimento.forEach(valor => {
+                    colunasNutrientes += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+                });
+            }
+            // Completa com células vazias se necessário
+            const faltando = numNutrientes - (linha.comp_alimento ? linha.comp_alimento.length : 0);
+            for (let i = 0; i < faltando; i++) {
+                colunasNutrientes += `<td style="text-align: center;">-</td>`;
+            }
 
-                let colunasNutrientes = '';
-                if (linha.comp_alimento) {
-                    linha.comp_alimento.forEach(valor => {
-                        colunasNutrientes += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
-                    });
-                }
-
-                bodyHtml += `
-                <tr data-id="${linha.id}">
-                    <td>
-                        <button class="btn-acao remover" data-id="${linha.id}" title="Remover alimento">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                    <td style="white-space: nowrap;">${linha.nome}</td>
-                    <td>
-                        <input class="form-control form-control-sm quantidade-input" 
-                               type="number" min="0.01" step="0.01" 
-                               style="width: 100px; text-align: center;" 
-                               value="${linha.quantidade}"
-                               data-id="${linha.id}"
-                               data-original="${linha.quantidade}">
-                    </td>
-                    <td style="text-align: center;">${formatarValor(linha.ms)}</td>
-                    <td style="text-align: center;">${formatarValor(linha.pb)}</td>
-                    <td style="text-align: center;">${formatarValor(linha.ed)}</td>
-                    ${colunasNutrientes}
-                </tr>
+            bodyHtml += `
+            <tr data-id="${linha.id}">
+                <td>
+                    <button class="btn-acao remover" data-id="${linha.id}" title="Remover alimento">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+                <td style="white-space: nowrap;">${linha.nome}</td>
+                <td>
+                    <input class="form-control form-control-sm quantidade-input" 
+                           type="number" min="0.01" step="0.01" 
+                           style="width: 100px; text-align: center;" 
+                           value="${linha.quantidade}"
+                           data-id="${linha.id}"
+                           data-original="${linha.quantidade}">
+                </td>
+                <td style="text-align: center;">${formatarValor(linha.ms)}</td>
+                <td style="text-align: center;">${formatarValor(linha.pb)}</td>
+                <td style="text-align: center;">${formatarValor(linha.ed)}</td>
+                ${colunasNutrientes}
+            </tr>
             `;
-            });
-            tbody.innerHTML = bodyHtml;
+        });
+        tbody.innerHTML = bodyHtml;
 
-            // ===== ATUALIZA FOOTER =====
-            const opcoesAlimentos = `
+        // ===== ATUALIZA FOOTER =====
+        const opcoesAlimentos = `
             <option value="" disabled selected>Selecione um alimento</option>
             {% for a in alimentos %}
             <option value="{{ a.id }}">{{ a.nome }}</option>
             {% endfor %}
         `;
 
-            // Linha "Novo"
-            let footerHtml = `
-            <tr id="linha-novo">
-                <td><small>Novo</small></td>
-                <td>
-                    <select id="alimento" class="form-control form-control-sm" style="width: 150px;">
-                        ${opcoesAlimentos}
-                    </select>
-                </td>
-                <td>
-                    <input class="form-control form-control-sm" type="number" min="0.01" step="0.01" style="width: 100px;">
-                </td>
-                <td style="text-align: center;">-</td>
-                <td style="text-align: center;">-</td>
-                <td style="text-align: center;">-</td>
+        // Linha "Novo"
+        let footerHtml = `
+        <tr id="linha-novo">
+            <td><small>Novo</small></td>
+            <td>
+                <select id="alimento" class="form-control form-control-sm" style="width: 150px;">
+                    ${opcoesAlimentos}
+                </select>
+            </td>
+            <td>
+                <input class="form-control form-control-sm" type="number" min="0.01" step="0.01" style="width: 100px;">
+            </td>
+            <td style="text-align: center;">-</td>
+            <td style="text-align: center;">-</td>
+            <td style="text-align: center;">-</td>
         `;
-            for (let i = 0; i < numNutrientes; i++) {
-                footerHtml += `<td style="text-align: center;">-</td>`;
-            }
-            footerHtml += `</tr>`;
+        for (let i = 0; i < numNutrientes; i++) {
+            footerHtml += `<td style="text-align: center;">-</td>`;
+        }
+        footerHtml += `</tr>`;
 
-            // Linha do Total Fornecido
-            footerHtml += `
-            <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-total">
-                <td colspan="3" class="text-end">Total Fornecido:</td>
-                <td style="text-align: center;">${formatarValor(data.total_fornecido.ms)}</td>
-                <td style="text-align: center;">${formatarValor(data.total_fornecido.pb)}</td>
-                <td style="text-align: center;">${formatarValor(data.total_fornecido.ed)}</td>
+        // Linha do Total Fornecido
+        footerHtml += `
+        <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-total">
+            <td colspan="3" class="text-end">Total Fornecido:</td>
+            <td style="text-align: center;">${formatarValor(data.total_fornecido.ms)}</td>
+            <td style="text-align: center;">${formatarValor(data.total_fornecido.pb)}</td>
+            <td style="text-align: center;">${formatarValor(data.total_fornecido.ed)}</td>
         `;
-            data.header_nutrientes.forEach(nutr => {
-                const valor = data.total_fornecido.nutrientes[nutr] || 0;
-                footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
-            });
-            footerHtml += `</tr>`;
+        headerNutrientesNomes.forEach(nutr => {
+            const valor = data.total_fornecido.nutrientes[nutr] || 0;
+            footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+        });
+        footerHtml += `</tr>`;
 
-            // Linha da Exigência
-            footerHtml += `
-            <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-exigencia">
-                <td colspan="3" class="text-end">
-                    ${data.exigencia.nome || '{{ exigencia.nome }}'} - ${data.exigencia.peso || '{{ exigencia.categoria.peso_vivo }}'}<small>Kg</small>:
-                </td>
-                <td style="text-align: center;">${formatarValor(data.exigencia.valores.ms)}</td>
-                <td style="text-align: center;">${formatarValor(data.exigencia.valores.pb)}</td>
-                <td style="text-align: center;">${formatarValor(data.exigencia.valores.ed)}</td>
+        // Linha da Exigência
+        footerHtml += `
+        <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-exigencia">
+            <td colspan="3" class="text-end">
+                ${data.exigencia.nome || '{{ exigencia.nome }}'} - ${data.exigencia.peso || '{{ exigencia.categoria.peso_vivo }}'}<small>Kg</small>:
+            </td>
+            <td style="text-align: center;">${formatarValor(data.exigencia.valores.ms)}</td>
+            <td style="text-align: center;">${formatarValor(data.exigencia.valores.pb)}</td>
+            <td style="text-align: center;">${formatarValor(data.exigencia.valores.ed)}</td>
         `;
-            data.header_nutrientes.forEach(nutr => {
-                const valor = data.exigencia.valores.nutrientes[nutr] || 0;
-                footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+        headerNutrientesNomes.forEach(nutr => {
+            const valor = data.exigencia.valores.nutrientes[nutr] || 0;
+            footerHtml += `<td style="text-align: center;">${formatarValor(valor)}</td>`;
+        });
+        footerHtml += `</tr>`;
+
+        // Linha de Balanceamento
+        footerHtml += `
+        <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-balanceamento">
+            <td colspan="3" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
+            <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ms, data.exigencia.valores.ms)}</td>
+            <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.pb, data.exigencia.valores.pb)}</td>
+            <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ed, data.exigencia.valores.ed)}</td>
+        `;
+        headerNutrientesNomes.forEach(nutr => {
+            const valorBalanceamento = data.balanceamento.nutrientes[nutr] || 0;
+            const valorExigido = data.exigencia.valores.nutrientes[nutr] || 0;
+            footerHtml += `<td style="text-align: center;">${formatarBalanceamento(valorBalanceamento, valorExigido)}</td>`;
+        });
+        footerHtml += `</tr>`;
+
+        tfoot.innerHTML = footerHtml;
+
+        // Limpa referência do alimento selecionado
+        alimentoSelecionado = null;
+        botao.style.display = "none";
+    }
+
+    // ===== REMOVER ALIMENTO =====
+    async function removerAlimento(alimentoId) {
+        const confirmacao = await Swal.fire({
+            title: 'Remover alimento?',
+            text: 'Deseja realmente remover este alimento da dieta?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sim, remover',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!confirmacao.isConfirmed) return;
+
+        const form = new FormData();
+        form.append("id", alimentoId);
+        form.append("exigencia_id", exigenciaId);
+        form.append("csrfmiddlewaretoken", csrfToken);
+
+        try {
+            const r = await fetch(urlRemover, { method: "POST", body: form });
+            const data = await r.json();
+
+            if (data.ok) {
+                atualizarTabela(data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removido!',
+                    text: 'Alimento removido com sucesso.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(data.erro || "Erro ao remover");
+            }
+        } catch (error) {
+            console.error("Erro ao remover:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Erro ao remover alimento. Tente novamente.'
             });
-            footerHtml += `</tr>`;
+        }
+    }
 
-            // Linha de Balanceamento
-            // Linha de Balanceamento
-            footerHtml += `
-                <tr class="fw-bold" style="background-color:#2f453a; color:white" id="linha-balanceamento">
-                    <td colspan="3" class="text-end">Balanceamento (Diferença p/ Exigência):</td>
-                    <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ms, data.exigencia.valores.ms)}</td>
-                    <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.pb, data.exigencia.valores.pb)}</td>
-                    <td style="text-align: center;">${formatarBalanceamento(data.balanceamento.ed, data.exigencia.valores.ed)}</td>
-            `;
-            data.header_nutrientes.forEach(nutr => {
-                const valorBalanceamento = data.balanceamento.nutrientes[nutr] || 0;
-                const valorExigido = data.exigencia.valores.nutrientes[nutr] || 0;
-                footerHtml += `<td style="text-align: center;">${formatarBalanceamento(valorBalanceamento, valorExigido)}</td>`;
+    // ===== ATUALIZAR QUANTIDADE =====
+    async function atualizarQuantidade(alimentoId, novaQuantidade) {
+        const form = new FormData();
+        form.append("id", alimentoId);
+        form.append("quantidade", novaQuantidade);
+        form.append("exigencia_id", exigenciaId);
+        form.append("csrfmiddlewaretoken", csrfToken);
+
+        try {
+            const r = await fetch(urlAtualizar, { method: "POST", body: form });
+            const data = await r.json();
+
+            if (data.ok) {
+                atualizarTabela(data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Atualizado!',
+                    text: 'Quantidade atualizada com sucesso.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(data.erro || "Erro ao atualizar");
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Erro ao atualizar quantidade. Tente novamente.'
             });
-            footerHtml += `</tr>`;
-
-            tfoot.innerHTML = footerHtml;
-
-            // Limpa referência do alimento selecionado
-            alimentoSelecionado = null;
-            botao.style.display = "none";
         }
+    }
 
-        // ===== REMOVER ALIMENTO =====
-        async function removerAlimento(alimentoId) {
-            const confirmacao = await Swal.fire({
-                title: 'Remover alimento?',
-                text: 'Deseja realmente remover este alimento da dieta?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Sim, remover',
-                cancelButtonText: 'Cancelar'
-            });
-
-            if (!confirmacao.isConfirmed) return;
-
-            const form = new FormData();
-            form.append("id", alimentoId);
-            form.append("exigencia_id", exigenciaId);
-            form.append("csrfmiddlewaretoken", csrfToken);
-
-            try {
-                const r = await fetch(urlRemover, { method: "POST", body: form });
-                const data = await r.json();
-
-                if (data.ok) {
-                    atualizarTabela(data);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Removido!',
-                        text: 'Alimento removido com sucesso.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                } else {
-                    throw new Error(data.erro || "Erro ao remover");
-                }
-            } catch (error) {
-                console.error("Erro ao remover:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: 'Erro ao remover alimento. Tente novamente.'
-                });
-            }
+    // ===== DELEGAÇÃO DE EVENTOS =====
+    document.addEventListener("change", function (e) {
+        if (e.target && e.target.id === "alimento") {
+            buscarNutrientesAlimento(e.target.value);
+            verificarCampos();
         }
-
-        // ===== ATUALIZAR QUANTIDADE =====
-        async function atualizarQuantidade(alimentoId, novaQuantidade) {
-            const form = new FormData();
-            form.append("id", alimentoId);
-            form.append("quantidade", novaQuantidade);
-            form.append("exigencia_id", exigenciaId);
-            form.append("csrfmiddlewaretoken", csrfToken);
-
-            try {
-                const r = await fetch(urlAtualizar, { method: "POST", body: form });
-                const data = await r.json();
-
-                if (data.ok) {
-                    atualizarTabela(data);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Atualizado!',
-                        text: 'Quantidade atualizada com sucesso.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                } else {
-                    throw new Error(data.erro || "Erro ao atualizar");
-                }
-            } catch (error) {
-                console.error("Erro ao atualizar:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: 'Erro ao atualizar quantidade. Tente novamente.'
-                });
-            }
-        }
-
-        // ===== DELEGAÇÃO DE EVENTOS =====
-
-        // Evento change no select de alimento (linha novo)
-        document.addEventListener("change", function (e) {
-            if (e.target && e.target.id === "alimento") {
-                buscarNutrientesAlimento(e.target.value);
-                verificarCampos();
-            }
-        });
-
-        // Evento input no campo quantidade (linha novo)
-        document.addEventListener("input", function (e) {
-            if (e.target && e.target.closest("#linha-novo") && e.target.type === "number") {
-                verificarCampos();
-            }
-
-            // Detecta mudança na quantidade de um alimento existente
-            if (e.target && e.target.classList.contains("quantidade-input")) {
-                const input = e.target;
-                const alimentoId = input.dataset.id;
-                const valorOriginal = parseFloat(input.dataset.original);
-                const valorAtual = parseFloat(input.value);
-                const tr = input.closest("tr");
-                const btnAcao = tr.querySelector(".btn-acao");
-
-                if (valorAtual !== valorOriginal && valorAtual > 0) {
-                    // Muda o botão para "salvar"
-                    input.classList.add("quantidade-alterada");
-                    btnAcao.classList.remove("remover");
-                    btnAcao.classList.add("salvar");
-                    btnAcao.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
-                    btnAcao.title = "Salvar alteração";
-                } else {
-                    // Volta o botão para "remover"
-                    input.classList.remove("quantidade-alterada");
-                    btnAcao.classList.remove("salvar");
-                    btnAcao.classList.add("remover");
-                    btnAcao.innerHTML = '<i class="bi bi-trash"></i>';
-                    btnAcao.title = "Remover alimento";
-                }
-            }
-        });
-
-        // Evento click nos botões de ação (remover/salvar)
-        document.addEventListener("click", function (e) {
-            const btnAcao = e.target.closest(".btn-acao");
-            if (!btnAcao) return;
-
-            const alimentoId = btnAcao.dataset.id;
-            const tr = btnAcao.closest("tr");
-            const input = tr.querySelector(".quantidade-input");
-
-            if (btnAcao.classList.contains("salvar")) {
-                // Salvar nova quantidade
-                const novaQuantidade = input.value;
-                atualizarQuantidade(alimentoId, novaQuantidade);
-            } else if (btnAcao.classList.contains("remover")) {
-                // Remover alimento
-                removerAlimento(alimentoId);
-            }
-        });
-
-        // ===== BOTÃO ADICIONAR =====
-        botao.addEventListener('click', async () => {
-            const selectAlimento = document.getElementById("alimento");
-            const inputQuantidade = document.querySelector("#linha-novo input[type='number']");
-
-            if (!selectAlimento.value || !inputQuantidade.value) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atenção',
-                    text: 'Selecione um alimento e informe a quantidade.'
-                });
-                return;
-            }
-
-            const form = new FormData();
-            form.append("alimento", selectAlimento.value);
-            form.append("quantidade", inputQuantidade.value);
-            form.append("exigencia_id", exigenciaId);
-            form.append("csrfmiddlewaretoken", csrfToken);
-
-            try {
-                const r = await fetch(urlAdd, { method: "POST", body: form });
-                const data = await r.json();
-
-                if (data.ok) {
-                    atualizarTabela(data);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Adicionado!',
-                        text: 'Alimento adicionado com sucesso.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                } else {
-                    throw new Error(data.erro || "Erro ao adicionar");
-                }
-            } catch (error) {
-                console.error("Erro na requisição:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erro',
-                    text: 'Erro ao adicionar alimento. Tente novamente.'
-                });
-            }
-        });
     });
+
+    document.addEventListener("input", function (e) {
+        if (e.target && e.target.closest("#linha-novo") && e.target.type === "number") {
+            verificarCampos();
+        }
+
+        if (e.target && e.target.classList.contains("quantidade-input")) {
+            const input = e.target;
+            const valorOriginal = parseFloat(input.dataset.original);
+            const valorAtual = parseFloat(input.value);
+            const tr = input.closest("tr");
+            const btnAcao = tr.querySelector(".btn-acao");
+
+            if (valorAtual !== valorOriginal && valorAtual > 0) {
+                input.classList.add("quantidade-alterada");
+                btnAcao.classList.remove("remover");
+                btnAcao.classList.add("salvar");
+                btnAcao.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+                btnAcao.title = "Salvar alteração";
+            } else {
+                input.classList.remove("quantidade-alterada");
+                btnAcao.classList.remove("salvar");
+                btnAcao.classList.add("remover");
+                btnAcao.innerHTML = '<i class="bi bi-trash"></i>';
+                btnAcao.title = "Remover alimento";
+            }
+        }
+    });
+
+    document.addEventListener("click", function (e) {
+        const btnAcao = e.target.closest(".btn-acao");
+        if (!btnAcao) return;
+
+        const alimentoId = btnAcao.dataset.id;
+        const tr = btnAcao.closest("tr");
+        const input = tr.querySelector(".quantidade-input");
+
+        if (btnAcao.classList.contains("salvar")) {
+            const novaQuantidade = input.value;
+            atualizarQuantidade(alimentoId, novaQuantidade);
+        } else if (btnAcao.classList.contains("remover")) {
+            removerAlimento(alimentoId);
+        }
+    });
+
+    // ===== BOTÃO ADICIONAR =====
+    botao.addEventListener('click', async () => {
+        const selectAlimento = document.getElementById("alimento");
+        const inputQuantidade = document.querySelector("#linha-novo input[type='number']");
+
+        if (!selectAlimento.value || !inputQuantidade.value) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Atenção',
+                text: 'Selecione um alimento e informe a quantidade.'
+            });
+            return;
+        }
+
+        const form = new FormData();
+        form.append("alimento", selectAlimento.value);
+        form.append("quantidade", inputQuantidade.value);
+        form.append("exigencia_id", exigenciaId);
+        form.append("csrfmiddlewaretoken", csrfToken);
+
+        try {
+            const r = await fetch(urlAdd, { method: "POST", body: form });
+            const data = await r.json();
+
+            if (data.ok) {
+                atualizarTabela(data);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Adicionado!',
+                    text: 'Alimento adicionado com sucesso.',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(data.erro || "Erro ao adicionar");
+            }
+        } catch (error) {
+            console.error("Erro na requisição:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Erro ao adicionar alimento. Tente novamente.'
+            });
+        }
+    });
+});
 </script>
 
 {% endblock %}
