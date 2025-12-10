@@ -25,7 +25,7 @@
                         data-id="{{ nutriente.id }}"
                         data-url="{% url 'alimentos:desativar_nutriente' %}?id={{ nutriente.id }}"
                         title="Desativar alimento">
-                        <img src="{% static 'img/visibility.png' %}" width="20">
+                        <img src="{% static 'img/not_visibility.png' %}" width="20">
                     </button>
                     <button class="btn btn-sm update-btn"
                         data-id="{{ nutriente.id }}"
@@ -40,7 +40,7 @@
                         data-id="{{ nutriente.id }}"
                         data-url="{% url 'alimentos:ativar_nutriente' %}?id={{ nutriente.id }}"
                         title="Ativar alimento">
-                        <img src="{% static 'img/not_visibility.png' %}" width="20">
+                        <img src="{% static 'img/visibility.png' %}" width="20">
                     </button>
                 {% endif %}
             </td>

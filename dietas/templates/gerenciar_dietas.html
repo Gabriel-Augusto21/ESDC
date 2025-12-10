@@ -9,8 +9,8 @@
     <!-- Card - Animal da dieta -->
     <div class="row g-4 mt-3">
         <div class="col-lg-5">
-            <div class="card shadow-sm h-100">
-                <div class="card-header fw-bold align-items-left" style="background-color: #2f453a; color:white;">
+            <div class="card shadow-sm h-100" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                <div class="card-header fw-bold align-items-left" style="background-color: #2f453a; color:white; border-top-left-radius: 12px; border-top-right-radius: 12px;">
                     Animal Referenciado
                 </div>
                 <div class="card-body d-flex p-4">
@@ -40,8 +40,8 @@
 
         <!-- Card - Informações Gerais da dieta -->
         <div class="col-lg-7">
-            <div class="card shadow-sm h-100">
-                <div class="card-header fw-bold" style="background-color: #2f453a; color:white;">
+            <div class="card shadow-sm h-100" style="border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                <div class="card-header fw-bold" style="background-color: #2f453a; color:white; border-top-left-radius: 12px; border-top-right-radius: 12px;">
                     Informações Gerais
                 </div>
                 <div class="card-body p-4 d-flex justify-content-end mt-3">
@@ -87,9 +87,9 @@
                                         {% endfor %}
                                     </select>
                                 </div>
-                                <div class="row d-flex justify-content-end mt-4 mt-2" style="position: end">
-                                        <button type="button" id="btnCancelar" class="btn btn-secondary">Cancelar</button>
-                                        <button type="submit" id="btnSalvar" class="botao btn-custom">Salvar Informações</button>
+                                <div class="row d-flex mt-5 justify-content-end">
+                                    <button type="button" id="btnCancelar" class="btn btn-secondary mr-2">Cancelar</button>
+                                    <button type="submit" id="btnSalvar" class="botao btn-custom">Salvar Informações</button>
                                 </div>
                             </div>
                         </div>
@@ -100,9 +100,12 @@
     </div>
 
     <!-- ===== TABELA DE BALANCEAMENTO INTERATIVA ===== -->
-    <div class="table-responsive my-3" style="border-radius: 10px;">
+    <div class="card-header fw-bold" style="background-color: #2f453a; color:white; border-top-left-radius: 12px; border-top-right-radius: 12px; margin-top: 15px">
+        Balanceamento da Dieta
+    </div>
+    <div class="table-responsive">
         <table class="table border" id="tabela-balanceamento">
-            <thead class="fw-bold" style="background-color:#2f453a; color:white">
+            <thead class="fw-bold" style="background-color: #2f453a; color:white">
                 <tr>
                     <th>Ação</th>
                     <th>Alimento</th>

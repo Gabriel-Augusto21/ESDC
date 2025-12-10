@@ -33,7 +33,7 @@
             <td class="d-none d-sm-table-cell">{{exigencia.pb}}</td>
             <td class="text-end">{% if exigencia.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Desativar" title="Desativar exigência">
-                    <img src="{% static 'img/visibility.png' %}" width="20">
+                    <img src="{% static 'img/not_visibility.png' %}" width="20">
                 </button>
                 <button class="btn btn-sm update-btn" id="{{exigencia.id}}" title="Editar">
                     <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
@@ -43,7 +43,7 @@
                 </button>
                 {% else %}
                     <button class="btn btn-sm ativar-btn" alt="Ativar" title="Ativar exigência">
-                        <img src="{% static 'img/not_visibility.png' %}" width="20">
+                        <img src="{% static 'img/visibility.png' %}" width="20">
                     </button>
                 {% endif %}
             </td>

@@ -1,34 +1,86 @@
-{% load static %}
-{% for animal in page_obj %}
+{% load static %} {% for animal in page_obj %}
 <div class="col-6 col-md-4 col-lg-3 my-3 hover-card">
-    <div class="card position-relative shadow-sm card-animal" data-id="{{ animal.id }}"
-        data-nome="{{ animal.nome }}" data-imagem="{{ animal.imagem.url }}"
-        data-proprietario="{{ animal.proprietario }}" data-idade="{{ animal.data_nasc }}"
-        data-genero="{{ animal.genero }}" data-peso="{{ animal.peso_vivo }}"
-        style="border-radius: 15px; overflow: hidden; cursor:pointer;">
+  <div
+    class="card position-relative shadow-sm card-animal bg-light"
+    data-id="{{ animal.id }}"
+    data-nome="{{ animal.nome }}"
+    data-imagem="{{ animal.imagem.url }}"
+    data-proprietario="{{ animal.proprietario }}"
+    data-idade="{{ animal.data_nasc }}"
+    data-genero="{{ animal.genero }}"
+    data-peso="{{ animal.peso_vivo }}"
+    style="border-radius: 15px; overflow: hidden; cursor: pointer"
+  >
+    {% if animal.imagem %}
+    <img
+      src="{{ animal.imagem.url }}"
+      alt="{{ animal.nome }}"
+      class="card-img"
+      style="height: 300px; object-fit: cover; {% if not animal.is_active %}opacity: 0.2; filter: grayscale(50%);{% endif %}"
+    />
+    {% else %}
+    <img
+      src="{% static 'img/default-animal.png' %}"
+      alt="Imagem não disponível"
+      class="card-img"
+      style="height: 300px; object-fit: cover; {% if not animal.is_active %}opacity: 0.4; filter: grayscale(100%);{% endif %}"
+    />
+    {% endif %}
 
-        {% if animal.imagem %}
-        <img src="{{ animal.imagem.url }}" alt="{{ animal.nome }}" class="card-img"
-            style="height: 300px; object-fit: cover;">
-        {% else %}
-        <img src="{% static 'img/default-animal.png' %}" alt="Imagem não disponível" class="card-img"
-            style="height: 300px; object-fit: cover;">
-        {% endif %}
+    <div
+      class="card-img-overlay d-flex flex-column justify-content-end"
+      style="
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.8),
+          rgba(0, 0, 0, 0)
+        );
+        color: white;
+        padding: 15px;
+      "
+    >
+      <div style="text-align: left; margin-bottom: 20px">
+        <h5 class="mb-0" style="font-size: 1.7rem; font-weight: 400">
+          {{ animal.nome }}
+        </h5>
+        <p class="mb-1 text-white-50" style="font-size: 1.5rem">
+          {{ animal.proprietario }}
+        </p>
+      </div>
 
-        <div class="card-img-overlay d-flex flex-column justify-content-end"
-            style="background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); color: white; padding: 15px;">
-            <div style="text-align: left; margin-bottom: 20px;">
-                <h5 class="mb-0" style="font-size: 1.7rem; font-weight: 400;">{{ animal.nome }}</h5>
-                <p class="mb-1 text-white-50" style="font-size: 1.5rem;">{{ animal.proprietario }}</p>
-            </div>
-            {% if animal.is_active %}
-            <img class="desativar-btn" src="{% static 'img/visibility.png' %}" width="20" title="Desativar animal">
-            <img src="{% static 'img/edit.png' %}" alt="Editar" class="editar-btn" title="Editar"
-                style="position: absolute; bottom: 10px; right: 10px; width: 22px; height: 22px; cursor: pointer; filter: brightness(0) invert(1); opacity: 0.8; transition: opacity 0.2s;">
-            {% else %}
-            <img class="ativar-btn" src="{% static 'img/not_visibility.png' %}" width="25" title="Ativar alimento">
-            {% endif %}
-        </div>
+      {% if animal.is_active %}
+      <img
+        class="desativar-btn"
+        src="{% static 'img/not_visibility.png' %}"
+        width="20"
+        title="Desativar animal"
+      />
+      <img
+        src="{% static 'img/edit.png' %}"
+        alt="Editar"
+        class="editar-btn"
+        title="Editar"
+        style="
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          width: 22px;
+          height: 22px;
+          cursor: pointer;
+          filter: brightness(0) invert(1);
+          opacity: 0.8;
+          transition: opacity 0.2s;
+        "
+      />
+      {% else %}
+      <img
+        class="ativar-btn"
+        src="{% static 'img/visibility.png' %}"
+        width="25"
+        title="Ativar alimento"
+      />
+      {% endif %}
     </div>
+  </div>
 </div>
 {% endfor %}

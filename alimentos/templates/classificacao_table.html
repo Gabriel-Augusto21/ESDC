@@ -21,7 +21,7 @@
                         data-id="{{ classificacao.id }}"
                         data-url="{% url 'alimentos:desativar_classificacao' %}?id={{ classificacao.id }}"
                         title="Desativar alimento">
-                    <img src="{% static 'img/visibility.png' %}" width="20">
+                    <img src="{% static 'img/not_visibility.png' %}" width="20">
                 </button>
                 <button class="btn btn-sm update-btn"
                         data-id="{{ classificacao.id }}"
@@ -34,7 +34,7 @@
                         data-id="{{ classificacao.id }}"
                         data-url="{% url 'alimentos:ativar_classificacao' %}?id={{ classificacao.id }}"
                         title="Ativar alimento">
-                    <img src="{% static 'img/not_visibility.png' %}" width="20">
+                    <img src="{% static 'img/visibility.png' %}" width="20">
                 </button>
                 {% endif %}
             </td>

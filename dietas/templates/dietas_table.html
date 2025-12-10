@@ -12,21 +12,26 @@
     </thead>
     <tbody>
         {% for dieta in dietas %}
-        <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}">
+        <tr class="container" data-id="{{ dieta.id }}" data-nome="{{ dieta.nome }}"
+            {% if dieta.is_active %}
+                style="background-color: #ffffff3d"
+            {% else %}
+                style="background-color:rgba(190, 190, 190, 0.31)"
+            {% endif %}>
             <td id="txtNome">{{ dieta.nome }}</td>
             <td id="txtExigencia">{{dieta.exigencia.nome}} - {{dieta.exigencia.categoria.peso_vivo}} kgs</td>
             <td id="txtData">{{dieta.data_criacao}}</td>
             <td class="text-end">
                 {% if dieta.is_active %}
                 <button class="btn btn-sm desativar-btn" alt="Ativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}" title="Desativar dieta">
-                    <img src="{% static 'img/visibility.png' %}" width="20">
+                    <img src="{% static 'img/not_visibility.png' %}" width="20">
                 </button>
                 <button class="btn btn-sm btn-ver-dieta" data-id="{{ dieta.id }}" title="Editar">
                     <img src="{% static 'img/edit.png' %}" alt="Alterar" width="20" height="20">
                 </button>
                 {% else %}
                 <button class="btn btn-sm ativar-btn" alt="Desativar" data-nome="{{dieta.nome}}" data-id="{{dieta.id}}" title="Ativar dieta">
-                    <img src="{% static 'img/not_visibility.png' %}" width="20">
+                    <img src="{% static 'img/visibility.png' %}" width="20">
                 </button>
                 {% endif %}
             </td>
